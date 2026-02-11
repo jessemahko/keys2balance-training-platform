@@ -23,33 +23,38 @@ loginRouter.post('/', async (req, res) => {
 		return res.status(401).json({ error: 'Invalid email or password' })
 	}
 
-	// 3. If participant, check cohort (optional: ensure they are assigned)
+	// 3. If participant, check cohorts (ensure they are assigned)
+	let cohorts = []
 	if (user.role === 'participant') {
-		const cohort = await Cohort.findById(user.cohort_id)
-		if (!cohort) {
+		cohorts = await Cohort.findByUserId(user.id)
+
+		if (!cohorts || cohorts.length === 0) {
 			return res.status(400).json({ error: 'Cohort not assigned or invalid' })
 		}
 	}
 
-	// 4. Generate JWT
-	const userForToken = {
+	// 4. Prepare user data for token
+	const userData = {
 		id: user.id,
 		email: user.email,
 		role: user.role,
-		cohortId: user.cohort_id,
+	}
+
+	// Add cohorts only for participants
+	if (user.role === 'participant') {
+		userData.cohorts = cohorts.map((c) => c.id) // array of cohort IDs
 	}
 
 	// Generate a JSON Web Token with an expiration of 3 days
-	const token = jwt.sign(userForToken, process.env.SECRET, {
+	const token = jwt.sign(userData, process.env.SECRET, {
 		expiresIn: 60 * 60 * 24 * 3,
 	})
 
 	// 5. Respond with token + basic info
-	res.status(200).json({
+	const response = {
 		token,
 		email: user.email,
 		role: user.role,
-		cohortId: user.cohort_id,
 		name: user.name,
 		// username: user.username,
 		// name: user.name,
@@ -58,7 +63,14 @@ loginRouter.post('/', async (req, res) => {
 		// gender: user.gender,
 		// dateOfBirth: user.dateOfBirth,
 		// phoneNumber: user.phoneNumber,
-	})
+	}
+
+	// Add cohorts to response only for participants
+	if (user.role === 'participant') {
+		response.cohorts = userData.cohorts
+	}
+
+	res.status(200).json(response)
 })
 
 // Export the router
