@@ -8,6 +8,8 @@ require('express-async-errors') // Handle async errors automatically
 const app = express()
 
 // Import routers and utilities
+const loginRouter = require('./controllers/login') // Login-related routes
+
 const middleware = require('./utils/middleware') // Middleware functions
 
 console.log('connecting to PostgreSQL')
@@ -27,6 +29,7 @@ app.use(express.json()) // Parse incoming JSON requests
 app.use(middleware.tokenExtractor) // Extract token from requests
 
 // Route handlers
+app.use('/login', loginRouter) // Routes for login operations
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
