@@ -37,6 +37,7 @@ loginRouter.post('/', async (req, res) => {
 	res.status(200).send({
 		token,
 		email: user.email,
+		role: user.role,
 		// username: user.username,
 		// name: user.name,
 		// avatarUrl: user.avatarUrl,
