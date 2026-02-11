@@ -9,17 +9,16 @@ const app = express()
 
 // Import routers and utilities
 const middleware = require('./utils/middleware') // Middleware functions
-const logger = require('./utils/logger') // Logger utility
 
-logger.info('connecting to PostgreSQL')
+console.log('connecting to PostgreSQL')
 // Connect to Postgresql
 config.pool
 	.connect()
 	.then(() => {
-		logger.info('connected to PostgreSQL')
+		console.log('connected to PostgreSQL')
 	})
 	.catch((error) => {
-		logger.error('error connecting to PostgreSQL:', error.message)
+		console.log('error connecting to PostgreSQL:', error.message)
 	})
 
 // Middleware setup
