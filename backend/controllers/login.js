@@ -9,18 +9,23 @@ const Cohort = require('../models/cohort')
 
 // Handle login requests
 loginRouter.post('/', async (req, res) => {
-	const { email, password } = req.body // Extract email and password from request body
+	const { identifier, password } = req.body // Extract identifier (email or username) and password from request body
 
-	// 1. Find user by email
-	const user = await User.findByEmail(email)
+	// 1. Find user by email or username
+	let user
+	if (identifier.includes('@')) {
+		user = await User.findByEmail(identifier)
+	} else {
+		user = await User.findByUsername(identifier)
+	}
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email or password' })
+		return res.status(401).json({ error: 'Invalid email/username or password' })
 	}
 
 	// 2. Check password
 	const passwordCorrect = await bcrypt.compare(password, user.password_hash)
 	if (!passwordCorrect) {
-		return res.status(401).json({ error: 'Invalid email or password' })
+		return res.status(401).json({ error: 'Invalid email/username or password' })
 	}
 
 	// 3. If participant, check cohorts (ensure they are assigned)
