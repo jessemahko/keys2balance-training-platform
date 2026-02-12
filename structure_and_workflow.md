@@ -195,7 +195,7 @@ After installing, add this to your VS Code `settings.json`:
 "prettier.singleQuote": true,
 "prettier.useTabs": true
 
-If you have ideas or preferences about coding style or workflow, let’s define them early and document them here.
-This keeps it professional, clear, and team-focused.
 ```
 
+If you have ideas or preferences about coding style or workflow, let’s define them early and document them here.
+This keeps it professional, clear, and team-focused.
