@@ -1,0 +1,526 @@
+{
+  "type": "object",
+  "properties": {
+    "users": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/User"
+      }
+    },
+    "courses": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Course"
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Module"
+      }
+    },
+    "assessments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Assessment"
+      }
+    },
+    "discussions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/DiscussionThread"
+      }
+    },
+    "homePage": {
+      "$ref": "#/definitions/HomePage"
+    },
+    "platformSettings": {
+      "$ref": "#/definitions/PlatformSettings"
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "required": [
+        "id",
+        "role"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "participant",
+            "trainer",
+            "admin"
+          ]
+        },
+        "assignedCourses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progress": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProgressRecord"
+          }
+        },
+        "lastLogin": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Course": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cohortAccessCode": {
+          "type": "string"
+        }
+      }
+    },
+    "Module": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "locked",
+            "unlocked",
+            "completed"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/VideoSection"
+              },
+              {
+                "$ref": "#/definitions/ZoomSection"
+              },
+              {
+                "$ref": "#/definitions/MaterialsSection"
+              },
+              {
+                "$ref": "#/definitions/AssessmentSection"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "VideoSection": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "video"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "videoUrl": {
+          "type": "string"
+        },
+        "durationString": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "videoUrl"
+      ]
+    },
+    "ZoomSection": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "zoom"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "meetingId": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "durationString": {
+          "type": "string"
+        },
+        "joinLink": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "meetingId"
+      ]
+    },
+    "MaterialsSection": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "materials"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "type",
+        "files"
+      ]
+    },
+    "AssessmentSection": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "assessment"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "assessmentId": {
+          "type": "string"
+        },
+        "instructions": {
+          "type": "string"
+        },
+        "buttonText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "assessmentId"
+      ]
+    },
+    "Assessment": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/QuestionGroup"
+          }
+        }
+      }
+    },
+    "QuestionGroup": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "questions"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Question"
+          }
+        }
+      }
+    },
+    "Question": {
+      "type": "object",
+      "required": [
+        "id",
+        "text"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "checkbox",
+            "mcq",
+            "text"
+          ]
+        }
+      }
+    },
+    "AssessmentResponse": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "questionId": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ProgressRecord": {
+      "type": "object",
+      "properties": {
+        "moduleId": {
+          "type": "string"
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "DiscussionThread": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiscussionMessage"
+          }
+        }
+      }
+    },
+    "DiscussionMessage": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "HomePage": {
+      "type": "object",
+      "properties": {
+        "heroBanner": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "image": {
+              "type": "string"
+            }
+          }
+        },
+        "instructor": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "officeHours": {
+              "type": "string"
+            },
+            "photoUrl": {
+              "type": "string"
+            }
+          }
+        },
+        "community": {
+          "type": "object",
+          "properties": {
+            "discordLink": {
+              "type": "string"
+            },
+            "discussionLink": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "featuredCourses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "announcements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Announcement"
+          }
+        }
+      }
+    },
+    "Announcement": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PlatformSettings": {
+      "type": "object",
+      "properties": {
+        "branding": {
+          "type": "object",
+          "properties": {
+            "logo": {
+              "type": "string"
+            },
+            "primaryColor": {
+              "type": "string"
+            },
+            "secondaryColor": {
+              "type": "string"
+            }
+          }
+        },
+        "accessControl": {
+          "type": "object",
+          "properties": {
+            "allowAccessCodes": {
+              "type": "boolean"
+            },
+            "allowUserAccounts": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}
