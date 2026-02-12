@@ -2,8 +2,8 @@
 const bcrypt = require('bcrypt') // For hashing passwords
 const jwt = require('jsonwebtoken') // For email verification token
 const registerRouter = require('express').Router()
-const User = require('../models/user')
-const Cohort = require('../models/cohort')
+const User = require('../../models/user')
+const Cohort = require('../../models/cohort')
 const sendEmail = require('../../utils/sendEmail') // utility to send emails
 
 // Handle participant registration
