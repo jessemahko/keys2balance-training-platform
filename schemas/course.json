@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Course Schema",
+  "description": "Defines courses and their structure",
+  "type": "object",
+  "required": ["id", "title"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique course identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Course title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Course description"
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "Course thumbnail image URL"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Module IDs included in this course"
+    },
+    "cohortAccessCode": {
+      "type": "string",
+      "description": "Optional access code for cohort enrollment"
+    }
+  }
+}

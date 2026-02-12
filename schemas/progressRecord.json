@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Progress Record Schema",
+  "description": "Defines user progress tracking for modules",
+  "type": "object",
+  "properties": {
+    "moduleId": {
+      "type": "string",
+      "description": "ID of the module"
+    },
+    "completed": {
+      "type": "boolean",
+      "description": "Whether the module has been completed"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the module was completed"
+    }
+  }
+}

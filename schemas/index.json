@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Keys2Balance Training Platform - Data Schemas Index",
+  "description": "Root index file that references all entity schemas for the Keys2Balance training platform",
+  "type": "object",
+  "required": ["users", "courses", "modules", "assessments", "discussions", "homePage", "platformSettings"],
+  "properties": {
+    "users": {
+      "type": "array",
+      "items": {
+        "$ref": "user.json"
+      },
+      "description": "Array of user accounts with roles and progress tracking"
+    },
+    "courses": {
+      "type": "array",
+      "items": {
+        "$ref": "course.json"
+      },
+      "description": "Array of courses containing modules"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "$ref": "module.json#/definitions/Module"
+      },
+      "description": "Array of modules with various section types (video, zoom, materials, assessment)"
+    },
+    "assessments": {
+      "type": "array",
+      "items": {
+        "$ref": "assessment.json#/definitions/Assessment"
+      },
+      "description": "Array of assessments with question groups and questions"
+    },
+    "assessmentResponses": {
+      "type": "array",
+      "items": {
+        "$ref": "assessmentResponse.json"
+      },
+      "description": "User responses to assessment questions"
+    },
+    "discussions": {
+      "type": "array",
+      "items": {
+        "$ref": "discussionThread.json#/definitions/DiscussionThread"
+      },
+      "description": "Array of discussion threads for collaborative learning"
+    },
+    "homePage": {
+      "$ref": "homePage.json#/definitions/HomePage",
+      "description": "Home page configuration including hero banner, instructor info, and announcements"
+    },
+    "platformSettings": {
+      "$ref": "platformSettings.json#/definitions/PlatformSettings",
+      "description": "Platform-level settings for branding and access control"
+    }
+  },
+  "info": {
+    "version": "1.0.0",
+    "description": "This index file serves as the blueprint for the Keys2Balance training platform. Each entity type is defined in a separate schema file for better readability and maintainability.",
+    "schemaLocation": "Each schema can be found in the same directory with its entity name (e.g., user.json, course.json, etc.)",
+    "usage": "Developers should use these schemas to:\n- Design database schema\n- Define backend API payloads\n- Create frontend data models\n- Validate data structures\n- Maintain consistent data formats across the platform"
+  }
+}

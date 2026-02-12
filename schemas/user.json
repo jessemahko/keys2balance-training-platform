@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Schema",
+  "description": "Defines user roles, authentication, and course assignments",
+  "type": "object",
+  "required": ["id", "role"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique user identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "User's full name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["participant", "trainer", "admin"],
+      "description": "User's role in the platform"
+    },
+    "assignedCourses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Course IDs assigned to this user"
+    },
+    "progress": {
+      "type": "array",
+      "items": {
+        "$ref": "progressRecord.json"
+      },
+      "description": "User's progress records for modules"
+    },
+    "lastLogin": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last login timestamp"
+    }
+  }
+}

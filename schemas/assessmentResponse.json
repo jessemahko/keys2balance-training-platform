@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Assessment Response Schema",
+  "description": "Defines user responses to assessment questions",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "ID of the user submitting the response"
+    },
+    "questionId": {
+      "type": "string",
+      "description": "ID of the question being answered"
+    },
+    "answer": {
+      "type": "string",
+      "description": "User's answer to the question"
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the answer was submitted"
+    }
+  }
+}

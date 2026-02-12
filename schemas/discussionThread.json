@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Discussion Thread Schema",
+  "description": "Defines discussion threads and messages for collaborative learning",
+  "type": "object",
+  "definitions": {
+    "DiscussionThread": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique thread identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Thread title"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiscussionMessage"
+          },
+          "description": "Messages in this thread"
+        }
+      }
+    },
+    "DiscussionMessage": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "ID of the message author"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Display name of the author"
+        },
+        "text": {
+          "type": "string",
+          "description": "Message content"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Message timestamp"
+        }
+      }
+    }
+  }
+}

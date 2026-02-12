@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Assessment Schema",
+  "description": "Defines assessments, question groups, and questions",
+  "type": "object",
+  "definitions": {
+    "Assessment": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique assessment identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Assessment title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Assessment description"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/QuestionGroup"
+          },
+          "description": "Groups of questions in this assessment"
+        }
+      }
+    },
+    "QuestionGroup": {
+      "type": "object",
+      "required": ["id", "title", "questions"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique group identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Group title"
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Question"
+          },
+          "description": "Questions in this group"
+        }
+      }
+    },
+    "Question": {
+      "type": "object",
+      "required": ["id", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique question identifier"
+        },
+        "text": {
+          "type": "string",
+          "description": "Question text"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["checkbox", "mcq", "text"],
+          "description": "Question type: checkbox (multiple choice), mcq (single choice), text (open-ended)"
+        }
+      }
+    }
+  }
+}
