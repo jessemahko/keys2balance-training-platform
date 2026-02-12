@@ -8,7 +8,8 @@ require('express-async-errors') // Handle async errors automatically
 const app = express()
 
 // Import routers and utilities
-const loginRouter = require('./controllers/login') // Login-related routes
+const loginRouter = require('./controllers/auth/login') // Login-related routes
+const registerRouter = require('./controllers/auth/register') // Registration-related routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 
@@ -30,6 +31,7 @@ app.use(middleware.tokenExtractor) // Extract token from requests
 
 // Route handlers
 app.use('/login', loginRouter) // Routes for login operations
+app.use('/register', registerRouter) // Routes for registration operations
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
