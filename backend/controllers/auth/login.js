@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt') // For hashing and comparing passwords
 const loginRouter = require('express').Router() // Create a new router instance
 
 // Import models
-const User = require('../models/user')
-const Cohort = require('../models/cohort')
+const User = require('../../models/user')
+const Cohort = require('../../models/cohort')
 
 // Handle login requests
 loginRouter.post('/', async (req, res) => {
