@@ -1,7 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Course Schema",
-  "description": "Defines courses and their structure",
+  "title": "Course",
+  "description": "List of courses available in the system",
   "type": "object",
   "required": ["id", "title"],
   "properties": {
@@ -27,10 +26,6 @@
         "type": "string"
       },
       "description": "Module IDs included in this course"
-    },
-    "cohortAccessCode": {
-      "type": "string",
-      "description": "Optional access code for cohort enrollment"
     }
   }
 }

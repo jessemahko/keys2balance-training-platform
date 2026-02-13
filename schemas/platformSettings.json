@@ -1,6 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Platform Settings Schema",
+  "title": "Platform Settings",
   "description": "Defines platform-level settings for branding and access control",
   "type": "object",
   "definitions": {
@@ -31,6 +30,18 @@
         "secondaryColor": {
           "type": "string",
           "description": "Secondary brand color (hex code)"
+        },
+        "accentGold": {
+          "type": "string",
+          "description": "Accent gold color (hex code)"
+        },
+        "accentTeal": {
+          "type": "string",
+          "description": "Accent teal color (hex code)"
+        },
+        "bgGrey": {
+          "type": "string",
+          "description": "Background grey color (hex code)"
         }
       }
     },

@@ -1,173 +1,120 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Module Schema",
-  "description": "Defines modules and their section types (video, zoom, materials, assessment)",
+  "title": "Module",
+  "description": "A module represent an entie course. especially the general page of a course. Defines general page structure of one course including hero banner, instructor info, and community links",
   "type": "object",
   "definitions": {
-    "Module": {
+    "HomePage": {
       "type": "object",
-      "required": ["id", "title"],
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique module identifier"
+        "heroBanner": {
+          "$ref": "#/definitions/HeroBanner",
+          "description": "Hero banner section"
         },
-        "title": {
-          "type": "string",
-          "description": "Module title"
+        "instructor": {
+          "$ref": "#/definitions/InstructorInfo",
+          "description": "Instructor information section"
         },
-        "description": {
-          "type": "string",
-          "description": "Module description"
+        "community": {
+          "$ref": "#/definitions/CommunityLinks",
+          "description": "Community and discussion links"
         },
-        "status": {
-          "type": "string",
-          "enum": ["locked", "unlocked", "completed"],
-          "description": "Module access status"
-        },
-        "sections": {
+        "lessons": {
           "type": "array",
           "items": {
-            "oneOf": [
-              { "$ref": "#/definitions/VideoSection" },
-              { "$ref": "#/definitions/ZoomSection" },
-              { "$ref": "#/definitions/MaterialsSection" },
-              { "$ref": "#/definitions/AssessmentSection" }
-            ]
+            "type": "string"
           },
-          "description": "List of sections in this module"
+          "description": "IDs of all the lesson in this course"
+        },
+        "announcements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Announcement"
+          },
+          "description": "Platform announcements"
         }
       }
     },
-    "VideoSection": {
+    "HeroBanner": {
       "type": "object",
       "properties": {
-        "type": {
-          "const": "video",
-          "description": "Section type identifier"
-        },
-        "id": {
-          "type": "string",
-          "description": "Section ID"
-        },
         "title": {
           "type": "string",
-          "description": "Section title"
+          "description": "Banner title"
         },
-        "videoUrl": {
+        "subtitle": {
           "type": "string",
-          "description": "URL to the video"
+          "description": "Banner subtitle"
         },
-        "durationString": {
+        "image": {
           "type": "string",
-          "description": "Video duration (e.g., '45:30')"
+          "description": "Banner image URL"
         }
-      },
-      "required": ["type", "videoUrl"]
+      }
     },
-    "ZoomSection": {
+    "InstructorInfo": {
       "type": "object",
       "properties": {
-        "type": {
-          "const": "zoom",
-          "description": "Section type identifier"
-        },
-        "id": {
+        "name": {
           "type": "string",
-          "description": "Section ID"
+          "description": "Instructor's full name"
         },
         "title": {
           "type": "string",
-          "description": "Section title"
+          "description": "Instructor's title/position"
         },
-        "meetingId": {
+        "email": {
           "type": "string",
-          "description": "Zoom meeting ID"
+          "format": "email",
+          "description": "Instructor's email"
         },
-        "startTime": {
+        "officeHours": {
+          "type": "string",
+          "description": "Office hours information"
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "Instructor's profile photo URL"
+        },
+        "description": {
+          "type": "string",
+          "description": "Short bio or welcome message from instructor"
+        }
+      }
+    },
+    "CommunityLinks": {
+      "type": "object",
+      "properties": {
+        "discordLink": {
+          "type": "string",
+          "description": "Discord community link"
+        },
+        "discussionLink": {
+          "type": "string",
+          "description": "Discussion forum link"
+        },
+        "description": {
+          "type": "string",
+          "description": "Community description"
+        }
+      }
+    },
+    "Announcement": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Announcement title"
+        },
+        "content": {
+          "type": "string",
+          "description": "Announcement content"
+        },
+        "date": {
           "type": "string",
           "format": "date-time",
-          "description": "Meeting start time"
-        },
-        "durationString": {
-          "type": "string",
-          "description": "Meeting duration (e.g., '1:30')"
-        },
-        "joinLink": {
-          "type": "string",
-          "description": "Meeting join link"
+          "description": "Announcement date"
         }
-      },
-      "required": ["type", "meetingId"]
-    },
-    "MaterialsSection": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "materials",
-          "description": "Section type identifier"
-        },
-        "id": {
-          "type": "string",
-          "description": "Section ID"
-        },
-        "title": {
-          "type": "string",
-          "description": "Section title"
-        },
-        "files": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "File name"
-              },
-              "type": {
-                "type": "string",
-                "description": "File type (pdf, doc, etc.)"
-              },
-              "url": {
-                "type": "string",
-                "description": "File download URL"
-              }
-            }
-          },
-          "description": "List of downloadable files"
-        }
-      },
-      "required": ["type", "files"]
-    },
-    "AssessmentSection": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "const": "assessment",
-          "description": "Section type identifier"
-        },
-        "id": {
-          "type": "string",
-          "description": "Section ID"
-        },
-        "title": {
-          "type": "string",
-          "description": "Section title"
-        },
-        "assessmentId": {
-          "type": "string",
-          "description": "Reference to assessment schema"
-        },
-        "instructions": {
-          "type": "string",
-          "description": "Assessment instructions"
-        },
-        "buttonText": {
-          "type": "string",
-          "description": "CTA button text"
-        }
-      },
-      "required": ["type", "assessmentId"]
+      }
     }
   }
 }
