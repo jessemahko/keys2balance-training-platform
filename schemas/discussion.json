@@ -1,24 +1,24 @@
 {    
-    "DiscussionMessage": {
-      "type": "object",
-      "properties": {
-        "userId": {
-          "type": "string",
-          "description": "ID of the message author"
-        },
-        "authorName": {
-          "type": "string",
-          "description": "Display name of the author"
-        },
-        "text": {
-          "type": "string",
-          "description": "Message content"
-        },
-        "timestamp": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Message timestamp"
-        }
+  "DiscussionMessage": {
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "string",
+        "description": "ID of the message author"
+      },
+      "authorName": {
+        "type": "string",
+        "description": "Display name of the author"
+      },
+      "text": {
+        "type": "string",
+        "description": "Message content"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Message timestamp"
       }
     }
+  }
 }
