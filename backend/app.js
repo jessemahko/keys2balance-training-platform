@@ -28,6 +28,7 @@ config.pool
 app.use(cors()) // Enable CORS for all routes
 app.use(express.json()) // Parse incoming JSON requests
 app.use(middleware.tokenExtractor) // Extract token from requests
+app.use(middleware.userExtractor) // Extract user from requests
 
 // Route handlers
 app.use('/login', loginRouter) // Routes for login operations
@@ -43,6 +44,13 @@ app.use('/register', registerRouter) // Routes for registration operations
 //   const testingRouter = require("./controllers/testing");
 //   app.use("/api/testing", testingRouter);
 // }
+
+// Test route for User Access
+app.get('/api/user-dashboard', middleware.authorizeRoles('participant'), (req, res) => {
+    res.status(200).json({ 
+        message: `Welcome, ${req.user.username}! You have access to the User content.` 
+    })
+})
 
 app.use(middleware.unknownEndpoint) // Handle requests to unknown endpoints
 app.use(middleware.errorHandler) // Handle application errors
