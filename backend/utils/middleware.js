@@ -64,6 +64,24 @@ const userExtractor = (req, res, next) => {
 	next() // Proceed to the next middleware
 }
 
+const authorizeRoles = (...allowedRoles) => {
+	return (req, res, next) => {
+		if (!req.user) {
+			return res.status(401).json({ error: 'Authentication required' })
+		}
+
+		if (!allowedRoles.includes(req.user.role)) {
+			return res.status(403).json({
+				error: `Access denied. Requires one of these roles: ${allowedRoles.join(
+					', ',
+				)}`,
+			})
+		}
+
+		next()
+	}
+}
+
 // Export all the middleware for use in other parts of the application
 module.exports = {
 	requestLogger,
@@ -71,5 +89,6 @@ module.exports = {
 	errorHandler,
 	tokenExtractor,
 	userExtractor,
+	authorizeRoles,
 }
 
