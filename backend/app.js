@@ -33,7 +33,11 @@ app.use(middleware.tokenExtractor) // Extract token from requests
 // Route handlers
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
-app.use('/api/admin', adminController) // Admin routes
+app.use(
+  '/api/admin',
+  middleware.userExtractor,
+  middleware.authorizeRoles('admin'),
+  adminRouter) // Admin routes
 
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
