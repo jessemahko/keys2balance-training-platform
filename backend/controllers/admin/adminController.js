@@ -1,13 +1,9 @@
 const router = require('express').Router()
 const User = require('../../models/user')
 
-router.get('/users', async (req, res) => {
-  try {
-    const users = await User.findAll()
-    res.json(users)
-  } catch (error) {
-    res.status(500).json({ error: error.message })
-  }
+router.get('/users', async (req,res) => {
+	const users = await User.findAll()
+	res.json(users)
 })
 
 module.exports = router
