@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS users (
 
   email          TEXT NOT NULL UNIQUE,
   password_hash  TEXT NOT NULL,
-  role           TEXT NOT NULL DEFAULT 'participant',
+  role           TEXT NOT NULL DEFAULT 'participant'
+                 CHECK (role IN ('participant', 'trainer', 'admin'))
 
   -- profile fields
   first_name     TEXT,
