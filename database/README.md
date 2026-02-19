@@ -9,10 +9,11 @@
 ## Core tables
 
 1) users
-## Stores participants and trainers.
+## Stores participants, trainers and admin.
 -user_id (PK)
 -email (UNIQUE, NOT NULL)
 -password_hash (NOT NULL)
+-role (NOT NULL, default 'participant') → participant | trainer | admin
 ## profile fields 
 -first_name
 -last_name
