@@ -11,6 +11,7 @@ const app = express()
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 const adminController = require('./controllers/admin/adminController') // Admin routes
+const userController = require('./controllers/user/userController') // User routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 
@@ -29,7 +30,6 @@ config.pool
 app.use(cors()) // Enable CORS for all routes
 app.use(express.json()) // Parse incoming JSON requests
 app.use(middleware.tokenExtractor) // Extract token from requests
-app.use(middleware.userExtractor) // Extract user from requests
 
 // Route handlers
 app.use('/login', loginRouter) // Routes for login operations
@@ -39,7 +39,12 @@ app.use(
   middleware.userExtractor,
   middleware.authorizeRoles('admin'),
   adminRouter) // Admin routes
-
+app.use(
+  '/api/user',
+  middleware.userExtractor,
+  middleware.authorizeRoles('admin', 'participant'),
+  userController
+)
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
@@ -51,13 +56,6 @@ app.use(
 //   const testingRouter = require("./controllers/testing");
 //   app.use("/api/testing", testingRouter);
 // }
-
-// Test route for User Access
-app.get('/api/user-dashboard', middleware.authorizeRoles('participant'), (req, res) => {
-    res.status(200).json({ 
-        message: `Welcome, ${req.user.username}! You have access to the User content.` 
-    })
-})
 
 app.use(middleware.unknownEndpoint) // Handle requests to unknown endpoints
 app.use(middleware.errorHandler) // Handle application errors
