@@ -11,7 +11,7 @@ const app = express()
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 const adminController = require('./controllers/admin/adminController') // Admin routes
-
+const progressRouter = require('./controllers/progress/progressController')// Progress routes
 const middleware = require('./utils/middleware') // Middleware functions
 
 console.log('connecting to PostgreSQL')
@@ -38,7 +38,7 @@ app.use(
   middleware.userExtractor,
   middleware.authorizeRoles('admin'),
   adminRouter) // Admin routes
-
+app.use('/api/progress', progressRouter)
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
