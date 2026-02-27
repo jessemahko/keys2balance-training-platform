@@ -1,64 +1,62 @@
-## Database Setup
+# 🗄️ Database Architecture - Keys2Balance LMS
 
-1. Install PostgreSQL
-2. Create database:
-   createdb keys2balance
-3. Run schema:
-   psql -d keys2balance -f database/schema.sql
+This directory contains the source of truth for the Keys2Balance PostgreSQL database schema.
 
-## Core tables
+## 🚀 Setup Instructions
 
-1) users
-## Stores participants, trainers and admin.
--user_id (PK)
--email (UNIQUE, NOT NULL)
--password_hash (NOT NULL)
--role (NOT NULL, default 'participant') → participant | trainer | admin
-## profile fields 
--first_name
--last_name
--gender 
--date_of_birth
--phone
--address 
--city 
--post_code
--country
--avatar_url 
-## Account meta
--is_active (NOT NULL, default true)
--created_at (NOT NULL)
--updated_at (NOT NULL)
+1.  **Install PostgreSQL** (v14+ recommended).
+2.  **Create the database:**
+    ```bash
+    createdb keys2balance
+    ```
+3.  **Run the schema script:**
+    ```bash
+    psql -d keys2balance -f database/schema.sql
+    ```
 
-2) modules
-## Reusable course templates (e.g., “Team Training”).
--module_id (PK)
--title (NOT NULL)
--description
+---
 
-3) progress
-## Tracks completion per participant
--module_id (PK/FK → modules.module_id)
--user_id (PK/FK → users.user_id)
--is_completed (NOT NULL, default false)
--completed_at (nullable)
--last_activity_at (NOT NULL)
+## 🏗️ Core Architecture (12 Tables)
 
-4) assessments
-## Assessment attached to a module (can be 0..many).
--assessment_id (PK)
--module_id (FK → modules.module_id, NOT NULL)
--title (NOT NULL)
--description (optional)
--assessment_json (JSONB, NOT NULL) → the assessment structure (questions, types, options)
--is_required (NOT NULL, default false)
--created_at (NOT NULL)
+The schema is built using **UUIDs** for security and **Transactions** for data integrity.
 
-5) assessment_responses
-## One submitted response per user per assessment per cohort.
--assessment_response_id (PK)
--assessment_id (FK → assessments.assessment_id, NOT NULL)
--user_id (FK → users.user_id, NOT NULL)
--answers_json (JSONB, NOT NULL) → answers payload (mcq selections, text answers)
--submitted_at (NOT NULL)
--UNIQUE (assessment_id, user_id)
+### 1. System & Branding
+*   **`platform_settings`**: Global configuration (Logo, Primary/Secondary colors, Accent colors). Enables "white-label" branding without code changes.
+
+### 2. User Management
+*   **`users`**: Core account data. 
+    *   Roles: `admin`, `teacher`, `student`.
+    *   Includes `is_verified` for email auth and `profile_image_url`.
+
+### 3. Training Hierarchy
+*   **`courses`**: The top-level container for a training program.
+*   **`cohorts`**: Groups/Classes (e.g., "Company X - Spring 2026"). 
+*   **`user_cohorts`**: Junction table linking Users to their assigned Cohorts (Profile-based access).
+*   **`modules`**: Chapters inside a course (ordered via `order_index`).
+*   **`lessons`**: Actual content units (Video, PDF, Text, Zoom).
+
+### 4. Progress & Assessments
+*   **`progress_records`**: Real-time tracking of student completion per lesson.
+*   **`assessments`**: Quiz definitions stored as **JSONB** for maximum flexibility in question types.
+*   **`assessment_responses`**: Student answers stored in JSONB format.
+
+### 5. Community & Social
+*   **`discussion_threads`**: Topic-based forum headers linked to specific courses.
+*   **`discussion_messages`**: Real-time chat content within threads.
+
+---
+
+## 🛠️ Design Philosophy
+
+### Why UUIDs?
+We use `UUID PRIMARY KEY` instead of standard Integers. This prevents ID guessing (security) and makes it easier to merge data across different server environments.
+
+### Why JSONB?
+The `assessments` and `responses` tables use `JSONB`. This allows us to add or change quiz formats (Multiple Choice, True/False, Open Text) without ever needing to perform a database migration or change the SQL schema.
+
+### Data Integrity
+*   **`ON DELETE CASCADE`**: Automatically cleans up child records (e.g., deleting a module deletes its lessons).
+*   **`ON DELETE SET NULL`**: Used for chat messages so that valuable community knowledge remains even if a user account is deleted.
+
+---
+*Last Updated: 2026-02-27*
