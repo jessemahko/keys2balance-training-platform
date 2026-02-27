@@ -33,13 +33,31 @@ CREATE TABLE IF NOT EXISTS platform_settings (
 -- Our current register.js backend expects these columns, so we need them to avoid crashes!
 CREATE TABLE IF NOT EXISTS users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username TEXT UNIQUE NOT NULL, 
+
+    -- Authentication
+    username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'participant' CHECK (role IN ('participant', 'trainer', 'admin')),
-    is_verified BOOLEAN DEFAULT FALSE, 
-    profile_image_url TEXT,
+
+    -- Role & Status
+    role TEXT NOT NULL DEFAULT 'participant'
+        CHECK (role IN ('participant', 'trainer', 'admin')),
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Profile Fields (from original requirement)
+    first_name TEXT,
+    last_name TEXT,
+    gender TEXT,
+    date_of_birth DATE,
+    phone TEXT,
+    address TEXT,
+    city TEXT,
+    post_code TEXT,
+    country TEXT,
+    avatar_url TEXT,
+
+    -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
