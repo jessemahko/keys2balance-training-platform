@@ -13,7 +13,8 @@ const registerRouter = require('./controllers/auth/register') // Registration-re
 const adminController = require('./controllers/admin/adminController') // Admin routes
 const progressRouter = require('./controllers/progress/progressController')// Progress routes
 const userController = require('./controllers/user/userController') // User routes
-
+const notificationController = require('./controllers/notificationController') // Notifications
+const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 const middleware = require('./utils/middleware') // Middleware functions
 
 console.log('connecting to PostgreSQL')
@@ -47,7 +48,17 @@ app.use(
   middleware.authorizeRoles('admin', 'participant'),
   userController
 )
-
+app.use(
+  '/api/notifications',
+  middleware.userExtractor,
+  notificationsRouter
+)
+// Notification routes
+app.use(
+  '/api/notifications',
+  middleware.userExtractor, // ensure we have the user
+  notificationController
+)
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
 // 	res.sendFile(path.join(__dirname, 'dist', 'index.html')) // Serve index.html for all other routes so the SPA handles routing

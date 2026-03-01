@@ -177,4 +177,38 @@ CREATE TABLE IF NOT EXISTS discussion_messages (
 CREATE INDEX IF NOT EXISTS idx_assessments_lesson ON assessments(lesson_id);
 CREATE INDEX IF NOT EXISTS idx_assessment_responses_user_time ON assessment_responses(user_id, submitted_at DESC);
 
+-- ======================================================================================
+-- 7. NOTIFICATIONS
+-- ======================================================================================
+
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+
+    type TEXT NOT NULL CHECK (
+        type IN (
+            'welcome',
+            'course_assigned',
+            'lesson_completed',
+            'assessment_submitted',
+            'discussion_reply',
+            'admin_announcement',
+            'reminder'
+        )
+    ),
+
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user_time
+ON notifications(user_id, created_at DESC);
+
 COMMIT;
