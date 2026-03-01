@@ -11,6 +11,7 @@ const app = express()
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 const adminController = require('./controllers/admin/adminController') // Admin routes
+const userController = require('./controllers/user/userController') // User routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 
@@ -38,7 +39,12 @@ app.use(
   middleware.userExtractor,
   middleware.authorizeRoles('admin'),
   adminRouter) // Admin routes
-
+app.use(
+  '/api/user',
+  middleware.userExtractor,
+  middleware.authorizeRoles('admin', 'participant'),
+  userController
+)
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
