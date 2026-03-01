@@ -15,6 +15,7 @@ const progressRouter = require('./controllers/progress/progressController')// Pr
 const userController = require('./controllers/user/userController') // User routes
 const notificationController = require('./controllers/notificationController') // Notifications
 const notificationsRouter = require('./controllers/notifications/notificationsRouter')
+const assessmentRouter = require('./controllers/assessment/assessmentRouter') //Assessments
 const middleware = require('./utils/middleware') // Middleware functions
 
 console.log('connecting to PostgreSQL')
@@ -59,6 +60,9 @@ app.use(
   middleware.userExtractor, // ensure we have the user
   notificationController
 )
+//Assessments
+app.use('/api/assessment',assessmentRouter)
+
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
 // 	res.sendFile(path.join(__dirname, 'dist', 'index.html')) // Serve index.html for all other routes so the SPA handles routing
