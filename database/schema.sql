@@ -1,7 +1,6 @@
 -- ======================================================================================
 -- Keys2Balance Training & Assessment Platform - CONSOLIDATED SCHEMA
 -- This version merges our requirements with the UUID/Transaction style.
--- I've added the missing Course/Lesson hierarchy and fixed the user columns.
 -- ======================================================================================
 
 BEGIN;
@@ -13,7 +12,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 1. BRANDING & LOOK (platform_settings)
 -- ======================================================================================
 
--- Added this so the client can change logos/colors without us editing CSS.
+-- Client can change logos/colors without editing CSS.
 CREATE TABLE IF NOT EXISTS platform_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     logo_url TEXT,
@@ -29,7 +28,6 @@ CREATE TABLE IF NOT EXISTS platform_settings (
 -- 2. OUR USERS (Updated to match our backend logic)
 -- ======================================================================================
 
--- I kept your UUID style here but added 'username' and 'is_verified'.
 -- Our current register.js backend expects these columns, so we need them to avoid crashes!
 CREATE TABLE IF NOT EXISTS users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -78,8 +76,7 @@ CREATE TABLE IF NOT EXISTS courses (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- I got rid of the 'access_code' here like we decided.
--- Now we just assign students to these groups manually.
+-- Assign students to these groups manually.
 CREATE TABLE IF NOT EXISTS cohorts (
     cohort_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
@@ -97,7 +94,7 @@ CREATE TABLE IF NOT EXISTS user_cohorts (
 -- 4. MODULES & LESSONS (The content layers)
 -- ======================================================================================
 
--- Modules are chapters. I added 'order_index' so we can sort them.
+-- Modules are chapters. Added 'order_index' so we can sort them.
 CREATE TABLE IF NOT EXISTS modules (
     module_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     course_id UUID REFERENCES courses(course_id) ON DELETE CASCADE,
@@ -131,8 +128,8 @@ CREATE TABLE IF NOT EXISTS progress (
     PRIMARY KEY (user_id, lesson_id)
 );
 
--- I kept your assessment logic but linked it to lessons. 
--- Using JSONB is a great move for flexibility here.
+-- Assessment logic linked to lessons. 
+-- Using JSONB for flexibility.
 CREATE TABLE IF NOT EXISTS assessments (
     assessment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     lesson_id UUID REFERENCES lessons(lesson_id) ON DELETE CASCADE,
@@ -173,7 +170,7 @@ CREATE TABLE IF NOT EXISTS discussion_messages (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Helpful indexes (Kept these from your original code!)
+-- Helpful indexes
 CREATE INDEX IF NOT EXISTS idx_assessments_lesson ON assessments(lesson_id);
 CREATE INDEX IF NOT EXISTS idx_assessment_responses_user_time ON assessment_responses(user_id, submitted_at DESC);
 
