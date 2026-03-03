@@ -13,11 +13,11 @@ const registerRouter = require('./controllers/auth/register') // Registration-re
 const adminController = require('./controllers/admin/adminController') // Admin routes
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 const progressRouter = require('./controllers/progress/progressController')// Progress routes
-const userController = require('./controllers/user/userController') // User routes
 const notificationController = require('./controllers/notifications/notificationController') // Notifications
 const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
 const middleware = require('./utils/middleware') // Middleware functions
+const userRouter = require('./controllers/user/userRoute')
 
 console.log('connecting to PostgreSQL')
 // Connect to Postgresql
@@ -61,6 +61,13 @@ app.use(
   '/api/notifications',
   middleware.userExtractor, // ensure we have the user
   notificationController
+)
+//user routes
+app.use(
+	'/api/user',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
+	userRouter,
 )
 //Assessments
 app.use('/api/assessment',assessmentRouter)
