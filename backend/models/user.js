@@ -33,11 +33,13 @@ async function createUser({ username, email, passwordHash, role, cohorts }) {
 	)
 	return res.rows[0]
 }
+
 // Find all users (for admin)
 async function findAll() {
 	const res = await pool.query('SELECT id, username, email, role, name FROM users')
 	return res.rows
 }
+
 // Export functions
 module.exports = {
 	findByEmail,
