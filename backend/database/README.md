@@ -16,7 +16,7 @@ This directory contains the source of truth for the Keys2Balance PostgreSQL data
 
 ---
 
-## 🏗️ Core Architecture (12 Tables)
+## 🏗️ Core Architecture (10 Tables)
 
 The schema is built using **UUIDs** for security and **Transactions** for data integrity.
 
@@ -25,24 +25,24 @@ The schema is built using **UUIDs** for security and **Transactions** for data i
 
 ### 2. User Management
 *   **`users`**: Core account data. 
-    *   Roles: `admin`, `teacher`, `student`.
-    *   Includes `is_verified` for email auth and `profile_image_url`.
+    *   Roles: `participant`, `trainer`, `admin`.
+    *   Includes authentication fields and full profile data (`first_name`, `address`, `phone`, `date_of_birth`, `avatar_url`).
 
-### 3. Training Hierarchy
+### 3. Training Hierarchy & Access
 *   **`courses`**: The top-level container for a training program.
-*   **`cohorts`**: Groups/Classes (e.g., "Company X - Spring 2026"). 
-*   **`user_cohorts`**: Junction table linking Users to their assigned Cohorts (Profile-based access).
-*   **`modules`**: Chapters inside a course (ordered via `order_index`).
-*   **`lessons`**: Actual content units (Video, PDF, Text, Zoom).
+*   **`lessons`**: Directly linked to a Course. Contains dynamic `content_data` (JSONB) for building rich pages (Video, PDF, Text, Zoom) and ordered via `order_index`.
+*   **`cohorts`**: Groups/Teams (e.g., "Company X - Spring 2026"). 
+*   **`user_cohorts`**: Junction table linking Users to their assigned Cohorts (Bridge for profile-based access).
 
 ### 4. Progress & Assessments
-*   **`progress_records`**: Real-time tracking of student completion per lesson.
-*   **`assessments`**: Quiz definitions stored as **JSONB** for maximum flexibility in question types.
+*   **`progress`**: Real-time tracking of student completion per lesson, including timestamps (`completed_at`, `last_activity_at`).
+*   **`assessments`**: Quiz definitions stored as **JSONB** for maximum flexibility, linked directly to lessons.
 *   **`assessment_responses`**: Student answers stored in JSONB format.
 
-### 5. Community & Social
+### 5. Community & Communications
 *   **`discussion_threads`**: Topic-based forum headers linked to specific courses.
 *   **`discussion_messages`**: Real-time chat content within threads.
+*   **`notifications`**: System alerts for users (e.g., welcome, lesson completion, replies).
 
 ---
 
@@ -52,11 +52,11 @@ The schema is built using **UUIDs** for security and **Transactions** for data i
 We use `UUID PRIMARY KEY` instead of standard Integers. This prevents ID guessing (security) and makes it easier to merge data across different server environments.
 
 ### Why JSONB?
-The `assessments` and `responses` tables use `JSONB`. This allows us to add or change quiz formats (Multiple Choice, True/False, Open Text) without ever needing to perform a database migration or change the SQL schema.
+The `lessons`, `assessments`, and `responses` tables use `JSONB`. This creates an extremely flexible NoSQL-like experience inside PostgreSQL, allowing us to build dynamic course pages and varying quiz formats (Multiple Choice, True/False, Open Text) without ever performing a database migration.
 
 ### Data Integrity
-*   **`ON DELETE CASCADE`**: Automatically cleans up child records (e.g., deleting a module deletes its lessons).
-*   **`ON DELETE SET NULL`**: Used for chat messages so that valuable community knowledge remains even if a user account is deleted.
+*   **`ON DELETE CASCADE`**: Automatically cleans up child records (e.g., deleting a course deletes its lessons and progress tracking).
+*   **`ON DELETE SET NULL`**: Used for chat messages and course instructors so that valuable community knowledge and global settings remain even if a user account is deleted.
 
 ---
-*Last Updated: 2026-02-27*
+*Last Updated: 2026-03-04*
