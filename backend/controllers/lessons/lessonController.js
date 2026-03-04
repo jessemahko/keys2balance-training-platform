@@ -8,11 +8,21 @@ const crypto = require('crypto')
  */
 
 const getLessonsByCourse = async (req, res) => {
+	const user = req.user
+	if (!user) {
+		return res.status(401).json({ error: 'Invalid email/username or password' })
+	}
+
 	const lessons = await Lesson.findByCourseId(req.params.courseId)
 	res.json(lessons)
 }
 
 const getLesson = async (req, res) => {
+	const user = req.user
+	if (!user) {
+		return res.status(401).json({ error: 'Invalid email/username or password' })
+	}
+
 	const lesson = await Lesson.findById(req.params.id)
 	if (!lesson) {
 		return res.status(404).json({ error: 'Lesson not found' })

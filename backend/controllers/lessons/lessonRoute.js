@@ -3,10 +3,18 @@ const lessonController = require('./lessonController')
 const middleware = require('../../utils/middleware')
 
 // GET all lessons for a specific course
-lessonRouter.get('/course/:courseId', lessonController.getLessonsByCourse)
+lessonRouter.get(
+    '/course/:courseId',
+    middleware.userExtractor,
+    lessonController.getLessonsByCourse
+)
 
 // GET a single lesson
-lessonRouter.get('/:id', lessonController.getLesson)
+lessonRouter.get(
+    '/:id',
+    middleware.userExtractor,
+    lessonController.getLesson
+)
 
 // POST a new lesson container
 lessonRouter.post(
