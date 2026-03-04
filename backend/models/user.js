@@ -39,12 +39,12 @@ const findByUsernameOrEmail = async (username, email) => {
 }
 
 // Create new user (insert password_hash but return public fields only)
-const createUser = async ({ username, email, passwordHash, role, cohorts }) => {
+const createUser = async ({ username, email, passwordHash, role, cohorts, name }) => {
   const res = await pool.query(
-    `INSERT INTO users (username, email, password_hash, role, cohorts)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO users (username, email, password_hash, role, cohorts, name)
+     VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING ${PUBLIC_FIELDS}`,
-    [username, email, passwordHash, role, cohorts]
+    [username, email, passwordHash, role, cohorts, name]
   )
   return res.rows[0]
 }
