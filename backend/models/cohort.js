@@ -1,7 +1,7 @@
 const { pool } = require('../utils/config')
 
 // Find cohort by access code
-async function findByAccessCode(accessCode) {
+const findByAccessCode = async (accessCode) => {
 	const res = await pool.query('SELECT * FROM cohorts WHERE access_code = $1', [
 		accessCode,
 	])
@@ -9,7 +9,7 @@ async function findByAccessCode(accessCode) {
 }
 
 // Find cohorts for a given user ID
-async function findByUserId(userId) {
+const findByUserId = async (userId) => {
 	const res = await pool.query(
 		`SELECT c.* 
 		 FROM cohorts c
@@ -21,17 +21,15 @@ async function findByUserId(userId) {
 }
 
 // Find cohort by ID
-async function findById(cohortId) {
+const findById = async (cohortId) => {
 	const res = await pool.query('SELECT * FROM cohorts WHERE id = $1', [
 		cohortId,
 	])
 	return res.rows[0] || null
 }
 
-// Export functions
 module.exports = {
 	findByAccessCode,
 	findByUserId,
 	findById,
 }
-
