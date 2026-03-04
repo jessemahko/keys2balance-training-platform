@@ -9,34 +9,44 @@ const Cohort = require('../../models/cohort')
 
 // Handle login requests
 loginRouter.post('/', async (req, res) => {
-	const { identifier, password } = req.body // Extract identifier (email or username) and password from request body
+	// bcrypt.hash('peogway', 10).then(console.log)
+	const { email, username, password } = req.body
 
-	// 1. Find user by email or username
-	let user
-	if (identifier.includes('@')) {
-		user = await User.findByEmail(identifier)
-	} else {
+	// Validate that either email or username is provided along with password
+	if (!password || (!email && !username)) {
+		return res
+			.status(400)
+			.json({ error: 'Email or username and password required' })
+	}
+
+	const identifier = email || username
+
+	// 1. Check if user exists
+	let user = await User.findByEmail(identifier)
+
+	if (!user) {
 		user = await User.findByUsername(identifier)
 	}
+
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Invalid credentials' })
 	}
 
 	// 2. Check password
 	const passwordCorrect = await bcrypt.compare(password, user.password_hash)
 	if (!passwordCorrect) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Invalid credentials' })
 	}
 
-	// 3. If participant, check cohorts (ensure they are assigned)
-	let cohorts = []
-	if (user.role === 'participant') {
-		cohorts = await Cohort.findByUserId(user.id)
+	// // 3. If participant, check cohorts (ensure they are assigned)
+	// let cohorts = []
+	// if (user.role === 'participant') {
+	// 	cohorts = await Cohort.findByUserId(user.id)
 
-		if (!cohorts || cohorts.length === 0) {
-			return res.status(400).json({ error: 'Cohort not assigned or invalid' })
-		}
-	}
+	// 	if (!cohorts || cohorts.length === 0) {
+	// 		return res.status(400).json({ error: 'Cohort not assigned or invalid' })
+	// 	}
+	// }
 
 	// 4. Prepare user data for token
 	const userData = {
@@ -45,10 +55,10 @@ loginRouter.post('/', async (req, res) => {
 		role: user.role,
 	}
 
-	// Add cohorts only for participants
-	if (user.role === 'participant') {
-		userData.cohorts = cohorts.map((c) => c.id) // array of cohort IDs
-	}
+	// // Add cohorts only for participants
+	// if (user.role === 'participant') {
+	// 	userData.cohorts = cohorts.map((c) => c.id) // array of cohort IDs
+	// }
 
 	// Generate a JSON Web Token with an expiration of 3 days
 	const token = jwt.sign(userData, process.env.SECRET, {
@@ -70,14 +80,13 @@ loginRouter.post('/', async (req, res) => {
 		// phoneNumber: user.phoneNumber,
 	}
 
-	// Add cohorts to response only for participants
-	if (user.role === 'participant') {
-		response.cohorts = userData.cohorts
-	}
+	// // Add cohorts to response only for participants
+	// if (user.role === 'participant') {
+	// 	response.cohorts = userData.cohorts
+	// }
 
 	res.status(200).json(response)
 })
 
 // Export the router
 module.exports = loginRouter
-
