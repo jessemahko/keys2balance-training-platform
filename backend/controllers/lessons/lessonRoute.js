@@ -12,7 +12,7 @@ lessonRouter.get('/:id', lessonController.getLesson)
 lessonRouter.post(
     '/',
     middleware.userExtractor,
-    middleware.authorizeRoles('admin', 'teacher'),
+    middleware.authorizeRoles('admin', 'trainer'),
     lessonController.createLesson,
 )
 
@@ -20,7 +20,7 @@ lessonRouter.post(
 lessonRouter.patch(
     '/:id/add-block',
     middleware.userExtractor,
-    middleware.authorizeRoles('admin', 'teacher'),
+    middleware.authorizeRoles('admin', 'trainer'),
     lessonController.addBlock,
 )
 
@@ -28,7 +28,7 @@ lessonRouter.patch(
 lessonRouter.patch(
     '/:id/blocks/:blockId',
     middleware.userExtractor,
-    middleware.authorizeRoles('admin', 'teacher'),
+    middleware.authorizeRoles('admin', 'trainer'),
     lessonController.updateBlock,
 )
 
@@ -36,7 +36,7 @@ lessonRouter.patch(
 lessonRouter.delete(
     '/:id/blocks/:blockId',
     middleware.userExtractor,
-    middleware.authorizeRoles('admin', 'teacher'),
+    middleware.authorizeRoles('admin', 'trainer'),
     lessonController.deleteBlock,
 )
 
@@ -44,7 +44,7 @@ lessonRouter.delete(
 lessonRouter.delete(
     '/:id',
     middleware.userExtractor,
-    middleware.authorizeRoles('admin', 'teacher'),
+    middleware.authorizeRoles('admin', 'trainer'),
     lessonController.deleteLesson,
 )
 

@@ -5,8 +5,9 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 1. Platform Settings
 CREATE TABLE IF NOT EXISTS platform_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(user_id) ON DELETE SET NULL, -- Who set this?
     logo_url TEXT,
-    primary_color VARCHAR(7) DEFAULT '#514587',
+    primary_color VARCHAR(7) DEFAULT '#514587', -- K2B Purple
     secondary_color VARCHAR(7) DEFAULT '#9484b4',
     accent_gold VARCHAR(7) DEFAULT '#e3b465',
     accent_teal VARCHAR(7) DEFAULT '#2ea49c',
@@ -16,13 +17,31 @@ CREATE TABLE IF NOT EXISTS platform_settings (
 -- 2. Users
 CREATE TABLE IF NOT EXISTS users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username TEXT UNIQUE NOT NULL, 
+
+    -- Authentication
+    username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'participant' CHECK (role IN ('participant', 'trainer', 'admin')),
-    is_verified BOOLEAN DEFAULT FALSE, 
-    profile_image_url TEXT,
+
+    -- Role & Status
+    role TEXT NOT NULL DEFAULT 'participant'
+        CHECK (role IN ('participant', 'trainer', 'admin')),
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Profile Fields (from original requirement)
+    first_name TEXT,
+    last_name TEXT,
+    gender TEXT,
+    date_of_birth DATE,
+    phone TEXT,
+    address TEXT,
+    city TEXT,
+    post_code TEXT,
+    country TEXT,
+    avatar_url TEXT,
+
+    -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -37,14 +56,14 @@ CREATE TABLE IF NOT EXISTS courses (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 4. Cohorts (Teams/Classes)
+-- Assign students to these groups manually.
 CREATE TABLE IF NOT EXISTS cohorts (
     cohort_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 5. User-Cohort Junction
+-- This is the "Bridge" that links students to their teams.
 CREATE TABLE IF NOT EXISTS user_cohorts (
     user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
     cohort_id UUID REFERENCES cohorts(cohort_id) ON DELETE CASCADE,
@@ -61,7 +80,11 @@ CREATE TABLE IF NOT EXISTS lessons (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 7. Progress Tracking
+-- ======================================================================================
+-- 5. PROGRESS & ASSESSMENTS
+-- ======================================================================================
+
+-- Tracks if a user finished a specific lesson.
 CREATE TABLE IF NOT EXISTS progress (
     user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
     lesson_id UUID REFERENCES lessons(lesson_id) ON DELETE CASCADE,
@@ -71,7 +94,8 @@ CREATE TABLE IF NOT EXISTS progress (
     PRIMARY KEY (user_id, lesson_id)
 );
 
--- 8. Assessments
+-- Assessment logic linked to lessons. 
+-- Using JSONB for flexibility.
 CREATE TABLE IF NOT EXISTS assessments (
     assessment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     lesson_id UUID REFERENCES lessons(lesson_id) ON DELETE CASCADE,
@@ -80,7 +104,7 @@ CREATE TABLE IF NOT EXISTS assessments (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 9. Assessment Responses
+-- Stores student's quiz answers.
 CREATE TABLE IF NOT EXISTS assessment_responses (
     response_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     assessment_id UUID REFERENCES assessments(assessment_id) ON DELETE CASCADE,
@@ -90,7 +114,12 @@ CREATE TABLE IF NOT EXISTS assessment_responses (
     UNIQUE (assessment_id, user_id)
 );
 
--- 10. Community (Threads linked to Course)
+
+-- ======================================================================================
+-- 6. COMMUNITY (Discussion Threads)
+-- ======================================================================================
+
+-- Each course gets a team discussion area.
 CREATE TABLE IF NOT EXISTS discussion_threads (
     thread_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     course_id UUID REFERENCES courses(course_id) ON DELETE CASCADE,
@@ -98,6 +127,7 @@ CREATE TABLE IF NOT EXISTS discussion_threads (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- The actual chat messages. 
 CREATE TABLE IF NOT EXISTS discussion_messages (
     message_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     thread_id UUID REFERENCES discussion_threads(thread_id) ON DELETE CASCADE,
@@ -107,7 +137,41 @@ CREATE TABLE IF NOT EXISTS discussion_messages (
 );
 
 -- Helpful indexes
-CREATE INDEX IF NOT EXISTS idx_lessons_course ON lessons(course_id);
-CREATE INDEX IF NOT EXISTS idx_progress_user ON progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_assessments_lesson ON assessments(lesson_id);
+CREATE INDEX IF NOT EXISTS idx_assessment_responses_user_time ON assessment_responses(user_id, submitted_at DESC);
+
+-- ======================================================================================
+-- 7. NOTIFICATIONS
+-- ======================================================================================
+
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL
+        REFERENCES users(user_id)
+        ON DELETE CASCADE,
+
+    type TEXT NOT NULL CHECK (
+        type IN (
+            'welcome',
+            'course_assigned',
+            'lesson_completed',
+            'assessment_submitted',
+            'discussion_reply',
+            'admin_announcement',
+            'reminder'
+        )
+    ),
+
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user_time
+ON notifications(user_id, created_at DESC);
 
 COMMIT;
