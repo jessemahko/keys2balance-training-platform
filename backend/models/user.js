@@ -1,33 +1,41 @@
 const { pool } = require('../utils/config')
+
 const PUBLIC_FIELDS = 'id, username, email, role, name, cohorts'
 
 // Find user by id
 const findById = async (id) => {
-  const res = await pool.query(`SELECT ${PUBLIC_FIELDS} FROM users WHERE id = $1`, [id])
+  const res = await pool.query(
+    `SELECT ${PUBLIC_FIELDS} FROM users WHERE id = $1`,
+    [id]
+  )
   return res.rows[0] || null
 }
 
 // Find user by email
 const findByEmail = async (email) => {
-	const res = await pool.query('SELECT * FROM users WHERE email = $1', [email])
-	return res.rows[0] || null
+  const res = await pool.query(
+    `SELECT ${PUBLIC_FIELDS} FROM users WHERE email = $1`,
+    [email]
+  )
+  return res.rows[0] || null
 }
 
 // Find user by username
 const findByUsername = async (username) => {
-	const res = await pool.query('SELECT * FROM users WHERE username = $1', [
-		username,
-	])
-	return res.rows[0] || null
+  const res = await pool.query(
+    `SELECT ${PUBLIC_FIELDS} FROM users WHERE username = $1`,
+    [username]
+  )
+  return res.rows[0] || null
 }
 
-// Find user by username OR email
+// Find user by username OR email (exist check)
 const findByUsernameOrEmail = async (username, email) => {
-	const res = await pool.query(
-		'SELECT * FROM users WHERE username = $1 OR email = $2',
-		[username, email],
-	)
-	return res.rows[0] || null
+  const res = await pool.query(
+    `SELECT id FROM users WHERE username = $1 OR email = $2`,
+    [username, email]
+  )
+  return res.rows[0] || null
 }
 
 // Create new user (insert password_hash but return public fields only)
