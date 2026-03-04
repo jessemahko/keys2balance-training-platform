@@ -1,4 +1,5 @@
 const { pool } = require('../utils/config')
+const PUBLIC_FIELDS = 'id, username, email, role, name, cohorts'
 
 // Find user by id
 const findById = async (id) => {
