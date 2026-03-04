@@ -41,7 +41,7 @@ app.use(middleware.tokenExtractor) // Extract token from requests
 // Route handlers
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
-<<<<<<< HEAD
+
 // app.use(
 //   '/api/admin',
 //   middleware.userExtractor,
@@ -68,41 +68,6 @@ app.use('/register', registerRouter) // Routes for registration operations
 // )
 // //Assessments
 // app.use('/api/assessment',assessmentRouter)
-=======
-app.use(
-  '/api/admin',
-  middleware.userExtractor,
-  middleware.authorizeRoles('admin'),
-  adminController) // Admin routes
-app.use('/api/courses', coursesRouter)
-app.use('/api/progress', progressRouter)
-app.use(
-  '/api/user',
-  middleware.userExtractor,
-  middleware.authorizeRoles('admin', 'participant'),
-  userController
-)
-app.use(
-  '/api/notifications',
-  middleware.userExtractor,
-  notificationsRouter
-)
-// Notification routes
-app.use(
-  '/api/notifications',
-  middleware.userExtractor, // ensure we have the user
-  notificationController
-)
-//user routes
-app.use(
-	'/api/user',
-	middleware.userExtractor,
-	middleware.authorizeRoles('admin', 'trainer', 'participant'),
-	userRouter,
-)
-//Assessments
-app.use('/api/assessment',assessmentRouter)
->>>>>>> 42daf6cb71d203ef20efdfb26440b18c947e6569
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
