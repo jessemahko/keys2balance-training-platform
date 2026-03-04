@@ -10,6 +10,7 @@ const app = express()
 // Import routers and utilities
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
+
 // const adminController = require('./controllers/admin/adminController') // Admin routes
 // const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 // const progressRouter = require('./controllers/progress/progressController') // Progress routes
@@ -17,7 +18,9 @@ const registerRouter = require('./controllers/auth/register') // Registration-re
 // const notificationController = require('./controllers/notifications/notificationController') // Notifications
 // const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
+
 const middleware = require('./utils/middleware') // Middleware functions
+const userRouter = require('./controllers/user/userRoute')
 
 console.log('connecting to PostgreSQL')
 // Connect to Postgresql
@@ -38,6 +41,7 @@ app.use(middleware.tokenExtractor) // Extract token from requests
 // Route handlers
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
+<<<<<<< HEAD
 // app.use(
 //   '/api/admin',
 //   middleware.userExtractor,
@@ -64,6 +68,41 @@ app.use('/register', registerRouter) // Routes for registration operations
 // )
 // //Assessments
 // app.use('/api/assessment',assessmentRouter)
+=======
+app.use(
+  '/api/admin',
+  middleware.userExtractor,
+  middleware.authorizeRoles('admin'),
+  adminController) // Admin routes
+app.use('/api/courses', coursesRouter)
+app.use('/api/progress', progressRouter)
+app.use(
+  '/api/user',
+  middleware.userExtractor,
+  middleware.authorizeRoles('admin', 'participant'),
+  userController
+)
+app.use(
+  '/api/notifications',
+  middleware.userExtractor,
+  notificationsRouter
+)
+// Notification routes
+app.use(
+  '/api/notifications',
+  middleware.userExtractor, // ensure we have the user
+  notificationController
+)
+//user routes
+app.use(
+	'/api/user',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
+	userRouter,
+)
+//Assessments
+app.use('/api/assessment',assessmentRouter)
+>>>>>>> 42daf6cb71d203ef20efdfb26440b18c947e6569
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
