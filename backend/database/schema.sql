@@ -15,6 +15,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- Client can change logos/colors without editing CSS.
 CREATE TABLE IF NOT EXISTS platform_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(user_id) ON DELETE SET NULL, -- Who set this?
     logo_url TEXT,
     primary_color VARCHAR(7) DEFAULT '#514587', -- K2B Purple
     secondary_color VARCHAR(7) DEFAULT '#9484b4',
