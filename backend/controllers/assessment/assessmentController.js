@@ -1,28 +1,58 @@
-const Assessment = require('../models/assessment');
+const Assessment = require('../../models/assessment')
 
-const AssessmentController = {
-  async createAssessment(req) {
-    const user = req.user
-    if (!user) return res.status(401).json({ error: 'invalid token' })
+const getAssessments = async (req, res) => {
+	const user = req.user
+	if (!user) return res.status(401).json({ error: 'invalid token' })
+	const assessments = await Assessment.getAssessmentsByUser(user.id)
+	res.json(assessments)
+}
 
-    const { lessonId, title, assessmentJson } = req.body;
-    return await Assessment.create({ lessonId, title, assessmentJson });
-  },
+const getAssessment = async (req, res) => {
+	const user = req.user
+	if (!user) return res.status(401).json({ error: 'invalid token' })
+	const { id } = req.params
+	const assessment = await Assessment.getById(id)
+	if (!assessment)
+		return res.status(404).json({ error: 'Assessment not found' })
+	res.json(assessment)
+}
 
-  async getAssessment(req) {
-    const user = req.user
-    if (!user) return res.status(401).json({ error: 'invalid token' })
-      
-    const { id } = req.params;
-    const assessment = await Assessment.getById(id);
-    if (!assessment) return null;
+const postAssessment = async (req, res) => {
+	const user = req.user
+	if (!user) return res.status(401).json({ error: 'invalid token' })
+	const { lessonId, title, assessmentJson } = req.body
+	const assessment = await Assessment.create({
+		lessonId,
+		title,
+		assessmentJson,
+	})
+	res.json(assessment)
+}
 
-    const sanitized = JSON.parse(JSON.stringify(assessment.assessment_json));
-    sanitized.questions?.forEach(q => delete q.correctOptionId);
-    assessment.assessment_json = sanitized;
+const deleteAssessment = async (req, res) => {
+	const user = req.user
+	if (!user) return res.status(401).json({ error: 'invalid token' })
+	const { id } = req.params
+	const success = await Assessment.deleteById(id)
+	if (!success) return res.status(404).json({ error: 'Assessment not found' })
+	res.json({ success: true })
+}
 
-    return assessment;
-  }
-};
+const updateAssessment = async (req, res) => {
+	const user = req.user
+	if (!user) return res.status(401).json({ error: 'invalid token' })
+	const { id } = req.params
+	const { title, assessmentJson } = req.body
+	const assessment = await Assessment.updateById(id, { title, assessmentJson })
+	if (!assessment)
+		return res.status(404).json({ error: 'Assessment not found' })
+	res.json(assessment)
+}
 
-module.exports = AssessmentController;
+module.exports = {
+	getAssessments,
+	getAssessment,
+	postAssessment,
+	deleteAssessment,
+	updateAssessment,
+}
