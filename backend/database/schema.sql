@@ -1,18 +1,8 @@
--- ======================================================================================
--- Keys2Balance Training & Assessment Platform - CONSOLIDATED SCHEMA
--- This version merges our requirements with the UUID/Transaction style.
--- ======================================================================================
-
 BEGIN;
 
--- UUID generation (Professional standard - much better than simple integers)
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- ======================================================================================
--- 1. BRANDING & LOOK (platform_settings)
--- ======================================================================================
-
--- Client can change logos/colors without editing CSS.
+-- 1. Platform Settings
 CREATE TABLE IF NOT EXISTS platform_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(user_id) ON DELETE SET NULL, -- Who set this?
@@ -24,12 +14,7 @@ CREATE TABLE IF NOT EXISTS platform_settings (
     allow_user_registration BOOLEAN DEFAULT TRUE
 );
 
-
--- ======================================================================================
--- 2. OUR USERS (Updated to match our backend logic)
--- ======================================================================================
-
--- Our current register.js backend expects these columns, so we need them to avoid crashes!
+-- 2. Users
 CREATE TABLE IF NOT EXISTS users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -61,13 +46,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-
--- ======================================================================================
--- 3. COURSES & GROUPS (The missing hierarchy)
--- ======================================================================================
-
--- We need a 'Course' container because one course (like Leadership 101) 
--- will contain many modules and lessons.
+-- 3. Courses
 CREATE TABLE IF NOT EXISTS courses (
     course_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
@@ -91,29 +70,15 @@ CREATE TABLE IF NOT EXISTS user_cohorts (
     PRIMARY KEY (user_id, cohort_id)
 );
 
--- ======================================================================================
--- 4. MODULES & LESSONS (The content layers)
--- ======================================================================================
-
--- Modules are chapters. Added 'order_index' so we can sort them.
-CREATE TABLE IF NOT EXISTS modules (
-    module_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    course_id UUID REFERENCES courses(course_id) ON DELETE CASCADE,
-    title TEXT NOT NULL,
-    description TEXT,
-    order_index INTEGER NOT NULL DEFAULT 0
-);
-
--- Lessons are where the actual video/pdf/zoom links live.
+-- 6. Lessons (Directly linked to Course)
 CREATE TABLE IF NOT EXISTS lessons (
     lesson_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    module_id UUID REFERENCES modules(module_id) ON DELETE CASCADE,
+    course_id UUID REFERENCES courses(course_id) ON DELETE CASCADE,
     title TEXT NOT NULL,
-    content_type TEXT CHECK (content_type IN ('video', 'pdf', 'text', 'zoom')),
-    content_data TEXT, 
-    order_index INTEGER NOT NULL DEFAULT 0
+    content_data JSONB DEFAULT '[]'::jsonb, -- Array of blocks: Video, PDF, Zoom, etc.
+    order_index INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 
 -- ======================================================================================
 -- 5. PROGRESS & ASSESSMENTS
