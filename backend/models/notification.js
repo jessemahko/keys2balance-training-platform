@@ -1,6 +1,24 @@
 const pool = require('../utils/config')
 
 const Notification = {
+    async getAll() {
+        const query = `
+            SELECT *
+            FROM notifications
+            ORDER BY created_at DESC
+        `
+        const { rows } = await pool.query(query)
+        return rows
+    },
+    async getById(notificationId) {
+        const query = `
+            SELECT *
+            FROM notifications
+            WHERE notification_id = $1
+        `
+        const { rows } = await pool.query(query, [notificationId])
+        return rows[0]
+    },
     async getByUser(userId) {
         const query = `
             SELECT *
@@ -20,10 +38,19 @@ const Notification = {
         const { rows } = await pool.query(query, [userId, type, title, message])
         return rows[0]
     },
-    async markAsRead(notificationId) {
+async markAsRead(notificationId) {
         const query = `
             UPDATE notifications
             SET is_read = TRUE
+            WHERE notification_id = $1
+            RETURNING *
+        `
+        const { rows } = await pool.query(query, [notificationId])
+        return rows[0]
+    },
+    async delete(notificationId) {
+        const query = `
+            DELETE FROM notifications
             WHERE notification_id = $1
             RETURNING *
         `
