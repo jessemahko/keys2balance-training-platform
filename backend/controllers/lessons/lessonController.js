@@ -7,15 +7,7 @@ const crypto = require('crypto')
  * Manages individual pages and dynamic content blocks within a Course.
  */
 
-const getLessonsByCourse = async (req, res) => {
-	const user = req.user
-	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
-	}
 
-	const lessons = await Lesson.findByCourseId(req.params.courseId)
-	res.json(lessons)
-}
 
 const getLesson = async (req, res) => {
 	const user = req.user
@@ -165,7 +157,6 @@ const deleteLesson = async (req, res) => {
 }
 
 module.exports = {
-	getLessonsByCourse,
 	getLesson,
 	createLesson,
 	addBlock,

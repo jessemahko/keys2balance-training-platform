@@ -1,12 +1,5 @@
 const { pool } = require('../utils/config')
-// Find all lessons for a specific course, ordered by index
-const findByCourseId = async (courseId) => {
-	const res = await pool.query(
-		'SELECT * FROM lessons WHERE course_id = $1 ORDER BY order_index ASC',
-		[courseId],
-	)
-	return res.rows
-}
+
 
 // Find one lesson by ID
 const findById = async (lessonId) => {
@@ -125,7 +118,6 @@ const removeContentBlock = async (lessonId, blockId) => {
 }
 
 module.exports = {
-	findByCourseId,
 	findById,
 	createLesson,
 	updateLesson,

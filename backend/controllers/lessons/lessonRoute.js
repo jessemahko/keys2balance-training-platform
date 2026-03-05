@@ -2,12 +2,7 @@ const lessonRouter = require('express').Router()
 const lessonController = require('./lessonController')
 const middleware = require('../../utils/middleware')
 
-// GET all lessons for a specific course
-lessonRouter.get(
-    '/course/:courseId',
-    middleware.userExtractor,
-    lessonController.getLessonsByCourse
-)
+
 
 // GET a single lesson
 lessonRouter.get(
