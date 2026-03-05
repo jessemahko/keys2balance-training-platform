@@ -46,8 +46,8 @@ const createLesson = async (req, res) => {
 		return res.status(404).json({ error: 'Course not found' })
 	}
 
-	if (course.teacher_id !== user.id) {
-		return res.status(403).json({ error: 'Only the course creator can add lessons' })
+	if (course.teacher_id !== user.id && user.role !== 'admin') {
+		return res.status(403).json({ error: 'Only the course creator or an admin can add lessons' })
 	}
 
 	const newLesson = await Lesson.createLesson({
@@ -73,8 +73,8 @@ const addBlock = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || course.teacher_id !== user.id) {
-		return res.status(403).json({ error: 'Only the course creator can modify blocks' })
+	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+		return res.status(403).json({ error: 'Only the course creator or an admin can modify blocks' })
 	}
 
 	const allowedTypes = [
@@ -114,8 +114,8 @@ const updateBlock = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || course.teacher_id !== user.id) {
-		return res.status(403).json({ error: 'Only the course creator can modify blocks' })
+	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+		return res.status(403).json({ error: 'Only the course creator or an admin can modify blocks' })
 	}
 
 	const updatedLesson = await Lesson.updateContentBlock(id, blockId, updatedData)
@@ -136,8 +136,8 @@ const deleteBlock = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || course.teacher_id !== user.id) {
-		return res.status(403).json({ error: 'Only the course creator can modify blocks' })
+	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+		return res.status(403).json({ error: 'Only the course creator or an admin can modify blocks' })
 	}
 
 	const updatedLesson = await Lesson.removeContentBlock(id, blockId)
@@ -156,8 +156,8 @@ const deleteLesson = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || course.teacher_id !== user.id) {
-		return res.status(403).json({ error: 'Only the course creator can delete the lesson' })
+	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+		return res.status(403).json({ error: 'Only the course creator or an admin can delete the lesson' })
 	}
 
 	const deleted = await Lesson.deleteLesson(req.params.id)
