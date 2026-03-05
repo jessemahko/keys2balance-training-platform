@@ -1,12 +1,20 @@
 const Courses = require('../../models/courses')
 
 const getCourses = async (req, res) => {
-	const courses = await Courses.findAll()
+	if (!req.user) {
+		return res.status(401).json({ error: 'Authentication required' })
+	}
+
+	const courses = await Courses.findAll(req.user.id)
 	res.json(courses)
 }
 
 const getCourse = async (req, res) => {
-	const course = await Courses.findById(req.params.id)
+	if (!req.user) {
+		return res.status(401).json({ error: 'Authentication required' })
+	}
+
+	const course = await Courses.findById(req.params.id, req.user.id)
 
 	if (!course) {
 		return res.status(404).json({ error: 'course not found' })
@@ -18,6 +26,10 @@ const getCourse = async (req, res) => {
 const createCourse = async (req, res) => {
 	if (!req.user) {
 		return res.status(401).json({ error: 'Authentication required' })
+	}
+
+	if (req.user.role !== 'admin') {
+		return res.status(403).json({ error: 'Only admins can create courses' })
 	}
 
 	const { title, description, thumbnailUrl } = req.body

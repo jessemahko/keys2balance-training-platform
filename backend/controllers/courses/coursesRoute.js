@@ -2,17 +2,19 @@ const router = require('express').Router()
 const CoursesController = require('./coursesController')
 const middleware = require('../../utils/middleware')
 
-// public read endpoints
-router.get('/', CoursesController.getCourses)
-router.get('/:id', CoursesController.getCourse)
+// read endpoints require an authenticated user context
+router.get('/', middleware.userExtractor, CoursesController.getCourses)
+router.get('/:id', middleware.userExtractor, CoursesController.getCourse)
 
-// mutation endpoints require authenticated admin or trainer
+// create is admin-only
 router.post(
   '/',
   middleware.userExtractor,
-  middleware.authorizeRoles('admin', 'trainer'),
+  middleware.authorizeRoles('admin'),
   CoursesController.createCourse,
 )
+
+// update/delete require authenticated admin or trainer
 router.put(
   '/:id',
   middleware.userExtractor,
