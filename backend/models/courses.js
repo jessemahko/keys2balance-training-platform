@@ -18,6 +18,13 @@ const findById = async (courseId) => {
 	return res.rows[0] || null
 }
 
+// helper to ensure teacherId is integer or null
+const normalizeTeacherId = (id) => {
+	if (id === undefined || id === null) return null
+	const parsed = parseInt(id, 10)
+	return Number.isNaN(parsed) ? null : parsed
+}
+
 const createCourse = async ({ title, description, thumbnailUrl, teacherId }) => {
 	const res = await pool.query(
 		`INSERT INTO courses (title, description, thumbnail_url, teacher_id)
@@ -27,7 +34,7 @@ const createCourse = async ({ title, description, thumbnailUrl, teacherId }) => 
 			title,
 			description === undefined ? null : description,
 			thumbnailUrl === undefined ? null : thumbnailUrl,
-			teacherId === undefined ? null : teacherId,
+			normalizeTeacherId(teacherId),
 		],
 	)
 
@@ -40,6 +47,11 @@ const updateCourse = async (courseId, updates) => {
 		description: 'description',
 		thumbnailUrl: 'thumbnail_url',
 		teacherId: 'teacher_id',
+	}
+
+	// normalize teacherId if provided
+	if (updates.teacherId !== undefined) {
+		updates.teacherId = normalizeTeacherId(updates.teacherId)
 	}
 
 	const entries = Object.entries(updates).filter(([key, value]) => {
