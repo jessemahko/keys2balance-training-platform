@@ -213,4 +213,18 @@ BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
+
+
+-- ======================================================================================
+-- 12. ACCESS CODES (for student registration)
+-- ======================================================================================
+
+CREATE TABLE IF NOT EXISTS access_codes (
+	code_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	code TEXT NOT NULL UNIQUE,
+	course_id UUID REFERENCES courses(course_id) ON DELETE CASCADE,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	expires_at TIMESTAMPTZ
+);
+
 COMMIT;
