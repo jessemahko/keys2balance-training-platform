@@ -221,10 +221,9 @@ EXECUTE FUNCTION set_updated_at();
 
 CREATE TABLE IF NOT EXISTS access_codes (
 	code_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	code TEXT NOT NULL UNIQUE,
-	course_id UUID REFERENCES courses(course_id) ON DELETE CASCADE,
+	code TEXT UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(8), 'hex'),
+	course_id UUID NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	expires_at TIMESTAMPTZ
 );
-
 COMMIT;
