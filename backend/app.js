@@ -21,6 +21,7 @@ const registerRouter = require('./controllers/auth/register') // Registration-re
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
+const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 
 console.log('connecting to PostgreSQL')
 // Connect to Postgresql
@@ -68,6 +69,14 @@ app.use('/register', registerRouter) // Routes for registration operations
 // )
 // //Assessments
 //app.use('/api/assessments', middleware.userExtractor, assessmentRouter);
+
+// Discussion routes
+// app.use(
+//   '/api/discussions',
+//   middleware.userExtractor,
+//   middleware.authorizeRoles('admin', 'trainer', 'participant'),
+//   discussionRouter
+// )
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
