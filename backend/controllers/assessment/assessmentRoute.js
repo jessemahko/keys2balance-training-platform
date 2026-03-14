@@ -1,10 +1,8 @@
-const router = require('express').Router();
-const AssessmentController = require('../controllers/assessmentController');
-
-// Create a new assessment
-router.post('/', AssessmentController.createAssessment);
-
-// Get assessment by ID
-router.get('/:id', AssessmentController.getAssessment);
-
-module.exports = router;
+const router = require('express').Router()
+const AssessmentController = require('./assessmentController')
+router.get('/', AssessmentController.getAssessments)
+router.get('/:id', AssessmentController.getAssessment)
+router.post('/', AssessmentController.postAssessment)
+router.delete('/:id', AssessmentController.deleteAssessment)
+router.put('/:id', AssessmentController.updateAssessment)
+module.exports = router

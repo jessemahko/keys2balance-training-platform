@@ -67,7 +67,7 @@ app.use('/register', registerRouter) // Routes for registration operations
 //   notificationController
 // )
 // //Assessments
-// app.use('/api/assessment',assessmentRouter)
+//app.use('/api/assessments', middleware.userExtractor, assessmentRouter);
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
