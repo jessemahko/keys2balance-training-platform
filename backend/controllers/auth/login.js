@@ -50,7 +50,7 @@ loginRouter.post('/', async (req, res) => {
 
 	// 4. Prepare user data for token
 	const userData = {
-		id: user.id,
+		id: user.user_id,
 		email: user.email,
 		role: user.role,
 	}
