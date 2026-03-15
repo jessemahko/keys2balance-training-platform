@@ -6,10 +6,6 @@ const getCourses = async (req, res) => {
 }
 
 const getCourse = async (req, res) => {
-	if (!req.user) {
-		return res.status(401).json({ error: 'Authentication required' })
-	}
-
 	const course = await Courses.findById(req.params.id, req.user.id)
 
 	if (!course) {
@@ -20,10 +16,6 @@ const getCourse = async (req, res) => {
 }
 
 const createCourse = async (req, res) => {
-	if (!req.user) {
-		return res.status(401).json({ error: 'Authentication required' })
-	}
-
 	if (req.user.role !== 'admin') {
 		return res.status(403).json({ error: 'Only admins can create courses' })
 	}
@@ -47,10 +39,6 @@ const createCourse = async (req, res) => {
 }
 
 const updateCourse = async (req, res) => {
-	if (!req.user) {
-		return res.status(401).json({ error: 'Authentication required' })
-	}
-
 	const existingCourse = await Courses.findById(req.params.id)
 
 	if (!existingCourse) {
