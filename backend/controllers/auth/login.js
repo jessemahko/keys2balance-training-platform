@@ -38,15 +38,10 @@ loginRouter.post('/', async (req, res) => {
 		return res.status(401).json({ error: 'Invalid credentials' })
 	}
 
-	// // 3. If participant, check cohorts (ensure they are assigned)
-	// let cohorts = []
-	// if (user.role === 'participant') {
-	// 	cohorts = await Cohort.findByUserId(user.id)
-
-	// 	if (!cohorts || cohorts.length === 0) {
-	// 		return res.status(400).json({ error: 'Cohort not assigned or invalid' })
-	// 	}
-	// }
+	// 3. Check if user is verified (for participants)
+	if (user.role !== 'admin' && !user.is_verified) {
+		return res.status(403).json({ error: 'Account not verified' })
+	}
 
 	// 4. Prepare user data for token
 	const userData = {
