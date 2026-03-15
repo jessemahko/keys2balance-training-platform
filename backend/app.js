@@ -66,7 +66,7 @@ app.use('/verify-email', emailRouter) // Email verification route
 app.use(
 	'/api/users',
 	middleware.userExtractor,
-	middleware.authorizeRoles('admin', 'trainer'),
+	middleware.authorizeRoles('admin'),
 	userRouter,
 ) // User management routes for admin
 
