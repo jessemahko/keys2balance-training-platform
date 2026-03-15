@@ -227,4 +227,26 @@ CREATE TABLE IF NOT EXISTS access_codes (
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '1 day'
 );
+
+-- ======================================================================================
+-- 13. COURSE ENROLLMENTS
+-- ======================================================================================
+
+CREATE TABLE IF NOT EXISTS course_enrollments (
+	user_id UUID NOT NULL
+		REFERENCES users(user_id)
+		ON DELETE CASCADE,
+
+	course_id UUID NOT NULL
+		REFERENCES courses(course_id)
+		ON DELETE CASCADE,
+
+	enrolled_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+	PRIMARY KEY (user_id, course_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_course_enrollments_course
+ON course_enrollments(course_id);
+
 COMMIT;
