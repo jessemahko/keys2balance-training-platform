@@ -12,12 +12,13 @@ const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 
 // const adminController = require('./controllers/admin/adminController') // Admin routes
-// const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
+const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 // const progressRouter = require('./controllers/progress/progressController') // Progress routes
 // const userController = require('./controllers/user/userController') // User routes
 // const notificationController = require('./controllers/notifications/notificationController') // Notifications
 // const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
+const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
@@ -48,7 +49,6 @@ app.use('/register', registerRouter) // Routes for registration operations
 //   middleware.userExtractor,
 //   middleware.authorizeRoles('admin'),
 //   adminController) // Admin routes
-// app.use('/api/courses', coursesRouter)
 // app.use('/api/progress', progressRouter)
 // app.use(
 //   '/api/user',
@@ -77,6 +77,22 @@ app.use('/register', registerRouter) // Routes for registration operations
 //   middleware.authorizeRoles('admin', 'trainer', 'participant'),
 //   discussionRouter
 // )
+
+// Access code routes
+app.use(
+	'/api/access-codes',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin'),
+	accessCodeRouter,
+)
+
+// Course routes
+app.use(
+	'/api/courses',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer'),
+	coursesRouter,
+)
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
