@@ -1,7 +1,13 @@
 const Courses = require('../../models/courses')
 
 const getCourses = async (req, res) => {
-	const courses = await Courses.findAll(req.user.id)
+	if (req.user.role === 'admin') {
+		const courses = await Courses.findAll()
+		return res.json(courses)
+	}
+
+	const teacherId = req.user.id
+	const courses = await Courses.findAllByTeacherId(teacherId)
 	res.json(courses)
 }
 
@@ -17,6 +23,12 @@ const getCourse = async (req, res) => {
 		return res.status(404).json({ error: 'course not found' })
 	}
 
+	if (String(course.teacher_id) !== String(req.user.id)) {
+		return res
+			.status(403)
+			.json({ error: 'Only the course creator can view this course' })
+	}
+
 	res.json(course)
 }
 
@@ -25,9 +37,11 @@ const createCourse = async (req, res) => {
 		return res.status(403).json({ error: 'Only admins can create courses' })
 	}
 
-	const { title, description, thumbnailUrl } = req.body
+	const { title, description, thumbnailUrl, teacherId } = req.body
 	const trimmedTitle = typeof title === 'string' ? title.trim() : ''
-	const teacherId = req.user.id
+	if (!trimmedTitle || !teacherId) {
+		return res.status(400).json({ error: 'title and teacherId are required' })
+	}
 
 	if (!trimmedTitle) {
 		return res.status(400).json({ error: 'title is required' })
@@ -44,67 +58,44 @@ const createCourse = async (req, res) => {
 }
 
 const updateCourse = async (req, res) => {
-	const existingCourse = await Courses.findById(req.params.id)
+	const courseId = req.params.id
+	if (!courseId) {
+		return res.status(400).json({ error: 'course id is required' })
+	}
+
+	const existingCourse = await Courses.findById(courseId)
 
 	if (!existingCourse) {
 		return res.status(404).json({ error: 'course not found' })
 	}
 
-	if (String(existingCourse.teacher_id) !== String(req.user.id)) {
+	if (
+		req.user.role !== 'admin' &&
+		String(existingCourse.teacher_id) !== String(req.user.id)
+	) {
 		return res
 			.status(403)
 			.json({ error: 'Only the course creator can modify this course' })
 	}
 
 	const { title, description, thumbnailUrl, teacherId } = req.body
-	const updates = {}
 
-	if (title !== undefined) {
-		const trimmedTitle = typeof title === 'string' ? title.trim() : ''
-		if (!trimmedTitle) {
-			return res.status(400).json({ error: 'title cannot be empty' })
-		}
-		updates.title = trimmedTitle
+	const trimmedTitle = typeof title === 'string' ? title.trim() : ''
+	if (!trimmedTitle) {
+		return res.status(400).json({ error: 'title cannot be empty' })
 	}
+	const updates = { title: trimmedTitle, description, thumbnailUrl }
+	if (teacherId && req.user.role === 'admin') updates.teacherId = teacherId
 
-	if (description !== undefined) {
-		updates.description = description
-	}
-
-	if (thumbnailUrl !== undefined) {
-		updates.thumbnailUrl = thumbnailUrl
-	}
-
-	if (teacherId !== undefined) {
-		updates.teacherId = teacherId
-	}
-
-	if (Object.keys(updates).length === 0) {
-		return res.status(400).json({ error: 'no valid fields to update' })
-	}
-
-	const course = await Courses.updateCourse(req.params.id, updates)
+	const course = await Courses.updateCourse(courseId, updates)
 
 	res.json(course)
 }
 
 const deleteCourse = async (req, res) => {
-	if (!req.user) {
-		return res.status(401).json({ error: 'Authentication required' })
+	if (req.user.role !== 'admin') {
+		return res.status(403).json({ error: 'Only admins can delete courses' })
 	}
-
-	const course = await Courses.findById(req.params.id)
-
-	if (!course) {
-		return res.status(404).json({ error: 'course not found' })
-	}
-
-	if (String(course.teacher_id) !== String(req.user.id)) {
-		return res
-			.status(403)
-			.json({ error: 'Only the course creator can modify this course' })
-	}
-
 	const deletedCourse = await Courses.deleteCourse(req.params.id)
 	if (!deletedCourse) return res.status(404).json({ error: 'course not found' })
 
