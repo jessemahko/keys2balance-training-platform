@@ -7,51 +7,51 @@ BEGIN;
 INSERT INTO users (username, email, password_hash, role, first_name, last_name)
 VALUES
 ('admin1','admin@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','admin','Admin','User'),
-('trainer1','trainer@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','trainer','John','Trainer'),
-('student1','student1@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Alice','Student'),
-('student2','student2@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Bob','Student'),
-('student3','student3@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Charlie','Student');
+('trainer1','trainer1@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','trainer','John','Doe'),
+('trainer2','trainer2@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','trainer','Sarah','Smith'),
+('student1','student1@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Alice','Brown'),
+('student2','student2@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Bob','Taylor'),
+('student3','student3@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Charlie','Wilson'),
+('student4','student4@test.com','$2b$10$C6UzMDM.H6dfI/f/IKcEeO3vqE3c4T.Gv10XqjT5YsdDzZ3uw8DGa','participant','Diana','Clark')
+ON CONFLICT (username) DO NOTHING;
 
 -- ======================================================================================
 -- PLATFORM SETTINGS
 -- ======================================================================================
 
 INSERT INTO platform_settings (user_id)
-SELECT user_id FROM users WHERE username='admin1';
+SELECT user_id FROM users WHERE username='admin1'
+ON CONFLICT DO NOTHING;
 
 -- ======================================================================================
--- COURSE
+-- COURSES
 -- ======================================================================================
 
 INSERT INTO courses (title, description, teacher_id)
-VALUES (
+SELECT
 'Intro to Leadership',
-'Basic leadership training',
+'Leadership fundamentals',
 (SELECT user_id FROM users WHERE username='trainer1')
+WHERE NOT EXISTS (
+	SELECT 1 FROM courses WHERE title='Intro to Leadership'
 );
 
--- ======================================================================================
--- COHORTS
--- ======================================================================================
+INSERT INTO courses (title, description, teacher_id)
+SELECT
+'Effective Communication',
+'Communication and listening skills',
+(SELECT user_id FROM users WHERE username='trainer1')
+WHERE NOT EXISTS (
+	SELECT 1 FROM courses WHERE title='Effective Communication'
+);
 
-INSERT INTO cohorts (name)
-VALUES
-('Cohort A'),
-('Cohort B');
-
-INSERT INTO user_cohorts (user_id, cohort_id)
-VALUES
-(
-(SELECT user_id FROM users WHERE username='student1'),
-(SELECT cohort_id FROM cohorts WHERE name='Cohort A')
-),
-(
-(SELECT user_id FROM users WHERE username='student2'),
-(SELECT cohort_id FROM cohorts WHERE name='Cohort A')
-),
-(
-(SELECT user_id FROM users WHERE username='student3'),
-(SELECT cohort_id FROM cohorts WHERE name='Cohort B')
+INSERT INTO courses (title, description, teacher_id)
+SELECT
+'Team Management',
+'Managing teams and conflict',
+(SELECT user_id FROM users WHERE username='trainer2')
+WHERE NOT EXISTS (
+	SELECT 1 FROM courses WHERE title='Team Management'
 );
 
 -- ======================================================================================
@@ -59,118 +59,144 @@ VALUES
 -- ======================================================================================
 
 INSERT INTO lessons (course_id, title, order_index)
-VALUES
-(
+SELECT
 (SELECT course_id FROM courses WHERE title='Intro to Leadership'),
-'Lesson 1: Leadership Basics',
+'What is Leadership',
 1
-),
-(
+WHERE NOT EXISTS (
+	SELECT 1 FROM lessons WHERE title='What is Leadership'
+);
+
+INSERT INTO lessons (course_id, title, order_index)
+SELECT
 (SELECT course_id FROM courses WHERE title='Intro to Leadership'),
-'Lesson 2: Communication',
+'Leadership Styles',
 2
-),
-(
-(SELECT course_id FROM courses WHERE title='Intro to Leadership'),
-'Lesson 3: Team Management',
-3
+WHERE NOT EXISTS (
+	SELECT 1 FROM lessons WHERE title='Leadership Styles'
+);
+
+INSERT INTO lessons (course_id, title, order_index)
+SELECT
+(SELECT course_id FROM courses WHERE title='Effective Communication'),
+'Active Listening',
+1
+WHERE NOT EXISTS (
+	SELECT 1 FROM lessons WHERE title='Active Listening'
+);
+
+INSERT INTO lessons (course_id, title, order_index)
+SELECT
+(SELECT course_id FROM courses WHERE title='Effective Communication'),
+'Giving Feedback',
+2
+WHERE NOT EXISTS (
+	SELECT 1 FROM lessons WHERE title='Giving Feedback'
+);
+
+INSERT INTO lessons (course_id, title, order_index)
+SELECT
+(SELECT course_id FROM courses WHERE title='Team Management'),
+'Building Trust',
+1
+WHERE NOT EXISTS (
+	SELECT 1 FROM lessons WHERE title='Building Trust'
+);
+
+INSERT INTO lessons (course_id, title, order_index)
+SELECT
+(SELECT course_id FROM courses WHERE title='Team Management'),
+'Conflict Resolution',
+2
+WHERE NOT EXISTS (
+	SELECT 1 FROM lessons WHERE title='Conflict Resolution'
 );
 
 -- ======================================================================================
--- PROGRESS
+-- COURSE ENROLLMENTS
 -- ======================================================================================
 
-INSERT INTO progress (user_id, lesson_id, is_completed)
+INSERT INTO course_enrollments (user_id, course_id)
 VALUES
-(
-(SELECT user_id FROM users WHERE username='student1'),
-(SELECT lesson_id FROM lessons WHERE order_index=1 LIMIT 1),
-TRUE
-),
-(
-(SELECT user_id FROM users WHERE username='student2'),
-(SELECT lesson_id FROM lessons WHERE order_index=1 LIMIT 1),
-TRUE
-);
+((SELECT user_id FROM users WHERE username='student1'), (SELECT course_id FROM courses WHERE title='Intro to Leadership')),
+((SELECT user_id FROM users WHERE username='student2'), (SELECT course_id FROM courses WHERE title='Intro to Leadership')),
+((SELECT user_id FROM users WHERE username='student3'), (SELECT course_id FROM courses WHERE title='Intro to Leadership'))
+ON CONFLICT DO NOTHING;
+
+INSERT INTO course_enrollments (user_id, course_id)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'), (SELECT course_id FROM courses WHERE title='Effective Communication')),
+((SELECT user_id FROM users WHERE username='student4'), (SELECT course_id FROM courses WHERE title='Effective Communication'))
+ON CONFLICT DO NOTHING;
+
+INSERT INTO course_enrollments (user_id, course_id)
+VALUES
+((SELECT user_id FROM users WHERE username='student2'), (SELECT course_id FROM courses WHERE title='Team Management')),
+((SELECT user_id FROM users WHERE username='student3'), (SELECT course_id FROM courses WHERE title='Team Management')),
+((SELECT user_id FROM users WHERE username='student4'), (SELECT course_id FROM courses WHERE title='Team Management'))
+ON CONFLICT DO NOTHING;
 
 -- ======================================================================================
--- ASSESSMENT
+-- ASSESSMENTS
 -- ======================================================================================
 
 INSERT INTO assessments (lesson_id, title, assessment_json)
-VALUES (
-(SELECT lesson_id FROM lessons WHERE order_index=1 LIMIT 1),
-'Lesson 1 Quiz',
-'{
-	"questions":[
-		{
-			"id":1,
-			"question":"What is leadership?",
-			"type":"multiple_choice",
-			"options":["Control","Influence","Force"],
-			"correct":"Influence"
-		}
-	]
-}'
+SELECT
+(SELECT lesson_id FROM lessons WHERE title='What is Leadership'),
+'Leadership Quiz',
+'{"questions":[{"id":1,"question":"Leadership is...","options":["Control","Influence","Authority"],"correct":"Influence"}]}'
+WHERE NOT EXISTS (
+	SELECT 1 FROM assessments WHERE title='Leadership Quiz'
 );
 
 -- ======================================================================================
--- ASSESSMENT RESPONSES
--- ======================================================================================
-
-INSERT INTO assessment_responses (assessment_id, user_id, answers_json)
-VALUES
-(
-(SELECT assessment_id FROM assessments LIMIT 1),
-(SELECT user_id FROM users WHERE username='student1'),
-'{"1":"Influence"}'
-),
-(
-(SELECT assessment_id FROM assessments LIMIT 1),
-(SELECT user_id FROM users WHERE username='student2'),
-'{"1":"Control"}'
-);
-
--- ======================================================================================
--- DISCUSSION
+-- DISCUSSION THREADS
 -- ======================================================================================
 
 INSERT INTO discussion_threads (course_id, title)
-VALUES (
+SELECT
 (SELECT course_id FROM courses WHERE title='Intro to Leadership'),
-'General Discussion'
+'Leadership Discussion'
+WHERE NOT EXISTS (
+	SELECT 1 FROM discussion_threads WHERE title='Leadership Discussion'
 );
 
-INSERT INTO discussion_messages (thread_id, user_id, message_text)
-VALUES
-(
-(SELECT thread_id FROM discussion_threads LIMIT 1),
-(SELECT user_id FROM users WHERE username='student1'),
-'This lesson was great!'
-),
-(
-(SELECT thread_id FROM discussion_threads LIMIT 1),
-(SELECT user_id FROM users WHERE username='trainer1'),
-'Glad you liked it.'
+INSERT INTO discussion_threads (course_id, title)
+SELECT
+(SELECT course_id FROM courses WHERE title='Effective Communication'),
+'Communication Discussion'
+WHERE NOT EXISTS (
+	SELECT 1 FROM discussion_threads WHERE title='Communication Discussion'
+);
+
+INSERT INTO discussion_threads (course_id, title)
+SELECT
+(SELECT course_id FROM courses WHERE title='Team Management'),
+'Team Discussion'
+WHERE NOT EXISTS (
+	SELECT 1 FROM discussion_threads WHERE title='Team Discussion'
 );
 
 -- ======================================================================================
--- NOTIFICATIONS
+-- ACCESS CODES
 -- ======================================================================================
 
-INSERT INTO notifications (user_id, type, title, message)
-VALUES
-(
-(SELECT user_id FROM users WHERE username='student1'),
-'welcome',
-'Welcome',
-'Welcome to the platform'
-),
-(
-(SELECT user_id FROM users WHERE username='student1'),
-'course_assigned',
-'New Course',
-'You have been assigned a new course'
+INSERT INTO access_codes (course_id)
+SELECT (SELECT course_id FROM courses WHERE title='Intro to Leadership')
+WHERE NOT EXISTS (
+	SELECT 1 FROM access_codes WHERE course_id = (SELECT course_id FROM courses WHERE title='Intro to Leadership')
+);
+
+INSERT INTO access_codes (course_id)
+SELECT (SELECT course_id FROM courses WHERE title='Effective Communication')
+WHERE NOT EXISTS (
+	SELECT 1 FROM access_codes WHERE course_id = (SELECT course_id FROM courses WHERE title='Effective Communication')
+);
+
+INSERT INTO access_codes (course_id)
+SELECT (SELECT course_id FROM courses WHERE title='Team Management')
+WHERE NOT EXISTS (
+	SELECT 1 FROM access_codes WHERE course_id = (SELECT course_id FROM courses WHERE title='Team Management')
 );
 
 COMMIT;
