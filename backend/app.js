@@ -22,7 +22,7 @@ const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') //
 const emailRouter = require('./controllers/email-verify/emailVerifyController') // Email verification routes
 
 const middleware = require('./utils/middleware') // Middleware functions
-// const userRouter = require('./controllers/user/userRoute')
+const userRouter = require('./controllers/user/userRoute')
 // const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 
 console.log('connecting to PostgreSQL')
@@ -42,42 +42,9 @@ app.use(express.json()) // Parse incoming JSON requests
 app.use(middleware.tokenExtractor) // Extract token from requests
 
 // Route handlers
+
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
-
-// app.use(
-//   '/api/admin',
-//   middleware.userExtractor,
-//   middleware.authorizeRoles('admin'),
-//   adminController) // Admin routes
-// app.use('/api/progress', progressRouter)
-// app.use(
-//   '/api/user',
-//   middleware.userExtractor,
-//   middleware.authorizeRoles('admin', 'participant'),
-//   userController
-// )
-// app.use(
-//   '/api/notifications',
-//   middleware.userExtractor,
-//   notificationsRouter
-// )
-// // Notification routes
-// app.use(
-//   '/api/notifications',
-//   middleware.userExtractor, // ensure we have the user
-//   notificationController
-// )
-// //Assessments
-//app.use('/api/assessments', middleware.userExtractor, assessmentRouter);
-
-// Discussion routes
-// app.use(
-//   '/api/discussions',
-//   middleware.userExtractor,
-//   middleware.authorizeRoles('admin', 'trainer', 'participant'),
-//   discussionRouter
-// )
 
 // Access code routes
 app.use(
@@ -96,6 +63,12 @@ app.use(
 )
 
 app.use('/verify-email', emailRouter) // Email verification route
+app.use(
+	'/api/users',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer'),
+	userRouter,
+) // User management routes for admin
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
