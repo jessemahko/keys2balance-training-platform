@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken') // For email verification token
 const registerRouter = require('express').Router()
 const User = require('../../models/user')
 const AccessCode = require('../../models/access-code')
+const Course = require('../../models/courses')
 const sendEmail = require('../../utils/sendEmail') // utility to send emails
 
 // Handle participant registration
@@ -62,6 +63,7 @@ registerRouter.post('/', async (req, res) => {
 		role: 'participant',
 	})
 	await AccessCode.updateAvailability(accessCode) // Mark code as used
+	await Course.enrollInCourse(savedUser.user_id, foundAccessCode.course_id) // Enroll user in course
 
 	// 8. Generate email verification token
 	const verificationToken = jwt.sign(
