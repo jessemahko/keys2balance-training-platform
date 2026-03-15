@@ -11,7 +11,7 @@ const getUsers = async (req, res) => {
 
 // Admin: POST /api/user
 const createUser = async (req, res) => {
-	const { username, email, password, rePassword, accessCode } = req.body
+	const { username, email, password } = req.body
 
 	// 1. Password validation (strong)
 	const passwordRegex =
@@ -23,12 +23,7 @@ const createUser = async (req, res) => {
 		})
 	}
 
-	// 2. Check if passwords match
-	if (password !== rePassword) {
-		return res.status(400).json({ error: 'passwords do not match' })
-	}
-
-	// 3. Validate email (regex) and username
+	// 2. Validate email (regex) and username
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 	if (!email || !emailRegex.test(email)) {
 		return res.status(400).json({ error: 'email not valid' })
@@ -37,7 +32,7 @@ const createUser = async (req, res) => {
 		return res.status(400).json({ error: 'username too short' })
 	}
 
-	// 4. Check if user already exists
+	// 3. Check if user already exists
 	const existingUser = await User.findByUsernameOrEmail(username, email)
 	if (existingUser) {
 		const message =
@@ -47,10 +42,10 @@ const createUser = async (req, res) => {
 		return res.status(409).json({ error: message })
 	}
 
-	// 5. Hash password
+	// 4. Hash password
 	const passwordHash = await bcrypt.hash(password, 10)
 
-	// 6. Create user as unverified
+	// 5. Create user as unverified
 	const savedUser = await User.createUser({
 		username,
 		email,
@@ -58,14 +53,14 @@ const createUser = async (req, res) => {
 		role: 'trainer',
 	})
 
-	// 7. Generate email verification token
+	// 6. Generate email verification token
 	const verificationToken = jwt.sign(
 		{ id: savedUser.user_id },
 		process.env.EMAIL_SECRET || process.env.SECRET,
 		{ expiresIn: '1d' },
 	)
 
-	// 8. Send verification email
+	// 7. Send verification email
 	const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`
 	await sendEmail(
 		savedUser.email,
@@ -74,7 +69,7 @@ const createUser = async (req, res) => {
     \n\nThis link expires in 24 hours.\n\nAfter verification, you can log in and access the trainer dashboard with this account:\nusername: ${savedUser.username}\nemail: ${savedUser.email}\npassword: ${password}`,
 	)
 
-	// 9. Respond without password
+	// 8. Respond without password
 	res.status(201).json({
 		id: savedUser.id,
 		username: savedUser.username,
@@ -85,7 +80,49 @@ const createUser = async (req, res) => {
 	})
 }
 
+const updateUserPassword = async (req, res) => {
+	const { id } = req.params
+	if (!id) {
+		return res.status(400).json({ error: 'User id is not valid' })
+	}
+	const { password } = req.body
+
+	// 1. Password validation (strong)
+	const passwordRegex =
+		/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/
+	if (!password || !passwordRegex.test(password)) {
+		return res.status(400).json({
+			error:
+				'password must be at least 8 characters long and include 1 uppercase letter, 1 number, and 1 special character',
+		})
+	}
+
+	const user = await User.findById(id)
+	if (!user) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+
+	const passwordHash = await bcrypt.hash(password, 10)
+	await User.updateUserPassword(id, passwordHash)
+	res.json({ message: 'Password updated successfully' })
+}
+
+const deleteUser = async (req, res) => {
+	const { id } = req.params
+	if (!id) {
+		return res.status(400).json({ error: 'User id is not valid' })
+	}
+	const user = await User.findById(id)
+	if (!user) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+	await User.deleteById(id)
+	res.json({ message: 'User deleted successfully' })
+}
+
 module.exports = {
 	getUsers,
 	createUser,
+	deleteUser,
+	updateUserPassword,
 }
