@@ -1,10 +1,6 @@
 const Courses = require('../../models/courses')
 
 const getCourses = async (req, res) => {
-	if (!req.user) {
-		return res.status(401).json({ error: 'Authentication required' })
-	}
-
 	const courses = await Courses.findAll(req.user.id)
 	res.json(courses)
 }
