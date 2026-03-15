@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS access_codes (
 	code_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	code TEXT UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(8), 'hex'),
 	course_id UUID NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
-	available BOOLEAN NOT NULL DEFAULT FALSE
+	available BOOLEAN NOT NULL DEFAULT True,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	expires_at TIMESTAMPTZ
 );
