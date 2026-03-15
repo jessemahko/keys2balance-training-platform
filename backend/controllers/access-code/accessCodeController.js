@@ -1,8 +1,8 @@
 const AccessCode = require('../../models/access-code')
 
 // Get all access codes
-const getAllAccessCodesAndCleanup = async (req, res) => {
-	const accessCodes = await AccessCode.findAllAndCleanup()
+const getAllAccessCodes = async (req, res) => {
+	const accessCodes = await AccessCode.findAll()
 	res.json(accessCodes)
 }
 
@@ -27,7 +27,7 @@ const deleteAccessCode = async (req, res) => {
 }
 
 module.exports = {
-	getAllAccessCodesAndCleanup,
+	getAllAccessCodes,
 	createAccessCode,
 	deleteAccessCode,
 }
