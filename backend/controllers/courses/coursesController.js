@@ -6,7 +6,12 @@ const getCourses = async (req, res) => {
 }
 
 const getCourse = async (req, res) => {
-	const course = await Courses.findById(req.params.id, req.user.id)
+	const id = req.params.id
+	if (!id) {
+		return res.status(400).json({ error: 'course id is required' })
+	}
+
+	const course = await Courses.findById(req.params.id)
 
 	if (!course) {
 		return res.status(404).json({ error: 'course not found' })
