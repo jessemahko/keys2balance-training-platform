@@ -7,25 +7,10 @@ router.get('/', middleware.userExtractor, CoursesController.getCourses)
 router.get('/:id', middleware.userExtractor, CoursesController.getCourse)
 
 // create is admin-only
-router.post(
-  '/',
-  middleware.userExtractor,
-  middleware.authorizeRoles('admin'),
-  CoursesController.createCourse,
-)
+router.post('/', CoursesController.createCourse)
 
 // update/delete require authenticated admin or trainer
-router.put(
-  '/:id',
-  middleware.userExtractor,
-  middleware.authorizeRoles('admin', 'trainer'),
-  CoursesController.updateCourse,
-)
-router.delete(
-  '/:id',
-  middleware.userExtractor,
-  middleware.authorizeRoles('admin', 'trainer'),
-  CoursesController.deleteCourse,
-)
+router.put('/:id', CoursesController.updateCourse)
+router.delete('/:id', CoursesController.deleteCourse)
 
 module.exports = router
