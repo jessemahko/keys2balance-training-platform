@@ -1,7 +1,5 @@
 const { pool } = require('../utils/config')
 
-const PUBLIC_FIELDS = 'id, username, email, role, name, cohorts'
-
 // Find user by id
 const findById = async (id) => {
 	const res = await pool.query(`SELECT * FROM users WHERE user_id = $1`, [id])
@@ -25,34 +23,37 @@ const findByUsername = async (username) => {
 // Find user by username OR email (exist check)
 const findByUsernameOrEmail = async (username, email) => {
 	const res = await pool.query(
-		`SELECT id FROM users WHERE username = $1 OR email = $2`,
+		`SELECT user_id FROM users WHERE username = $1 OR email = $2`,
 		[username, email],
 	)
 	return res.rows[0] || null
 }
 
 // Create new user (insert password_hash but return public fields only)
-const createUser = async ({
-	username,
-	email,
-	passwordHash,
-	role,
-	cohorts,
-	name,
-}) => {
+const createUser = async ({ username, email, passwordHash, role }) => {
 	const res = await pool.query(
-		`INSERT INTO users (username, email, password_hash, role, cohorts, name)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING ${PUBLIC_FIELDS}`,
-		[username, email, passwordHash, role, cohorts, name],
+		`INSERT INTO users (username, email, password_hash, role)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+		[username, email, passwordHash, role],
 	)
 	return res.rows[0]
 }
 
 // Find all users (for admin)
 const findAll = async () => {
-	const res = await pool.query(`SELECT ${PUBLIC_FIELDS} FROM users`)
+	const res = await pool.query(`SELECT * FROM users`)
 	return res.rows
+}
+
+const verifyEmail = async (id) => {
+	await pool.query(`UPDATE users SET is_verified = true WHERE user_id = $1`, [
+		id,
+	])
+}
+
+const deleteById = async (id) => {
+	await pool.query(`DELETE FROM users WHERE user_id = $1`, [id])
 }
 
 module.exports = {
@@ -62,4 +63,6 @@ module.exports = {
 	findByUsernameOrEmail,
 	createUser,
 	findAll,
+	verifyEmail,
+	deleteById,
 }
