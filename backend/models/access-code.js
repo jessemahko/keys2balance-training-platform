@@ -3,7 +3,7 @@ const { pool } = require('../utils/config')
 const findAllAndCleanup = async () => {
 	await pool.query(`
 		DELETE FROM access_codes
-		WHERE available = true
+		WHERE available = false
 		OR created_at < NOW() - INTERVAL '1 day'
 	`)
 	const res = await pool.query(`SELECT * FROM access_codes`)
@@ -19,7 +19,7 @@ const create = async (courseId) => {
 }
 
 const deleteAccessCode = async (id) => {
-	await pool.query(`DELETE FROM access_codes WHERE id = $1`, [id])
+	await pool.query(`DELETE FROM access_codes WHERE code_id = $1`, [id])
 }
 
 module.exports = {
