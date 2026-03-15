@@ -3,8 +3,8 @@ const CoursesController = require('./coursesController')
 const middleware = require('../../utils/middleware')
 
 // read endpoints require an authenticated user context
-router.get('/', middleware.userExtractor, CoursesController.getCourses)
-router.get('/:id', middleware.userExtractor, CoursesController.getCourse)
+router.get('/', CoursesController.getCourses)
+router.get('/:id', CoursesController.getCourse)
 
 // create is admin-only
 router.post('/', CoursesController.createCourse)
