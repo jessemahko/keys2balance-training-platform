@@ -56,6 +56,12 @@ const deleteById = async (id) => {
 	await pool.query(`DELETE FROM users WHERE user_id = $1`, [id])
 }
 
+const updateUserPassword = async (id, newPasswordHash) => {
+	await pool.query(`UPDATE users SET password_hash = $1 WHERE user_id = $2`, [
+		newPasswordHash,
+		id,
+	])
+}
 module.exports = {
 	findById,
 	findByEmail,
@@ -65,4 +71,5 @@ module.exports = {
 	findAll,
 	verifyEmail,
 	deleteById,
+	updateUserPassword,
 }
