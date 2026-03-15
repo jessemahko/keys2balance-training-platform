@@ -1,30 +1,25 @@
 const { pool } = require('../utils/config')
 
-const findAll = async (userId) => {
+const findAll = async () => {
+	const res = await pool.query('SELECT * FROM courses ORDER BY created_at DESC')
+	return res.rows
+}
+
+const findAllByTeacherId = async (teacherId) => {
 	const res = await pool.query(
-		`SELECT course_id, title, description, thumbnail_url, teacher_id, created_at
-		 FROM courses
+		`SELECT * FROM courses
 		 WHERE teacher_id = $1
 		 ORDER BY created_at DESC`,
-		[userId],
+		[teacherId],
 	)
 
 	return res.rows
 }
 
-const findById = async (courseId, userId) => {
-	const query = userId
-		? {
-				text: 'SELECT * FROM courses WHERE course_id = $1 AND teacher_id = $2',
-				values: [courseId, userId],
-			}
-		: {
-				text: 'SELECT * FROM courses WHERE course_id = $1',
-				values: [courseId],
-			}
-
-	const res = await pool.query(query.text, query.values)
-
+const findById = async (courseId) => {
+	const res = await pool.query('SELECT * FROM courses WHERE course_id = $1', [
+		courseId,
+	])
 	return res.rows[0] || null
 }
 
@@ -34,7 +29,12 @@ const normalizeTeacherId = (id) => {
 	return normalizedId || null
 }
 
-const createCourse = async ({ title, description, thumbnailUrl, teacherId }) => {
+const createCourse = async ({
+	title,
+	description,
+	thumbnailUrl,
+	teacherId,
+}) => {
 	const res = await pool.query(
 		`INSERT INTO courses (title, description, thumbnail_url, teacher_id)
 		 VALUES ($1, $2, $3, $4)
@@ -64,7 +64,9 @@ const updateCourse = async (courseId, updates) => {
 	}
 
 	const entries = Object.entries(updates).filter(([key, value]) => {
-		return Object.prototype.hasOwnProperty.call(fields, key) && value !== undefined
+		return (
+			Object.prototype.hasOwnProperty.call(fields, key) && value !== undefined
+		)
 	})
 
 	if (entries.length === 0) {
@@ -99,6 +101,7 @@ const deleteCourse = async (courseId) => {
 
 module.exports = {
 	findAll,
+	findAllByTeacherId,
 	findById,
 	createCourse,
 	updateCourse,
