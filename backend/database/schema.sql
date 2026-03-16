@@ -150,8 +150,7 @@ CREATE TABLE IF NOT EXISTS discussion_threads (
 	thread_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	course_id UUID NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
 	title TEXT NOT NULL,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	UNIQUE(course_id)
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS discussion_messages (
