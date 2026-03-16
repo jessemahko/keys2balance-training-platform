@@ -156,6 +156,15 @@ const deleteEnrollment = async (userId, courseId) => {
 	)
 	return res.rows[0] || null
 }
+
+const findEnrollment = async (userId, courseId) => {
+	const res = await pool.query(
+		`SELECT * FROM course_enrollments WHERE user_id = $1 AND course_id = $2`,
+		[userId, courseId],
+	)
+	return res.rows[0] || null
+}
+
 module.exports = {
 	findAll,
 	findAllByTeacherId,
@@ -165,4 +174,5 @@ module.exports = {
 	deleteCourse,
 	enrollInCourse,
 	deleteEnrollment,
+	findEnrollment,
 }
