@@ -1,5 +1,5 @@
-const Lesson = require('../../../models/lesson')
-const Course = require('../../../models/courses')
+const Lesson = require('../../models/lesson')
+const Course = require('../../models/courses')
 const crypto = require('crypto')
 
 /**
@@ -7,25 +7,29 @@ const crypto = require('crypto')
  * Manages individual pages and dynamic content blocks within a Course.
  */
 
-
-
 const getLesson = async (req, res) => {
 	const user = req.user
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
 	const lesson = await Lesson.findById(req.params.id)
 	if (!lesson) {
 		return res.status(404).json({ error: 'Lesson not found' })
 	}
+
+	const enrollingCourse = await Course.findEnrollment(user.id, lesson.course_id)
+	if (!enrollingCourse) {
+		return res.status(403).json({ error: 'Access denied to this lesson' })
+	}
+
 	res.json(lesson)
 }
 
 const createLesson = async (req, res) => {
 	const user = req.user
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
 	const { course_id, title, order_index } = req.body
@@ -39,7 +43,9 @@ const createLesson = async (req, res) => {
 	}
 
 	if (course.teacher_id !== user.id && user.role !== 'admin') {
-		return res.status(403).json({ error: 'Only the course creator or an admin can add lessons' })
+		return res
+			.status(403)
+			.json({ error: 'Only the course creator or an admin can add lessons' })
 	}
 
 	const newLesson = await Lesson.createLesson({
@@ -53,7 +59,7 @@ const createLesson = async (req, res) => {
 const addBlock = async (req, res) => {
 	const user = req.user
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
 	const { id } = req.params
@@ -66,7 +72,9 @@ const addBlock = async (req, res) => {
 
 	const course = await Course.findById(lesson.course_id)
 	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
-		return res.status(403).json({ error: 'Only the course creator or an admin can modify blocks' })
+		return res
+			.status(403)
+			.json({ error: 'Only the course creator or an admin can modify blocks' })
 	}
 
 	const allowedTypes = [
@@ -94,7 +102,7 @@ const addBlock = async (req, res) => {
 const updateBlock = async (req, res) => {
 	const user = req.user
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
 	const { id, blockId } = req.params
@@ -107,17 +115,23 @@ const updateBlock = async (req, res) => {
 
 	const course = await Course.findById(lesson.course_id)
 	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
-		return res.status(403).json({ error: 'Only the course creator or an admin can modify blocks' })
+		return res
+			.status(403)
+			.json({ error: 'Only the course creator or an admin can modify blocks' })
 	}
 
-	const updatedLesson = await Lesson.updateContentBlock(id, blockId, updatedData)
+	const updatedLesson = await Lesson.updateContentBlock(
+		id,
+		blockId,
+		updatedData,
+	)
 	res.json(updatedLesson)
 }
 
 const deleteBlock = async (req, res) => {
 	const user = req.user
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
 	const { id, blockId } = req.params
@@ -129,7 +143,9 @@ const deleteBlock = async (req, res) => {
 
 	const course = await Course.findById(lesson.course_id)
 	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
-		return res.status(403).json({ error: 'Only the course creator or an admin can modify blocks' })
+		return res
+			.status(403)
+			.json({ error: 'Only the course creator or an admin can modify blocks' })
 	}
 
 	const updatedLesson = await Lesson.removeContentBlock(id, blockId)
@@ -139,7 +155,7 @@ const deleteBlock = async (req, res) => {
 const deleteLesson = async (req, res) => {
 	const user = req.user
 	if (!user) {
-		return res.status(401).json({ error: 'Invalid email/username or password' })
+		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
 	const lesson = await Lesson.findById(req.params.id)
@@ -149,7 +165,9 @@ const deleteLesson = async (req, res) => {
 
 	const course = await Course.findById(lesson.course_id)
 	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
-		return res.status(403).json({ error: 'Only the course creator or an admin can delete the lesson' })
+		return res.status(403).json({
+			error: 'Only the course creator or an admin can delete the lesson',
+		})
 	}
 
 	const deleted = await Lesson.deleteLesson(req.params.id)
