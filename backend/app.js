@@ -17,6 +17,7 @@ const notificationsRouter = require('./controllers/notifications/notificationsRo
 const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
 const emailRouter = require('./controllers/email-verify/emailVerifyController') // Email verification routes
+const lessonRouter = require('./controllers/lessons/lessonRoute') // Lesson routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
@@ -67,6 +68,7 @@ app.use(
 ) // User management routes for admin
 app.use('/api/discussions', middleware.userExtractor, discussionRouter) // Discussion routes for authenticated users
 app.use('/api/notifications', middleware.userExtractor, notificationsRouter) // Notification routes for authenticated users
+app.use('/api/lessons', middleware.userExtractor, lessonRouter) // Lesson routes for authenticated users
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
