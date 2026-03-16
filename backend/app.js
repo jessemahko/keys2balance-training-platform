@@ -11,13 +11,9 @@ const app = express()
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 
-// const adminController = require('./controllers/admin/adminController') // Admin routes
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
-// const progressRouter = require('./controllers/progress/progressController') // Progress routes
-// const userController = require('./controllers/user/userController') // User routes
-// const notificationController = require('./controllers/notifications/notificationController') // Notifications
-// const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
+const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
 const emailRouter = require('./controllers/email-verify/emailVerifyController') // Email verification routes
@@ -70,6 +66,7 @@ app.use(
 	userRouter,
 ) // User management routes for admin
 app.use('/api/discussions', middleware.userExtractor, discussionRouter) // Discussion routes for authenticated users
+app.use('/api/notifications', middleware.userExtractor, notificationsRouter) // Notification routes for authenticated users
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
