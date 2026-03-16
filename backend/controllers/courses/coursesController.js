@@ -23,7 +23,10 @@ const getCourse = async (req, res) => {
 		return res.status(404).json({ error: 'course not found' })
 	}
 
-	if (String(course.teacher_id) !== String(req.user.id)) {
+	if (
+		req.user.role !== 'admin' &&
+		String(course.teacher_id) !== String(req.user.id)
+	) {
 		return res
 			.status(403)
 			.json({ error: 'Only the course creator can view this course' })
