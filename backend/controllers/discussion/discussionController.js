@@ -1,6 +1,11 @@
 const Discussion = require('../../models/discussion')
 
 const getThreads = async (req, res) => {
+	const user = req.user
+	if (!user) {
+		return res.status(401).json({ error: 'Unauthorized' })
+	}
+
 	const { courseId } = req.body
 	if (!courseId) {
 		return res.status(400).json({ error: 'courseId is required' })
@@ -22,11 +27,6 @@ const createThread = async (req, res) => {
 		trimmedTitle,
 	)
 	res.status(201).json(newThread)
-}
-
-const getMessages = async (req, res) => {
-	const messages = await Discussion.getMessagesByThread(req.params.threadId)
-	res.json(messages)
 }
 
 const createMessage = async (req, res) => {
