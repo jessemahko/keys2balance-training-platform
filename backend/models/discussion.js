@@ -1,44 +1,66 @@
 const { pool } = require('../utils/config')
 
+const findThreadById = async (threadId) => {
+	const res = await pool.query(
+		'SELECT * FROM discussion_threads WHERE thread_id = $1',
+		[threadId],
+	)
+	return res.rows[0] || null
+}
+
 const getThreadsByCourse = async (courseId) => {
-    const res = await pool.query(
-        'SELECT * FROM discussion_threads WHERE course_id = $1 ORDER BY created_at DESC',
-        [courseId]
-    )
-    return res.rows
+	const res = await pool.query(
+		`SELECT 
+			dt.thread_id,
+			dt.course_id,
+			dt.title,
+			dt.created_at,
+			json_agg(
+				json_build_object(
+					'message_id', dm.message_id,
+					'user_id', dm.user_id,
+					'message_text', dm.message_text,
+					'created_at', dm.created_at,
+					'user', json_build_object(
+						'user_id', u.user_id,
+						'first_name', u.first_name,
+						'last_name', u.last_name,
+						'avatar_url', u.avatar_url
+					)
+				) ORDER BY dm.created_at ASC
+			) FILTER (WHERE dm.message_id IS NOT NULL) as messages
+		FROM discussion_threads dt
+		LEFT JOIN discussion_messages dm ON dt.thread_id = dm.thread_id
+		LEFT JOIN users u ON dm.user_id = u.user_id
+		WHERE dt.course_id = $1
+		GROUP BY dt.thread_id, dt.course_id, dt.title, dt.created_at
+		ORDER BY dt.created_at DESC`,
+		[courseId],
+	)
+	return res.rows
 }
 
 const createThread = async (courseId, title) => {
-    const res = await pool.query(
-        'INSERT INTO discussion_threads (course_id, title) VALUES ($1, $2) RETURNING *',
-        [courseId, title]
-    )
-    return res.rows[0]
-}
-
-const getMessagesByThread = async (threadId) => {
-    const res = await pool.query(
-        `SELECT m.*, u.username, u.avatar_url 
-         FROM discussion_messages m
-         LEFT JOIN users u ON m.user_id = u.user_id
-         WHERE m.thread_id = $1 
-         ORDER BY m.created_at ASC`,
-        [threadId]
-    )
-    return res.rows
+	const res = await pool.query(
+		`INSERT INTO discussion_threads (course_id, title)
+		 VALUES ($1, $2)
+		 RETURNING *`,
+		[courseId, title],
+	)
+	return res.rows[0]
 }
 
 const createMessage = async (threadId, userId, messageText) => {
-    const res = await pool.query(
-        'INSERT INTO discussion_messages (thread_id, user_id, message_text) VALUES ($1, $2, $3) RETURNING *',
-        [threadId, userId, messageText]
-    )
-    return res.rows[0]
+	const res = await pool.query(
+		'INSERT INTO discussion_messages (thread_id, user_id, message_text) VALUES ($1, $2, $3) RETURNING *',
+		[threadId, userId, messageText],
+	)
+	return res.rows[0]
 }
 
 module.exports = {
-    getThreadsByCourse,
-    createThread,
-    getMessagesByThread,
-    createMessage
+	getThreadsByCourse,
+	createThread,
+	createMessage,
+	findThreadById,
 }
