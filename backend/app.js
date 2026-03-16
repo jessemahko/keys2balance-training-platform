@@ -18,12 +18,12 @@ const coursesRouter = require('./controllers/courses/coursesRoute') // Courses r
 // const notificationController = require('./controllers/notifications/notificationController') // Notifications
 // const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
+const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
 const emailRouter = require('./controllers/email-verify/emailVerifyController') // Email verification routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
-// const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 
 console.log('connecting to PostgreSQL')
 // Connect to Postgresql
@@ -69,6 +69,7 @@ app.use(
 	middleware.authorizeRoles('admin'),
 	userRouter,
 ) // User management routes for admin
+app.use('/api/discussions', middleware.userExtractor, discussionRouter) // Discussion routes for authenticated users
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
