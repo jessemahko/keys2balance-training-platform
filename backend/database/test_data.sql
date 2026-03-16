@@ -177,6 +177,196 @@ WHERE NOT EXISTS (
 	SELECT 1 FROM discussion_threads WHERE title='Team Discussion'
 );
 
+
+-- ======================================================================================
+-- NOTIFICATIONS - TEST DATA
+-- ======================================================================================
+
+-- Welcome notifications (new users)
+INSERT INTO notifications (user_id, type, title, message, is_read)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'),
+ 'welcome',
+ 'Welcome to Leadership Academy!',
+ 'Welcome Alice! We are excited to have you join our learning platform. Start exploring courses today.',
+ TRUE),
+ 
+((SELECT user_id FROM users WHERE username='student2'),
+ 'welcome',
+ 'Welcome to Leadership Academy!',
+ 'Welcome Bob! We are excited to have you join our learning platform. Start exploring courses today.',
+ TRUE),
+ 
+((SELECT user_id FROM users WHERE username='student3'),
+ 'welcome',
+ 'Welcome to Leadership Academy!',
+ 'Welcome Charlie! We are excited to have you join our learning platform. Start exploring courses today.',
+ FALSE),
+ 
+((SELECT user_id FROM users WHERE username='student4'),
+ 'welcome',
+ 'Welcome to Leadership Academy!',
+ 'Welcome Diana! We are excited to have you join our learning platform. Start exploring courses today.',
+ FALSE);
+
+-- Course assigned notifications
+INSERT INTO notifications (user_id, type, title, message, is_read, created_at)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'),
+ 'course_assigned',
+ 'New Course: Intro to Leadership',
+ 'You have been assigned to the course "Intro to Leadership" taught by John Doe. Start learning now!',
+ TRUE,
+ NOW() - INTERVAL '5 days'),
+ 
+((SELECT user_id FROM users WHERE username='student1'),
+ 'course_assigned',
+ 'New Course: Effective Communication',
+ 'You have been assigned to the course "Effective Communication" taught by John Doe. Start learning now!',
+ TRUE,
+ NOW() - INTERVAL '4 days'),
+ 
+((SELECT user_id FROM users WHERE username='student2'),
+ 'course_assigned',
+ 'New Course: Intro to Leadership',
+ 'You have been assigned to the course "Intro to Leadership" taught by John Doe. Start learning now!',
+ FALSE,
+ NOW() - INTERVAL '3 days'),
+ 
+((SELECT user_id FROM users WHERE username='student3'),
+ 'course_assigned',
+ 'New Course: Team Management',
+ 'You have been assigned to the course "Team Management" taught by Sarah Smith. Start learning now!',
+ FALSE,
+ NOW() - INTERVAL '2 days');
+
+-- Lesson completed notifications
+INSERT INTO notifications (user_id, type, title, message, is_read, created_at)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'),
+ 'lesson_completed',
+ 'Lesson Completed: What is Leadership',
+ 'Congratulations! You have successfully completed the lesson "What is Leadership". Great progress!',
+ TRUE,
+ NOW() - INTERVAL '2 days'),
+ 
+((SELECT user_id FROM users WHERE username='student1'),
+ 'lesson_completed',
+ 'Lesson Completed: Active Listening',
+ 'Congratulations! You have successfully completed the lesson "Active Listening". Keep it up!',
+ TRUE,
+ NOW() - INTERVAL '1 day'),
+ 
+((SELECT user_id FROM users WHERE username='student2'),
+ 'lesson_completed',
+ 'Lesson Completed: What is Leadership',
+ 'Congratulations! You have successfully completed the lesson "What is Leadership". Great progress!',
+ FALSE,
+ NOW() - INTERVAL '3 days');
+
+-- Assessment submitted notifications
+INSERT INTO notifications (user_id, type, title, message, is_read, created_at)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'),
+ 'assessment_submitted',
+ 'Assessment Submitted: Leadership Quiz',
+ 'Your assessment "Leadership Quiz" has been submitted successfully. Score: 100%',
+ TRUE,
+ NOW() - INTERVAL '2 days'),
+ 
+((SELECT user_id FROM users WHERE username='student1'),
+ 'assessment_submitted',
+ 'Assessment Submitted: Communication Quiz',
+ 'Your assessment "Communication Quiz" has been submitted successfully. Score: 100%',
+ TRUE,
+ NOW() - INTERVAL '1 day'),
+ 
+((SELECT user_id FROM users WHERE username='student2'),
+ 'assessment_submitted',
+ 'Assessment Submitted: Leadership Quiz',
+ 'Your assessment "Leadership Quiz" has been submitted successfully. Score: 100%',
+ FALSE,
+ NOW() - INTERVAL '2 days');
+
+-- Discussion reply notifications
+INSERT INTO notifications (user_id, type, title, message, is_read, created_at)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'),
+ 'discussion_reply',
+ 'New Reply: Leadership Discussion',
+ 'John Doe replied to your discussion post: "Great question! Leaders need to be visionary, empathetic, and decisive."',
+ TRUE,
+ NOW() - INTERVAL '1 day'),
+ 
+((SELECT user_id FROM users WHERE username='student2'),
+ 'discussion_reply',
+ 'New Reply: Team Discussion',
+ 'Charlie Wilson replied to your discussion post in "Team Discussion"',
+ FALSE,
+ NOW() - INTERVAL '12 hours'),
+ 
+((SELECT user_id FROM users WHERE username='student1'),
+ 'discussion_reply',
+ 'New Reply: Communication Discussion',
+ 'Bob Taylor replied to your discussion post in "Communication Discussion"',
+ FALSE,
+ NOW() - INTERVAL '6 hours');
+
+-- Admin announcement notifications
+INSERT INTO notifications (user_id, type, title, message, is_read, created_at)
+VALUES
+((SELECT user_id FROM users WHERE username='student1'),
+ 'admin_announcement',
+ 'Platform Maintenance Scheduled',
+ 'The platform will undergo maintenance on Friday night from 11 PM to 1 AM. Plan accordingly.',
+ TRUE,
+ NOW() - INTERVAL '3 days'),
+ 
+((SELECT user_id FROM users WHERE username='student2'),
+ 'admin_announcement',
+ 'Platform Maintenance Scheduled',
+ 'The platform will undergo maintenance on Friday night from 11 PM to 1 AM. Plan accordingly.',
+ FALSE,
+ NOW() - INTERVAL '3 days'),
+ 
+((SELECT user_id FROM users WHERE username='student3'),
+ 'admin_announcement',
+ 'New Feature: Video Lessons',
+ 'We have added video lessons to all courses. Check out the new content!',
+ FALSE,
+ NOW() - INTERVAL '2 days'),
+ 
+((SELECT user_id FROM users WHERE username='student4'),
+ 'admin_announcement',
+ 'New Feature: Video Lessons',
+ 'We have added video lessons to all courses. Check out the new content!',
+ FALSE,
+ NOW() - INTERVAL '2 days');
+
+-- Reminder notifications
+INSERT INTO notifications (user_id, type, title, message, is_read, created_at)
+VALUES
+((SELECT user_id FROM users WHERE username='student2'),
+ 'reminder',
+ 'Incomplete Lesson: Leadership Styles',
+ 'You have not yet completed the lesson "Leadership Styles" in the Intro to Leadership course. Complete it today!',
+ FALSE,
+ NOW() - INTERVAL '1 day'),
+ 
+((SELECT user_id FROM users WHERE username='student3'),
+ 'reminder',
+ 'Pending Assessment: Building Trust',
+ 'You have not yet submitted the assessment for "Building Trust" lesson. Submit your response now!',
+ FALSE,
+ NOW() - INTERVAL '12 hours'),
+ 
+((SELECT user_id FROM users WHERE username='student4'),
+ 'reminder',
+ 'Course Start Reminder',
+ 'You are enrolled in "Effective Communication" course but haven''t started yet. Begin learning today!',
+ FALSE,
+ NOW() - INTERVAL '8 hours');
+
 -- ======================================================================================
 -- ACCESS CODES
 -- ======================================================================================
