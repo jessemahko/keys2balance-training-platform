@@ -12,13 +12,18 @@ import {
 	useLocation,
 } from 'react-router-dom'
 import Authentication from './pages/authentication/Authentication'
+import Notification from './components/Notification'
 import { setUserFn, rmUserFn } from './reducers/userReducer'
+import { clearMessages } from './reducers/notiReducer'
 import { setToken, isTokenExpired } from './services/login'
 import { useTranslation } from 'react-i18next'
+
+import LogoutIcon from '@mui/icons-material/Logout'
 
 const App = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
+	const notification = useSelector((state) => state.noti)
 	const navigate = useNavigate()
 	const location = useLocation()
 	const { t, i18n } = useTranslation()
@@ -40,8 +45,31 @@ const App = () => {
 		}
 	}, [])
 
+	const handleLogout = () => {
+		// Logout logic
+		window.localStorage.removeItem('loggedPrjMnUser') // Remove user from localStorage
+		dispatch(rmUserFn()) // Dispatch action to remove user from Redux
+		navigate('/')
+	}
+
 	return (
 		<div>
+			{/* Log out button for testing */}
+			<div onClick={handleLogout} className='relative hover:text-orange-500'>
+				<LogoutIcon />
+			</div>
+
+			{/* Display notifications */}
+			<Notification
+				message={notification.error}
+				className='error'
+				removeMessage={() => dispatch(clearMessages())}
+			/>
+			<Notification
+				message={notification.noti}
+				className='notification'
+				removeMessage={() => dispatch(clearMessages())}
+			/>
 			<Routes>
 				{/* Public Route */}
 				<Route path='/authentication' element={<Authentication />} />
