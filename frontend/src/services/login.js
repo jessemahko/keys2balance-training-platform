@@ -17,6 +17,7 @@ const isTokenExpired = (token) => {
 
 const login = async (credentials) => {
 	const response = await axios.post(baseUrl, credentials)
+
 	return response.data
 }
 
@@ -24,4 +25,3 @@ const getToken = () => token
 
 export { getToken, isTokenExpired, setToken }
 export default { login }
-

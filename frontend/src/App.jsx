@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom'
 import Authentication from './pages/authentication/Authentication'
 import Notification from './components/Notification'
+import Dashboard from './pages/dashboard/Dashboard'
 import { setUserFn, rmUserFn } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
 import { setToken, isTokenExpired } from './services/login'
@@ -21,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import LogoutIcon from '@mui/icons-material/Logout'
 
 const App = () => {
+	// using Hooks
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const notification = useSelector((state) => state.noti)
@@ -81,10 +83,7 @@ const App = () => {
 					}
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
-					<Route
-						path='/dashboard/*'
-						element={<div>{/* dashboard element */}</div>}
-					/>
+					<Route path='/dashboard' element={<Dashboard />} />
 				</Route>
 
 				{/* Catch-all Route */}
