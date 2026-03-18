@@ -26,7 +26,8 @@ const App = () => {
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedUser')
 		if (!loggedUserJSON) {
-			navigate('authentication')
+			navigate('/authentication')
+			return
 		}
 
 		const user = JSON.parse(loggedUserJSON)
