@@ -1,5 +1,6 @@
 import axios from 'axios'
-const baseUrl = '/login'
+// const baseUrl = '/login'
+const baseUrl = 'http://localhost:3001/login'
 let token = null
 
 const setToken = (newToken) => (token = `Bearer ${newToken}`)
