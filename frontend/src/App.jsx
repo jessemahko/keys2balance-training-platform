@@ -54,7 +54,7 @@ const App = () => {
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route
-						path='/dashboard'
+						path='/dashboard/*'
 						element={<div>{/* dashboard element */}</div>}
 					/>
 				</Route>
