@@ -25,16 +25,10 @@ const Login = () => {
 	const handleLogin = async (e) => {
 		e.preventDefault()
 		try {
-			console.log('username:', username.value, 'password:', password.value)
-
 			const user = await loginService.login({
 				username: username.value,
 				password: password.value,
 			})
-			console.log('tf')
-
-			console.log(user)
-
 			window.localStorage.setItem('loggedUser', JSON.stringify(user))
 			setToken(user.token)
 			dispatch(setUserFn(user))
