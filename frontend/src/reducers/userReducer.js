@@ -22,6 +22,7 @@ const userSlice = createSlice({
 
 export const { setUser, removeUser, editUser } = userSlice.actions
 
+// Thunks
 export const setUserFn = (user) => {
 	return (dispatch) => {
 		dispatch(setUser(user))
