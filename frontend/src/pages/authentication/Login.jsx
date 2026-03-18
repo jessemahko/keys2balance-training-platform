@@ -36,6 +36,7 @@ const Login = () => {
 			rmUsername()
 			rmPassword()
 			navigate('/dashboard')
+			
 		} catch (error) {
 			dispatch(setError(`${t('Wrong Credentials')}`, 2))
 		}
