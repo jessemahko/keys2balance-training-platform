@@ -1,0 +1,150 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+@import 'tailwindcss';
+
+:root {
+	--foreground-rgb: 0, 0, 0;
+	--background-start-rgb: 214, 219, 220;
+	--background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--foreground-rgb: 255, 255, 255;
+		--background-start-rgb: 0, 0, 0;
+		--background-end-rgb: 0, 0, 0;
+	}
+}
+
+@layer utilities {
+	.text-balance {
+		text-wrap: balance;
+	}
+}
+
+.navbar {
+	box-shadow: 1px 0 10px rgba(56, 55, 55, 0.3);
+}
+
+.box {
+	box-shadow: 1px 1px 10px rgba(56, 55, 55, 0.3);
+}
+
+.poppins {
+	font-family: var(--font-poppins);
+}
+
+.dropdown.default {
+	color: gray;
+}
+
+.editing {
+	background: #d4d92f;
+	border: 2px black;
+}
+
+.faded {
+	opacity: 0.5;
+}
+.active {
+	opacity: 1;
+	font-weight: bold; /* Optional: Make selected button stand out */
+}
+
+/* Custom thin scrollbar */
+::-webkit-scrollbar {
+	width: 6px; /* Thin width */
+}
+::-webkit-scrollbar {
+	height: 6px; /* Thin height */
+}
+
+::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+	background: #dadada;
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-button {
+	display: block; /* Ensure buttons/arrows are visible */
+}
+
+.search {
+	visibility: hidden;
+	transform: translate3d(94%, 0, 0);
+	transition: all 0.5s ease-out;
+}
+.search-open {
+	visibility: visible;
+	transform: translate3d(0, 0, 0);
+}
+
+/*  */
+.canvas:before {
+	content: '';
+	position: absolute;
+	z-index: 0;
+	/* background: linear-gradient(0deg, #191842, transparent 95%); */
+	/* top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%); */
+	width: 100%;
+	height: 100%;
+	/* box-shadow: -5px 35px 30px -20px rgba(0, 0, 0, 0.5); */
+}
+
+.canvas:after {
+	position: absolute;
+	z-index: 2;
+	/* top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%); */
+	letter-spacing: 1.4em;
+	text-transform: uppercase;
+	content: '';
+	color: violet;
+	mix-blend-mode: lighten;
+	font-size: 12px;
+	font-family: serif;
+	opacity: 0.8;
+}
+
+canvas {
+	position: relative;
+	z-index: 2;
+	background: transparent;
+}
+
+@keyframes wave {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+@keyframes wave-anti-clockwise {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(-360deg);
+	}
+}
+
+.p-dialog-mask {
+	background-color: rgba(129, 127, 127, 0.9) !important;
+	z-index: 9999 !important;
+	position: fixed !important; /* Ensure it's positioned relative to the viewport */
+	left: 60px !important; /* Offset the mask from the left by 60px */
+	top: 0 !important; /* Ensure it stretches from the top */
+	right: 0 !important; /* Stretch to the right */
+	bottom: 0 !important; /* Stretch to the bottom */
+	border-radius: 10px !important;
+}
