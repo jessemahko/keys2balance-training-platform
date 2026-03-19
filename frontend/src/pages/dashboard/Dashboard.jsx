@@ -14,10 +14,10 @@ const Dashboard = () => {
 	const dispatch = useDispatch()
 	const courses = useSelector((state) => state.course)
 
-	useEffect(() => {
-		dispatch(setCoursesFn())
-	}, [])
-	console.log(courses)
+	// useEffect(() => {
+	// 	dispatch(setCoursesFn())
+	// }, [])
+	// console.log(courses)
 
 	// const courses = [
 	// 	{
@@ -33,6 +33,7 @@ const Dashboard = () => {
 	// ]
 	return (
 		<div>
+			<h1>{t('Dashboard')}</h1>
 			{/* <div className='bg-black text-white'>
 				<h1>{t('Hello')}</h1>
 			</div> */}
@@ -53,4 +54,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-
