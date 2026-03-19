@@ -11,7 +11,7 @@ import registerService from '../../services/authen/register'
 import { setNotification, setError } from '../../reducers/notiReducer'
 import { useField } from '../../hooks/hook'
 
-const Register = () => {
+const Register = ({ setActive }) => {
 	const { t, i18n } = useTranslation()
 	const dispatch = useDispatch()
 
@@ -78,13 +78,10 @@ const Register = () => {
 			rmCfPassword()
 			setActive(false)
 		} catch (err) {
-			// Handle error
-			console.log(err)
-
-			// if (err.response.data.error) {
-			// 	dispatch(setError(err.response.data.error, 2))
-			// 	return
-			// }
+			if (err.response.data.error) {
+				dispatch(setError(err.response.data.error, 2))
+				return
+			}
 
 			dispatch(setError(`${t('Something went wrong')}`, 2))
 		}
