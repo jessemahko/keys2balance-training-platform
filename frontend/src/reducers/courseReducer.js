@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { isTokenExpired, getToken } from '../services/login'
+import { isTokenExpired, getToken } from '../services/authen/login'
 import { rmUserFn } from './userReducer'
 import { getAllCourses } from '../services/courses'
 
@@ -32,4 +32,3 @@ export const setCoursesFn = (courses) => {
 		dispatch(setCourses(courses))
 	}
 }
-

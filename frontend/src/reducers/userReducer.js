@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { isTokenExpired, getToken } from '../services/login'
+import { isTokenExpired, getToken } from '../services/authen/login'
 // import profile from '../services/profile'
 
 const userSlice = createSlice({
@@ -57,4 +57,3 @@ export const rmUserFn = () => {
 // }
 
 export default userSlice.reducer
-

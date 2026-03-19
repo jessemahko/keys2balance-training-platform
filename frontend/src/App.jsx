@@ -16,7 +16,7 @@ import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
 import { setUserFn, rmUserFn } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
-import { setToken, isTokenExpired } from './services/login'
+import { setToken, isTokenExpired } from './services/authen/login'
 import { useTranslation } from 'react-i18next'
 
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -58,7 +58,7 @@ const App = () => {
 		<div>
 			{/* Log out button for testing */}
 			<div onClick={handleLogout} className='relative hover:text-orange-500'>
-				<LogoutIcon />
+				{user && <LogoutIcon />}
 			</div>
 
 			{/* Display notifications */}
