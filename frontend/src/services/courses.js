@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // const baseUrl = '/api/courses'
 const baseUrl = 'http://localhost:3001/api/courses'
-import { getToken } from './login'
+import { getToken } from './authen/login'
 
 const getAllCourses = async () => {
 	const config = {
@@ -17,4 +17,3 @@ const getAllCourses = async () => {
 }
 
 export { getAllCourses }
-
