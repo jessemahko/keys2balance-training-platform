@@ -30,22 +30,22 @@ const App = () => {
 	const location = useLocation()
 	const { t, i18n } = useTranslation()
 
+	const [isLoading, setIsLoading] = useState(true)
+
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedUser')
-		if (!loggedUserJSON) {
-			navigate('/authentication')
-			return
+		if (loggedUserJSON) {
+			const user = JSON.parse(loggedUserJSON)
+			if (isTokenExpired(user.token)) {
+				dispatch(rmUserFn())
+				window.localStorage.removeItem('loggedUser')
+			} else {
+				dispatch(setUserFn(user))
+				setToken(user.token)
+			}
 		}
-
-		const user = JSON.parse(loggedUserJSON)
-		if (isTokenExpired(user.token)) {
-			dispatch(rmUserFn())
-			window.localStorage.removeItem('loggedUser')
-		} else {
-			dispatch(setUserFn(user))
-			setToken(user.token)
-		}
-	}, [])
+		setIsLoading(false)
+	}, [dispatch])
 
 	const handleLogout = () => {
 		// Logout logic
@@ -53,6 +53,8 @@ const App = () => {
 		dispatch(rmUserFn()) // Dispatch action to remove user from Redux
 		navigate('/')
 	}
+
+	if (isLoading) return <div>Loading...</div>
 
 	return (
 		<div>
