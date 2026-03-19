@@ -49,7 +49,7 @@ const App = () => {
 
 	const handleLogout = () => {
 		// Logout logic
-		window.localStorage.removeItem('loggedPrjMnUser') // Remove user from localStorage
+		window.localStorage.removeItem('loggedUser') // Remove user from localStorage
 		dispatch(rmUserFn()) // Dispatch action to remove user from Redux
 		navigate('/')
 	}
