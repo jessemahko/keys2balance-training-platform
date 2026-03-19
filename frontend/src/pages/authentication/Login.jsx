@@ -5,14 +5,14 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { setUserFn } from '../../reducers/userReducer'
 import { setError, setNotification } from '../../reducers/notiReducer'
-import loginService, { setToken } from '../../services/login'
+import loginService, { setToken } from '../../services/authen/login'
 
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
 import { useField } from '../../hooks/hook'
 
-import './authen.css'
+// import './authen.css'
 
 const Login = () => {
 	const dispatch = useDispatch()
@@ -25,10 +25,19 @@ const Login = () => {
 	const handleLogin = async (e) => {
 		e.preventDefault()
 		try {
-			const user = await loginService.login({
-				username: username.value,
-				password: password.value,
-			})
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+			let user
+			if (emailRegex.test(username.value)) {
+				user = await loginService.login({
+					email: username.value,
+					password: password.value,
+				})
+			} else {
+				user = await loginService.login({
+					username: username.value,
+					password: password.value,
+				})
+			}
 			window.localStorage.setItem('loggedUser', JSON.stringify(user))
 			setToken(user.token)
 			dispatch(setUserFn(user))
@@ -44,9 +53,9 @@ const Login = () => {
 	return (
 		<div className='form-box login'>
 			<form onSubmit={handleLogin}>
-				<h1 className='font-bold'>{t('Login')}</h1>
+				<h1 className='font-bold'>{t('Sign In')}</h1>
 				<div className='input-box'>
-					<input {...username} placeholder={t('Username')} />
+					<input {...username} placeholder={t('Username or Email')} />
 					<i className='bx bxs-user'></i>
 				</div>
 				<div className='input-box'>
@@ -72,12 +81,12 @@ const Login = () => {
 					</i>
 				</div>
 				<div className='forgot-link '>
-					<a href='#' className='hover:text-blue-500!'>
+					<a href='#' className='hover:underline! text-blue-500!'>
 						{t('Forgot Password?')}
 					</a>
 				</div>
 				<button className='btn  hover:opacity-80!' type='submit'>
-					{t('Login')}
+					{t('Sign In')}
 				</button>
 			</form>
 		</div>
