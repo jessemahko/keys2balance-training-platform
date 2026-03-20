@@ -62,12 +62,42 @@ const updateUserPassword = async (id, newPasswordHash) => {
 		id,
 	])
 }
+
+const createUserWithGoogle = async ({
+	username,
+	email,
+	password_hash,
+	role,
+	is_verified,
+	first_name,
+	last_name,
+	gender,
+}) => {
+	const res = await pool.query(
+		`INSERT INTO users (username, email, password_hash, role, is_verified, first_name, last_name, gender)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+		[
+			username,
+			email,
+			password_hash,
+			role,
+			is_verified,
+			first_name,
+			last_name,
+			gender,
+		],
+	)
+	return res.rows[0]
+}
+
 module.exports = {
 	findById,
 	findByEmail,
 	findByUsername,
 	findByUsernameOrEmail,
 	createUser,
+	createUserWithGoogle,
 	findAll,
 	verifyEmail,
 	deleteById,
