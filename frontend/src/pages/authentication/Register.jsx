@@ -87,6 +87,7 @@ const Register = ({ setActive }) => {
 		}
 	}
 
+	const base_url = 'http://localhost:3001'
 	return (
 		<div className='register form-box'>
 			<form onSubmit={handleRegister}>
@@ -136,6 +137,33 @@ const Register = ({ setActive }) => {
 				<button type='submit' className='btn hover:opacity-80!'>
 					{t('Sign Up')}
 				</button>
+				<p className='font-normal'>{t('or register with social platforms')}</p>
+				<div className='social-icons'>
+					<a
+						href={`${base_url}/auth/google`}
+						className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-500 ease-out'
+					>
+						<i className='bx bxl-google'></i>
+					</a>
+					<a
+						href='#'
+						className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-500 ease-out'
+					>
+						<i className='bx bxl-facebook'></i>
+					</a>
+					<a
+						href='#'
+						className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-500 ease-out'
+					>
+						<i className='bx bxl-github'></i>
+					</a>
+					<a
+						href='#'
+						className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-500 ease-out'
+					>
+						<i className='bx bxl-linkedin'></i>
+					</a>
+				</div>
 			</form>
 		</div>
 	)
