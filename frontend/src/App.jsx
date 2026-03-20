@@ -1,15 +1,12 @@
-import { useState, useEffect, cloneElement } from 'react'
+import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
-	BrowserRouter as Router,
 	Routes,
 	Route,
-	Link,
 	Outlet,
 	Navigate,
 	useNavigate,
-	useLocation,
 } from 'react-router-dom'
 import Authentication from './pages/authentication/Authentication'
 import Notification from './components/Notification'
@@ -17,7 +14,6 @@ import Dashboard from './pages/dashboard/Dashboard'
 import { setUserFn, rmUserFn } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
 import { setToken, isTokenExpired } from './services/authen/login'
-import { useTranslation } from 'react-i18next'
 
 import LogoutIcon from '@mui/icons-material/Logout'
 
@@ -27,8 +23,6 @@ const App = () => {
 	const user = useSelector((state) => state.user)
 	const notification = useSelector((state) => state.noti)
 	const navigate = useNavigate()
-	const location = useLocation()
-	const { t, i18n } = useTranslation()
 
 	const [isLoading, setIsLoading] = useState(true)
 
@@ -57,13 +51,18 @@ const App = () => {
 	if (isLoading) return <div>Loading...</div>
 
 	return (
-		<div>
-			{/* Log out button for testing */}
-			<div onClick={handleLogout} className='relative hover:text-orange-500'>
-				{user && <LogoutIcon />}
-			</div>
+		<div className='min-h-screen bg-slate-100 text-slate-950'>
+			{user ? (
+				<button
+					type='button'
+					onClick={handleLogout}
+					className='fixed right-5 top-5 z-20 rounded-full bg-white p-3 text-slate-700 shadow-sm transition hover:text-orange-500'
+					aria-label='Log out'
+				>
+					<LogoutIcon />
+				</button>
+			) : null}
 
-			{/* Display notifications */}
 			<Notification
 				message={notification.error}
 				className='error'
@@ -85,10 +84,9 @@ const App = () => {
 					}
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
-					<Route path='/dashboard' element={<Dashboard />} />
+					<Route path='/dashboard/*' element={<Dashboard />} />
 				</Route>
 
-				{/* Catch-all Route */}
 				<Route path='*' element={<Navigate replace to='/' />} />
 			</Routes>
 		</div>

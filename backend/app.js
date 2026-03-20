@@ -55,7 +55,7 @@ app.use(
 app.use(
 	'/api/courses',
 	middleware.userExtractor,
-	middleware.authorizeRoles('admin', 'trainer'),
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
 	coursesRouter,
 )
 

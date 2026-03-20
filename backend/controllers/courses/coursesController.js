@@ -6,6 +6,11 @@ const getCourses = async (req, res) => {
 		return res.json(courses)
 	}
 
+	if (req.user.role === 'participant') {
+		const courses = await Courses.findAllByParticipantId(req.user.id)
+		return res.json(courses)
+	}
+
 	const teacherId = req.user.id
 	const courses = await Courses.findAllByTeacherId(teacherId)
 	res.json(courses)
@@ -21,6 +26,16 @@ const getCourse = async (req, res) => {
 
 	if (!course) {
 		return res.status(404).json({ error: 'course not found' })
+	}
+
+	if (req.user.role === 'participant') {
+		const enrollment = await Courses.findEnrollment(req.user.id, course.course_id)
+		if (!enrollment) {
+			return res
+				.status(403)
+				.json({ error: 'Only enrolled participants can view this course' })
+		}
+		return res.json(course)
 	}
 
 	if (

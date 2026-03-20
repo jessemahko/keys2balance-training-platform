@@ -17,7 +17,7 @@ const coursesSlice = createSlice({
 
 export const { setCourses } = coursesSlice.actions
 
-export const setCoursesFn = (courses) => {
+export const setCoursesFn = () => {
 	return async (dispatch) => {
 		if (isTokenExpired(getToken())) {
 			dispatch(rmUserFn())
@@ -25,10 +25,8 @@ export const setCoursesFn = (courses) => {
 		}
 
 		const courses = await getAllCourses()
-		console.log(courses, typeof courses)
-
-		// console.log('1', typeof courses)
-
 		dispatch(setCourses(courses))
 	}
 }
+
+export default coursesSlice.reducer
