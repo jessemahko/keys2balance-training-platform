@@ -2,6 +2,8 @@
 const config = require('./utils/config')
 const express = require('express')
 const cors = require('cors') // Cross-Origin Resource Sharing middleware
+const passport = require('./utils/passport')
+
 const path = require('path') // Path module for handling file paths
 
 require('express-async-errors') // Handle async errors automatically
@@ -18,6 +20,7 @@ const discussionRouter = require('./controllers/discussion/discussionRoute') // 
 const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
 const emailRouter = require('./controllers/email-verify/emailVerifyController') // Email verification routes
 const lessonRouter = require('./controllers/lessons/lessonRoute') // Lesson routes
+const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
@@ -38,10 +41,14 @@ app.use(cors()) // Enable CORS for all routes
 app.use(express.json()) // Parse incoming JSON requests
 app.use(middleware.tokenExtractor) // Extract token from requests
 
+app.use(passport.initialize()) // Initialize Passport for authentication
+
 // Route handlers
 
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
+
+app.use('/auth', googleAuthRouter) // Routes for Google authentication
 
 // Access code routes
 app.use(
