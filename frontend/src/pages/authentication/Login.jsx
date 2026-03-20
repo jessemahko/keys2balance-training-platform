@@ -99,7 +99,7 @@ const Login = () => {
 						<i className='bx bxl-google'></i>
 					</a>
 					<a
-						href='#'
+						href={`${base_url}/auth/facebook`}
 						className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-100 ease-out'
 					>
 						<i className='bx bxl-facebook'></i>

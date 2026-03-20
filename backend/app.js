@@ -13,6 +13,9 @@ const app = express()
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 
+const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
+const facebookAuthRouter = require('./controllers/auth/facebookAuth') // Facebook authentication routes
+
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
 const notificationsRouter = require('./controllers/notifications/notificationsRouter')
@@ -20,7 +23,6 @@ const discussionRouter = require('./controllers/discussion/discussionRoute') // 
 const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
 const emailRouter = require('./controllers/email-verify/emailVerifyController') // Email verification routes
 const lessonRouter = require('./controllers/lessons/lessonRoute') // Lesson routes
-const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
@@ -49,6 +51,7 @@ app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
 
 app.use('/auth', googleAuthRouter) // Routes for Google authentication
+app.use('/auth', facebookAuthRouter) // Routes for Facebook authentication
 
 // Access code routes
 app.use(
