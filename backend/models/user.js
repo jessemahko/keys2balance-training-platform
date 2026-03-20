@@ -63,7 +63,7 @@ const updateUserPassword = async (id, newPasswordHash) => {
 	])
 }
 
-const createUserWithGoogle = async ({
+const createUserWithOAuth = async ({
 	username,
 	email,
 	password_hash,
@@ -99,7 +99,7 @@ module.exports = {
 	findByUsername,
 	findByUsernameOrEmail,
 	createUser,
-	createUserWithGoogle,
+	createUserWithOAuth,
 	findAll,
 	verifyEmail,
 	deleteById,
