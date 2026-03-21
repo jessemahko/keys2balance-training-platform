@@ -9,12 +9,21 @@ const getAllNotifications = async (req, res) => {
 	res.json(notifications)
 }
 
-const updateNotification = async (req, res) => {
+const markAsRead = async (req, res) => {
 	const user = req.user
 	if (!user) return res.status(401).json({ error: 'invalid token' })
 
-	const notifications = await Notification.markAsRead(user.id)
-	res.json(notifications)
+	const notification = await Notification.getById(req.params.id)
+	if (!notification) {
+		return res.status(404).json({ error: 'notification not found' })
+	}
+
+	if (notification.user_id !== user.id) {
+		return res.status(403).json({ error: 'not authorized' })
+	}
+
+	const updated = await Notification.markAsReadById(req.params.id)
+	res.json(updated)
 }
 
 const deleteNotification = async (req, res) => {
@@ -36,6 +45,6 @@ const deleteNotification = async (req, res) => {
 
 module.exports = {
 	getAllNotifications,
-	updateNotification,
+	markAsRead,
 	deleteNotification,
 }
