@@ -20,10 +20,7 @@ import { setToken, isTokenExpired } from './services/login'
 import { useTranslation } from 'react-i18next'
 
 import LogoutIcon from '@mui/icons-material/Logout'
-
-import AdminProfile from './pages/profile/AdminProfile'
-import TrainerProfile from './pages/profile/TrainerProfile'
-import ParticipantProfile from './pages/profile/ParticipantProfile'
+import ProfilePage from './pages/profile/ProfilePage'
 
 const App = () => {
 	// using Hooks
@@ -48,6 +45,7 @@ const App = () => {
 		} else {
 			dispatch(setUserFn(user))
 			setToken(user.token)
+			
 		}
 	}, [])
 
@@ -88,9 +86,7 @@ const App = () => {
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard' element={<Dashboard />} />
-					<Route path='/admin-profile' element={<AdminProfile />} />
-					<Route path='/trainer-profile' element={<TrainerProfile />} />
-					<Route path='/participant-profile' element={<ParticipantProfile />} />	
+					<Route path='/test-profile' element={<ProfilePage />} />
 				</Route>
 
 				{/* Catch-all Route */}
