@@ -51,8 +51,8 @@ const getCourse = async (req, res) => {
 }
 
 const createCourse = async (req, res) => {
-	if (req.user.role !== 'admin') {
-		return res.status(403).json({ error: 'Only admins can create courses' })
+	if (req.user.role !== 'admin' && req.user.role !== 'trainer') {
+		return res.status(403).json({ error: 'Only admins and trainers can create courses' })
 	}
 
 	const { title, description, thumbnailUrl, teacherId } = req.body
