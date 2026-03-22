@@ -18,6 +18,7 @@ import { setCoursesFn } from '../../reducers/courseReducer'
 import { setError } from '../../reducers/notiReducer'
 import { getCourseById } from '../../services/courses'
 import CourseForm from '../courses/CourseForm'
+import ParticipantModal from '../courses/ParticipantModal'
 
 const navigationItems = [
 	{
@@ -243,6 +244,10 @@ const CourseDetail = ({ courses, onError }) => {
 	)
 	const [course, setCourse] = useState(cachedCourse)
 	const [isLoading, setIsLoading] = useState(!cachedCourse)
+	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false)
+	const user = useSelector((state) => state.user)
+	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
+	const userRole = decodedToken?.role || user?.role || ''
 	const [loadError, setLoadError] = useState('')
 	const [moduleSearchTerm, setModuleSearchTerm] = useState('')
 	const deferredModuleSearchTerm = useDeferredValue(moduleSearchTerm)
@@ -310,6 +315,15 @@ const CourseDetail = ({ courses, onError }) => {
 
 	const participants = Array.isArray(course.participants) ? course.participants : []
 
+	const handleParticipantsChanged = async () => {
+		try {
+			const nextCourse = await getCourseById(courseId)
+			setCourse(nextCourse)
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
 	return (
 		<div className='dashboard-content-stack'>
 			<div className='dashboard-page-header'>
@@ -354,8 +368,26 @@ const CourseDetail = ({ courses, onError }) => {
 						>
 							Edit Course
 						</Link>
+						{(userRole === 'admin' || userRole === 'trainer') && (
+							<button
+								onClick={() => setIsParticipantModalOpen(true)}
+								className='dashboard-primary-action'
+								style={{ backgroundColor: '#0f172a', color: '#fff', border: '1px solid #cbd5e1' }}
+							>
+								Manage Participants
+							</button>
+						)}
 					</div>
 				</article>
+
+				{isParticipantModalOpen && (
+					<ParticipantModal
+						isOpen={isParticipantModalOpen}
+						onClose={() => setIsParticipantModalOpen(false)}
+						course={course}
+						onParticipantsChanged={handleParticipantsChanged}
+					/>
+				)}
 
 				<article className='dashboard-panel'>
 					<h3>Instructor</h3>

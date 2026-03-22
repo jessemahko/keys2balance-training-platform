@@ -28,4 +28,14 @@ const updateCourse = async (courseId, updates) => {
 	return response.data
 }
 
-export { getAllCourses, getCourseById, createCourse, updateCourse }
+const enrollParticipant = async (courseId, userId) => {
+	const response = await axios.post(`${baseUrl}/${courseId}/enroll`, { userId }, getConfig())
+	return response.data
+}
+
+const removeParticipant = async (courseId, userId) => {
+	const response = await axios.delete(`${baseUrl}/${courseId}/enroll/${userId}`, getConfig())
+	return response.data
+}
+
+export { getAllCourses, getCourseById, createCourse, updateCourse, enrollParticipant, removeParticipant }
