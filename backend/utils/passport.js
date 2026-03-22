@@ -1,6 +1,5 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-const FacebookStrategy = require('passport-facebook').Strategy
 
 const axios = require('axios')
 const fs = require('fs')
@@ -71,82 +70,4 @@ passport.use(
 	),
 )
 
-passport.use(
-	new FacebookStrategy(
-		{
-			clientID: process.env.FACEBOOK_APP_ID,
-			clientSecret: process.env.FACEBOOK_APP_SECRET,
-			callbackURL: '/auth/facebook/callback',
-			profileFields: ['id', 'emails', 'name', 'gender', 'picture.type(large)'], // request necessary fields
-		},
-		async (accessToken, refreshToken, profile, done) => {
-			try {
-				const email = profile.emails?.[0]?.value
-				if (!email) return done(new Error('Facebook email not provided'), null)
-
-				const existingUser = await User.findByEmail(email)
-				if (existingUser) {
-					return done(null, existingUser)
-				}
-
-				// Download avatar
-				let avatarPath = ''
-				// const avatarUrl = profile.photos?.[0]?.value
-				// if (avatarUrl) {
-				// 	try {
-				// 		const response = await axios.get(avatarUrl, {
-				// 			responseType: 'arraybuffer',
-				// 		})
-				// 		const ext = avatarUrl.split('.').pop().split('?')[0]
-				// 		const fileName = `${Date.now()}-${profile.id}.${ext}`
-				// 		const uploadDir = path.join(__dirname, '../../uploads/avatars')
-				// 		if (!fs.existsSync(uploadDir))
-				// 			fs.mkdirSync(uploadDir, { recursive: true })
-				// 		avatarPath = path.join(uploadDir, fileName)
-				// 		fs.writeFileSync(avatarPath, response.data)
-				// 	} catch (err) {
-				// 		console.error('Failed to download avatar:', err)
-				// 	}
-				// }
-
-				// Generate unique username
-				let baseUsername =
-					`${profile.name.givenName || ''}${profile.name.familyName || ''}`
-						.replace(/\s+/g, '')
-						.toLowerCase()
-				let username = baseUsername
-				let suffix = 1
-				while (await User.findByUsername(username)) {
-					username = `${baseUsername}${suffix}`
-					suffix++
-				}
-
-				// Random password for OAuth
-				const randomPassword = crypto.randomBytes(32).toString('hex')
-
-				const user = {
-					username,
-					email,
-					password_hash: randomPassword, // not used for login
-					is_verified: true,
-					role: 'participant',
-					first_name: profile.name.givenName || '',
-					last_name: profile.name.familyName || '',
-					gender: profile.gender || '',
-					avatar_url: avatarPath
-						? `/uploads/avatars/${path.basename(avatarPath)}`
-						: '',
-				}
-
-				const newUser = await User.createUserWithOAuth(user) // reuse your DB method
-
-				done(null, newUser)
-			} catch (error) {
-				return done(error, null)
-			}
-		},
-	),
-)
-
 module.exports = passport
-

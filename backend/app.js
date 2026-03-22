@@ -14,7 +14,6 @@ const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
 
 const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
-const facebookAuthRouter = require('./controllers/auth/facebookAuth') // Facebook authentication routes
 
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
@@ -51,7 +50,6 @@ app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
 
 app.use('/auth', googleAuthRouter) // Routes for Google authentication
-app.use('/auth', facebookAuthRouter) // Routes for Facebook authentication
 
 // Access code routes
 app.use(
