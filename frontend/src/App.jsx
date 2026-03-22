@@ -9,8 +9,10 @@ import {
 	useNavigate,
 } from 'react-router-dom'
 import Authentication from './pages/authentication/Authentication'
+import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
+
 import { setUserFn, rmUserFn } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
 import { setToken, isTokenExpired } from './services/authen/login'
@@ -45,7 +47,7 @@ const App = () => {
 		// Logout logic
 		window.localStorage.removeItem('loggedUser') // Remove user from localStorage
 		dispatch(rmUserFn()) // Dispatch action to remove user from Redux
-		navigate('/')
+		navigate('/authentication')
 	}
 
 	if (isLoading) return <div>Loading...</div>
@@ -76,6 +78,11 @@ const App = () => {
 			<Routes>
 				{/* Public Route */}
 				<Route path='/authentication' element={<Authentication />} />
+				<Route path='/auth-success' element={<AuthSuccess />} />
+				<Route
+					path='/auth-failed'
+					element={<Navigate replace to='/authentication' />}
+				/>
 
 				{/* Protected Routes */}
 				<Route
