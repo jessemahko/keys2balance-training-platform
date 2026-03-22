@@ -248,6 +248,7 @@ const CourseDetail = ({ courses, onError }) => {
 	const user = useSelector((state) => state.user)
 	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
 	const userRole = decodedToken?.role || user?.role || ''
+	const currentUserId = decodedToken?.id || user?.id || ''
 	const [loadError, setLoadError] = useState('')
 	const [moduleSearchTerm, setModuleSearchTerm] = useState('')
 	const deferredModuleSearchTerm = useDeferredValue(moduleSearchTerm)
@@ -315,6 +316,9 @@ const CourseDetail = ({ courses, onError }) => {
 
 	const participants = Array.isArray(course.participants) ? course.participants : []
 
+	const isCourseOwner = String(course.teacher_id) === String(currentUserId)
+	const canManageCourse = userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
+
 	const handleParticipantsChanged = async () => {
 		try {
 			const nextCourse = await getCourseById(courseId)
@@ -361,21 +365,23 @@ const CourseDetail = ({ courses, onError }) => {
 						>
 							Go to lessons page
 						</Link>
-						<Link
-							to={`/dashboard/courses/${course.course_id}/edit`}
-							className='dashboard-primary-action'
-							style={{ backgroundColor: '#fff', color: '#0f172a', border: '1px solid #cbd5e1' }}
-						>
-							Edit Course
-						</Link>
-						{(userRole === 'admin' || userRole === 'trainer') && (
-							<button
-								onClick={() => setIsParticipantModalOpen(true)}
-								className='dashboard-primary-action'
-								style={{ backgroundColor: '#0f172a', color: '#fff', border: '1px solid #cbd5e1' }}
-							>
-								Manage Participants
-							</button>
+						{canManageCourse && (
+							<>
+								<Link
+									to={`/dashboard/courses/${course.course_id}/edit`}
+									className='dashboard-primary-action'
+									style={{ backgroundColor: '#fff', color: '#0f172a', border: '1px solid #cbd5e1' }}
+								>
+									Edit Course
+								</Link>
+								<button
+									onClick={() => setIsParticipantModalOpen(true)}
+									className='dashboard-primary-action'
+									style={{ backgroundColor: '#0f172a', color: '#fff', border: '1px solid #cbd5e1' }}
+								>
+									Manage Participants
+								</button>
+							</>
 						)}
 					</div>
 				</article>

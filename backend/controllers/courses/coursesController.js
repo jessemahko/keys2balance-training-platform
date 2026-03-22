@@ -111,10 +111,24 @@ const updateCourse = async (req, res) => {
 }
 
 const deleteCourse = async (req, res) => {
-	if (req.user.role !== 'admin') {
-		return res.status(403).json({ error: 'Only admins can delete courses' })
+	const courseId = req.params.id
+	if (!courseId) {
+		return res.status(400).json({ error: 'course id is required' })
 	}
-	const deletedCourse = await Courses.deleteCourse(req.params.id)
+
+	const existingCourse = await Courses.findById(courseId)
+	if (!existingCourse) {
+		return res.status(404).json({ error: 'course not found' })
+	}
+
+	if (
+		req.user.role !== 'admin' &&
+		String(existingCourse.teacher_id) !== String(req.user.id)
+	) {
+		return res.status(403).json({ error: 'Only admins or the course creator can delete courses' })
+	}
+
+	const deletedCourse = await Courses.deleteCourse(courseId)
 	if (!deletedCourse) return res.status(404).json({ error: 'course not found' })
 
 	res.status(204).end()
