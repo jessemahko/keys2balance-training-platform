@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { createCourseFn, updateCourseFn } from '../../reducers/courseReducer'
 import { getCourseById } from '../../services/courses'
+import { getAllUsers } from '../../services/users'
 
 const CourseForm = () => {
 	const { courseId } = useParams()
@@ -23,6 +24,19 @@ const CourseForm = () => {
 	})
 	const [loading, setLoading] = useState(isEditMode)
 	const [error, setError] = useState(null)
+	const [trainers, setTrainers] = useState([])
+	const userRole = decodedToken?.role || user?.role || ''
+
+	useEffect(() => {
+		if (userRole === 'admin') {
+			getAllUsers()
+				.then((users) => {
+					const fetchedTrainers = users.filter(u => u.role === 'trainer')
+					setTrainers([{ user_id: currentUserId, username: 'Me (Admin)' }, ...fetchedTrainers])
+				})
+				.catch((e) => console.error('Failed to fetch trainers for dropdown', e))
+		}
+	}, [userRole, currentUserId])
 
 	useEffect(() => {
 		if (isEditMode) {
@@ -108,6 +122,26 @@ const CourseForm = () => {
 							placeholder='Describe what students will learn...'
 						></textarea>
 					</div>
+
+					{userRole === 'admin' && (
+						<div>
+							<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
+								Assign Instructor
+							</label>
+							<select
+								name='teacherId'
+								value={formData.teacherId}
+								onChange={handleChange}
+								className='w-full border border-[#cdd0d8] rounded-lg px-4 py-3 focus:outline-none focus:border-[#514587] transition bg-white'
+							>
+								{trainers.map(t => (
+									<option key={t.user_id} value={t.user_id}>
+										{t.first_name || t.username} {t.last_name || ''}
+									</option>
+								))}
+							</select>
+						</div>
+					)}
 
 					<div>
 						<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
