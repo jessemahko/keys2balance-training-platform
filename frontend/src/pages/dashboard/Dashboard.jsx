@@ -17,6 +17,7 @@ import './dashboard.css'
 import { setCoursesFn } from '../../reducers/courseReducer'
 import { setError } from '../../reducers/notiReducer'
 import { getCourseById } from '../../services/courses'
+import CourseForm from '../courses/CourseForm'
 
 const navigationItems = [
 	{
@@ -151,9 +152,14 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 	return (
 		<div className='dashboard-content-stack'>
 			<section className='dashboard-intro'>
-				<div>
-					<h1>Welcome back!</h1>
-					<p>Search your assigned courses below.</p>
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '1rem', flexWrap: 'wrap' }}>
+					<div>
+						<h1>Welcome back!</h1>
+						<p>Search your assigned courses below.</p>
+					</div>
+					<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
+						Create New Course
+					</Link>
 				</div>
 			</section>
 
@@ -334,12 +340,21 @@ const CourseDetail = ({ courses, onError }) => {
 							<strong>{participants.length}</strong>
 						</div>
 					</div>
-					<Link
-						to={`/dashboard/courses/${course.course_id}/lessons`}
-						className='dashboard-primary-action'
-					>
-						Go to lessons page
-					</Link>
+					<div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: 'column' }}>
+						<Link
+							to={`/dashboard/courses/${course.course_id}/lessons`}
+							className='dashboard-primary-action'
+						>
+							Go to lessons page
+						</Link>
+						<Link
+							to={`/dashboard/courses/${course.course_id}/edit`}
+							className='dashboard-primary-action'
+							style={{ backgroundColor: '#fff', color: '#0f172a', border: '1px solid #cbd5e1' }}
+						>
+							Edit Course
+						</Link>
+					</div>
 				</article>
 
 				<article className='dashboard-panel'>
@@ -513,6 +528,8 @@ const Dashboard = () => {
 							<DashboardHome courses={courses} isLoading={isLoading} user={user} />
 						}
 					/>
+					<Route path='courses/new' element={<CourseForm />} />
+					<Route path='courses/:courseId/edit' element={<CourseForm />} />
 					<Route
 						path='courses/:courseId'
 						element={<CourseDetail courses={courses} onError={reportLoadError} />}

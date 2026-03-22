@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
 import { rmUserFn } from './userReducer'
-import { getAllCourses } from '../services/courses'
+import { getAllCourses, createCourse, updateCourse } from '../services/courses'
 
 const initialState = []
 
@@ -12,10 +12,18 @@ const coursesSlice = createSlice({
 		setCourses(state, action) {
 			return action.payload
 		},
+		appendCourse(state, action) {
+			state.push(action.payload)
+		},
+		updateCourseAction(state, action) {
+			return state.map((c) =>
+				c.course_id === action.payload.course_id ? action.payload : c,
+			)
+		},
 	},
 })
 
-export const { setCourses } = coursesSlice.actions
+export const { setCourses, appendCourse, updateCourseAction } = coursesSlice.actions
 
 export const setCoursesFn = () => {
 	return async (dispatch) => {
@@ -26,6 +34,20 @@ export const setCoursesFn = () => {
 
 		const courses = await getAllCourses()
 		dispatch(setCourses(courses))
+	}
+}
+
+export const createCourseFn = (courseData) => {
+	return async (dispatch) => {
+		const newCourse = await createCourse(courseData)
+		dispatch(appendCourse(newCourse))
+	}
+}
+
+export const updateCourseFn = (id, updates) => {
+	return async (dispatch) => {
+		const updated = await updateCourse(id, updates)
+		dispatch(updateCourseAction(updated))
 	}
 }
 
