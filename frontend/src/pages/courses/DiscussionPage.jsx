@@ -76,13 +76,47 @@ const DiscussionPage = () => {
 		e.preventDefault()
 		if (!newMessage.trim() || !activeThread || isSending) return
 
+		const messageContent = newMessage.trim()
+		setNewMessage('')
 		setIsSending(true)
+
+		// Optimistic update: Add the message to the UI immediately
+		const currentUserId = user?.user_id || user?.id
+		const tempId = Date.now()
+		const optimisticMessage = {
+			message_id: tempId,
+			user_id: currentUserId,
+			message_text: messageContent,
+			created_at: new Date().toISOString(),
+			user: {
+				user_id: currentUserId,
+				first_name: user?.first_name || 'Me',
+				last_name: user?.last_name || '',
+				avatar_url: user?.avatar_url
+			}
+		}
+
+		// Pre-update the active thread locally
+		const updatedActiveThread = {
+			...activeThread,
+			messages: [...(activeThread.messages || []), optimisticMessage]
+		}
+		setActiveThread(updatedActiveThread)
+
 		try {
-			await createMessage(activeThread.thread_id, newMessage)
+			await createMessage(activeThread.thread_id, messageContent)
+			// Re-fetch to sync with server (get real ID and timestamp)
 			await fetchThreads()
-			setNewMessage('')
 		} catch (error) {
 			console.error('Error sending message:', error)
+			// Rollback on error: remove the optimistic message
+			const rolledBackThread = {
+				...activeThread,
+				messages: activeThread.messages.filter(m => m.message_id !== tempId)
+			}
+			setActiveThread(rolledBackThread)
+			setNewMessage(messageContent) // Restore the text for retry
+			alert('Failed to send message. Please try again.')
 		} finally {
 			setIsSending(false)
 		}
