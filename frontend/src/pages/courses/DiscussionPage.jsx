@@ -82,9 +82,14 @@ const DiscussionPage = () => {
 		e.preventDefault()
 		if (!newMessage.trim() || !activeThread || isSending) return
 
+		console.log('Active Thread:', activeThread)
+		console.log('Current User in State:', user)
+
 		setIsSending(true)
 		try {
 			const sentMessage = await createMessage(activeThread.thread_id, newMessage)
+			
+			console.log('Sent Message Response:', sentMessage)
 			
 			// Refresh to get full user details for the new message
 			await fetchThreads()
@@ -157,7 +162,13 @@ const DiscussionPage = () => {
 										const isOwn = String(msg.user_id) === String(currentUserId)
 										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
 										
-										return (
+										if (msg.message_text.includes('test')) {
+											console.log('Comparing Message:', {
+												msg_user_id: msg.user_id,
+												current_user_id: currentUserId,
+												is_own: isOwn
+											})
+										}
 											<div 
 												key={msg.message_id} 
 												className={`discussion-message-row ${isOwn ? 'own' : ''}`}

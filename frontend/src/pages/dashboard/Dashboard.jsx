@@ -528,8 +528,12 @@ const LessonsPlaceholder = () => {
 const Dashboard = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
+	const currentUserId = user?.user_id || user?.id
 	const courses = useSelector((state) => state.course)
 	const [isLoading, setIsLoading] = useState(true)
+
+	console.log('User in Redux:', user)
+	console.log('Detected User ID:', currentUserId)
 
 	useEffect(() => {
 		let isActive = true
