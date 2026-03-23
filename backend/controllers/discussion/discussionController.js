@@ -7,7 +7,7 @@ const getThreads = async (req, res) => {
 		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
-	const { courseId } = req.body
+	const courseId = req.query.courseId || req.body.courseId
 	if (!courseId) {
 		return res.status(400).json({ error: 'courseId is required' })
 	}
