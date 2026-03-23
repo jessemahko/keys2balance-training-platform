@@ -1,3 +1,6 @@
+import { useState, useEffect, useRef } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { getThreads, createThread, createMessage } from '../../services/discussion'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
