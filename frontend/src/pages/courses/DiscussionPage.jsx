@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { getThreads, createMessage } from '../../services/discussion'
+import { getThreads, createThread, createMessage } from '../../services/discussion'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
 import './discussion.css'
 
 const DiscussionPage = () => {
@@ -11,6 +9,8 @@ const DiscussionPage = () => {
 	const user = useSelector((state) => state.user)
 	const [threads, setThreads] = useState([])
 	const [activeThread, setActiveThread] = useState(null)
+	const [newThreadTitle, setNewThreadTitle] = useState('')
+	const [isCreatingThread, setIsCreatingThread] = useState(false)
 	const [newMessage, setNewMessage] = useState('')
 	const [isLoading, setIsLoading] = useState(true)
 	const [isSending, setIsSending] = useState(false)
@@ -20,26 +20,53 @@ const DiscussionPage = () => {
 		chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
-	useEffect(() => {
-		const fetchThreads = async () => {
-			try {
-				const data = await getThreads(courseId)
-				setThreads(data)
-				if (data.length > 0) {
-					setActiveThread(data[0])
-				}
-			} catch (error) {
-				console.error('Error fetching threads:', error)
-			} finally {
-				setIsLoading(false)
+	const fetchThreads = async () => {
+		try {
+			const data = await getThreads(courseId)
+			// Sort threads by creation date (oldest first) or newest first?
+			// The user said "chronologically ordered" - usually newest last or first.
+			// Let's go with the data as is (backend might sort newest first), 
+			// but we'll sort explicitly if needed.
+			const sorted = [...data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+			setThreads(sorted)
+			if (sorted.length > 0 && !activeThread) {
+				setActiveThread(sorted[0])
+			} else if (activeThread) {
+				const updatedActive = sorted.find(t => t.thread_id === activeThread.thread_id)
+				if (updatedActive) setActiveThread(updatedActive)
 			}
+		} catch (error) {
+			console.error('Error fetching threads:', error)
+		} finally {
+			setIsLoading(false)
 		}
+	}
+
+	useEffect(() => {
 		fetchThreads()
 	}, [courseId])
 
 	useEffect(() => {
 		scrollToBottom()
 	}, [activeThread?.messages])
+
+	const handleCreateThread = async (e) => {
+		e.preventDefault()
+		if (!newThreadTitle.trim() || isCreatingThread) return
+
+		setIsCreatingThread(true)
+		try {
+			const created = await createThread(courseId, newThreadTitle)
+			setNewThreadTitle('')
+			await fetchThreads()
+			// Set the newly created thread as active
+			setActiveThread(created)
+		} catch (error) {
+			console.error('Error creating thread:', error)
+		} finally {
+			setIsCreatingThread(false)
+		}
+	}
 
 	const handleSendMessage = async (e) => {
 		e.preventDefault()
@@ -49,29 +76,8 @@ const DiscussionPage = () => {
 		try {
 			const sentMessage = await createMessage(activeThread.thread_id, newMessage)
 			
-			// Update local state to show message immediately
-			const messageWithUser = {
-				...sentMessage,
-				user: {
-					user_id: user.id,
-					first_name: user.first_name || user.name?.split(' ')[0] || 'Me',
-					last_name: user.last_name || '',
-					avatar_url: user.avatar_url
-				}
-			}
-
-			const updatedThreads = threads.map(t => {
-				if (t.thread_id === activeThread.thread_id) {
-					return {
-						...t,
-						messages: [...(t.messages || []), messageWithUser]
-					}
-				}
-				return t
-			})
-
-			setThreads(updatedThreads)
-			setActiveThread(updatedThreads.find(t => t.thread_id === activeThread.thread_id))
+			// Refresh to get full user details for the new message
+			await fetchThreads()
 			setNewMessage('')
 		} catch (error) {
 			console.error('Error sending message:', error)
@@ -84,93 +90,123 @@ const DiscussionPage = () => {
 		return <div className='discussion-loading'>Loading discussion...</div>
 	}
 
-	if (threads.length === 0) {
-		return (
-			<div className='discussion-empty'>
-				<Groups2RoundedIcon sx={{ fontSize: 64, color: '#cbd5e1' }} />
-				<h2>No discussions yet</h2>
-				<p>This course doesn't have any discussion threads initialized.</p>
-				<Link to='/dashboard' className='dashboard-primary-action'>Back to Dashboard</Link>
-			</div>
-		)
-	}
-
-	const messages = activeThread?.messages || []
-
 	return (
 		<div className='discussion-container'>
-			<header className='discussion-header'>
-				<div className='discussion-header-content'>
+			<aside className='discussion-sidebar'>
+				<header className='sidebar-header'>
 					<Link to={`/dashboard/courses/${courseId}`} className='discussion-back-link'>
-						&larr; Back to Course
+						&larr; Course
 					</Link>
-					<h1>{activeThread?.title || 'Course Discussion'}</h1>
-				</div>
-			</header>
-
-			<div className='discussion-chat-window'>
-				<div className='discussion-messages-list'>
-					{messages.length === 0 ? (
-						<div className='discussion-no-messages'>
-							<p>No messages yet. Start the conversation!</p>
-						</div>
-					) : (
-						messages.map((msg) => {
-							const isOwn = String(msg.user_id) === String(user.id)
-							const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'Unknown User'
-							
-							return (
-								<div 
-									key={msg.message_id} 
-									className={`discussion-message-row ${isOwn ? 'own' : ''}`}
-								>
-									{!isOwn && (
-										<div className='discussion-avatar'>
-											{msg.user?.avatar_url ? (
-												<img src={msg.user.avatar_url} alt={displayName} />
-											) : (
-												<div className='avatar-placeholder'>
-													{displayName.charAt(0)}
-												</div>
-											)}
-										</div>
-									)}
-									<div className='discussion-message-content'>
-										{!isOwn && <span className='discussion-sender-name'>{displayName}</span>}
-										<div className='discussion-bubble'>
-											<p>{msg.message_text}</p>
-											<span className='discussion-timestamp'>
-												{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-											</span>
-										</div>
-									</div>
-								</div>
-							)
-						})
-					)}
-					<div ref={chatEndRef} />
+					<h3>Threads</h3>
+				</header>
+				
+				<div className='threads-list'>
+					{threads.map(thread => (
+						<button 
+							key={thread.thread_id}
+							className={`thread-item ${activeThread?.thread_id === thread.thread_id ? 'active' : ''}`}
+							onClick={() => setActiveThread(thread)}
+						>
+							<div className='thread-item-info'>
+								<span className='thread-title'>{thread.title}</span>
+								<span className='thread-meta'>{thread.messages?.length || 0} messages</span>
+							</div>
+						</button>
+					))}
 				</div>
 
-				<form className='discussion-input-area' onSubmit={handleSendMessage}>
-					<textarea
-						value={newMessage}
-						onChange={(e) => setNewMessage(e.target.value)}
-						placeholder='Type your reflection or question...'
-						onKeyDown={(e) => {
-							if (e.key === 'Enter' && !e.shiftKey) {
-								e.preventDefault()
-								handleSendMessage(e)
-							}
-						}}
+				<form className='create-thread-form' onSubmit={handleCreateThread}>
+					<input 
+						type='text' 
+						placeholder='New thread title...'
+						value={newThreadTitle}
+						onChange={(e) => setNewThreadTitle(e.target.value)}
 					/>
-					<button 
-						type='submit' 
-						disabled={!newMessage.trim() || isSending}
-						className='discussion-send-btn'
-					>
-						<SendRoundedIcon />
+					<button type='submit' disabled={!newThreadTitle.trim() || isCreatingThread}>
+						<AddBoxRoundedIcon />
 					</button>
 				</form>
+			</aside>
+
+			<div className='discussion-main'>
+				<header className='discussion-header'>
+					<h1>{activeThread?.title || 'Select a thread'}</h1>
+				</header>
+
+				<div className='discussion-chat-window'>
+					{activeThread ? (
+						<>
+							<div className='discussion-messages-list'>
+								{(activeThread.messages || []).length === 0 ? (
+									<div className='discussion-no-messages'>
+										<p>No messages yet. Start the conversation!</p>
+									</div>
+								) : (
+									(activeThread.messages || []).map((msg) => {
+										const isOwn = String(msg.user_id) === String(user.id)
+										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
+										
+										return (
+											<div 
+												key={msg.message_id} 
+												className={`discussion-message-row ${isOwn ? 'own' : ''}`}
+											>
+												{!isOwn && (
+													<div className='discussion-avatar'>
+														{msg.user?.avatar_url ? (
+															<img src={msg.user.avatar_url} alt={displayName} />
+														) : (
+															<div className='avatar-placeholder'>
+																{displayName.charAt(0)}
+															</div>
+														)}
+													</div>
+												)}
+												<div className='discussion-message-content'>
+													{!isOwn && <span className='discussion-sender-name'>{displayName}</span>}
+													<div className='discussion-bubble'>
+														<p>{msg.message_text}</p>
+														<span className='discussion-timestamp'>
+															{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+														</span>
+													</div>
+												</div>
+											</div>
+										)
+									})
+								)}
+								<div ref={chatEndRef} />
+							</div>
+
+							<form className='discussion-input-area' onSubmit={handleSendMessage}>
+								<textarea
+									value={newMessage}
+									onChange={(e) => setNewMessage(e.target.value)}
+									placeholder='Type your message...'
+									onKeyDown={(e) => {
+										if (e.key === 'Enter' && !e.shiftKey) {
+											e.preventDefault()
+											handleSendMessage(e)
+										}
+									}}
+								/>
+								<button 
+									type='submit' 
+									disabled={!newMessage.trim() || isSending}
+									className='discussion-send-btn'
+								>
+									<SendRoundedIcon />
+								</button>
+							</form>
+						</>
+					) : (
+						<div className='discussion-empty'>
+							<Groups2RoundedIcon sx={{ fontSize: 64, color: '#cbd5e1' }} />
+							<h2>Start a Discussion</h2>
+							<p>Select an existing thread or create a new one to begin.</p>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	)
