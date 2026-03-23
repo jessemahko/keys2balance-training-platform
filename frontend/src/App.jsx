@@ -37,7 +37,10 @@ const App = () => {
 				dispatch(rmUserFn())
 				window.localStorage.removeItem('loggedUser')
 			} else {
-				dispatch(setUserFn(user))
+				// Decode the token to get user info if it's not already in the object
+				const decoded = JSON.parse(atob(user.token.split('.')[1]))
+				const userWithInfo = { ...user, ...decoded }
+				dispatch(setUserFn(userWithInfo))
 				setToken(user.token)
 			}
 		}
