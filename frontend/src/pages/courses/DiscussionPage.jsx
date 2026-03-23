@@ -153,7 +153,8 @@ const DiscussionPage = () => {
 									</div>
 								) : (
 									(activeThread.messages || []).map((msg) => {
-										const isOwn = String(msg.user_id) === String(user.id)
+										const currentUserId = user?.user_id || user?.id
+										const isOwn = String(msg.user_id) === String(currentUserId)
 										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
 										
 										return (
