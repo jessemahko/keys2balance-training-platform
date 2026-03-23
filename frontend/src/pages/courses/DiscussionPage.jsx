@@ -61,11 +61,18 @@ const DiscussionPage = () => {
 		try {
 			const created = await createThread(courseId, newThreadTitle)
 			setNewThreadTitle('')
-			await fetchThreads()
-			// Set the newly created thread as active
-			setActiveThread(created)
+			
+			// Refresh list from server to ensure all state is synced
+			const updatedData = await getThreads(courseId)
+			const sorted = [...updatedData].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+			setThreads(sorted)
+			
+			// Find and set the newly created thread as active
+			const newActive = sorted.find(t => t.thread_id === created.thread_id)
+			setActiveThread(newActive || created)
 		} catch (error) {
 			console.error('Error creating thread:', error)
+			alert('Failed to create thread. Please try again.')
 		} finally {
 			setIsCreatingThread(false)
 		}
