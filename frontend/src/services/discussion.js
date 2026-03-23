@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getToken } from './authen/login'
 
-const baseUrl = 'http://localhost:3001/api/discussion'
+const baseUrl = 'http://localhost:3001/api/discussions'
 
 const getConfig = () => ({
 	headers: { Authorization: getToken() },
