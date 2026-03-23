@@ -26,10 +26,6 @@ const DiscussionPage = () => {
 	const fetchThreads = async () => {
 		try {
 			const data = await getThreads(courseId)
-			// Sort threads by creation date (oldest first) or newest first?
-			// The user said "chronologically ordered" - usually newest last or first.
-			// Let's go with the data as is (backend might sort newest first), 
-			// but we'll sort explicitly if needed.
 			const sorted = [...data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
 			setThreads(sorted)
 			if (sorted.length > 0 && !activeThread) {
@@ -62,12 +58,10 @@ const DiscussionPage = () => {
 			const created = await createThread(courseId, newThreadTitle)
 			setNewThreadTitle('')
 			
-			// Refresh list from server to ensure all state is synced
 			const updatedData = await getThreads(courseId)
 			const sorted = [...updatedData].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
 			setThreads(sorted)
 			
-			// Find and set the newly created thread as active
 			const newActive = sorted.find(t => t.thread_id === created.thread_id)
 			setActiveThread(newActive || created)
 		} catch (error) {
@@ -82,16 +76,9 @@ const DiscussionPage = () => {
 		e.preventDefault()
 		if (!newMessage.trim() || !activeThread || isSending) return
 
-		console.log('Active Thread:', activeThread)
-		console.log('Current User in State:', user)
-
 		setIsSending(true)
 		try {
-			const sentMessage = await createMessage(activeThread.thread_id, newMessage)
-			
-			console.log('Sent Message Response:', sentMessage)
-			
-			// Refresh to get full user details for the new message
+			await createMessage(activeThread.thread_id, newMessage)
 			await fetchThreads()
 			setNewMessage('')
 		} catch (error) {
@@ -162,13 +149,7 @@ const DiscussionPage = () => {
 										const isOwn = String(msg.user_id) === String(currentUserId)
 										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
 										
-										if (msg.message_text.includes('test')) {
-											console.log('Comparing Message:', {
-												msg_user_id: msg.user_id,
-												current_user_id: currentUserId,
-												is_own: isOwn
-											})
-										}
+										return (
 											<div 
 												key={msg.message_id} 
 												className={`discussion-message-row ${isOwn ? 'own' : ''}`}
