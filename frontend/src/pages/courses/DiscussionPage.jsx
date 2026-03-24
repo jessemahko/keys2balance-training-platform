@@ -10,6 +10,10 @@ import './discussion.css'
 const DiscussionPage = () => {
 	const { courseId } = useParams()
 	const user = useSelector((state) => state.user)
+	
+	// Helper to get the consistent current user ID
+	const currentUserId = user?.user_id || user?.id || user?.sub
+
 	const [threads, setThreads] = useState([])
 	const [activeThread, setActiveThread] = useState(null)
 	const [newThreadTitle, setNewThreadTitle] = useState('')
@@ -81,7 +85,6 @@ const DiscussionPage = () => {
 		setIsSending(true)
 
 		// Optimistic update: Add the message to the UI immediately
-		const currentUserId = user?.user_id || user?.id
 		const tempId = Date.now()
 		const optimisticMessage = {
 			message_id: tempId,
@@ -179,7 +182,6 @@ const DiscussionPage = () => {
 									</div>
 								) : (
 									(activeThread.messages || []).map((msg) => {
-										const currentUserId = user?.user_id || user?.id
 										const isOwn = String(msg.user_id) === String(currentUserId)
 										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
 										
