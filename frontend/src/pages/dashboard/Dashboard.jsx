@@ -91,7 +91,7 @@ const DashboardSidebar = ({ isOpen, onToggle }) => {
 			{/* Mobile/Overlay backdrop when open */}
 			{isOpen && <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[90] md:hidden transition-opacity" onClick={onToggle}></div>}
 			
-			<aside className={`bg-white border-r border-[#ecebea] flex flex-col py-6 shrink-0 z-[100] transition-all duration-300 ease-in-out h-full ${isOpen ? 'w-[280px] translate-x-0' : 'w-0 -translate-x-full border-r-0'}`}>
+			<aside className={`bg-white border-r border-[#ecebea] flex flex-col py-6 shrink-0 z-[100] transition-all duration-300 ease-in-out h-full overflow-hidden ${isOpen ? 'w-[280px] translate-x-0' : 'w-0 -translate-x-full border-r-0'}`}>
 				<div className={`px-6 pb-0 border-b border-[#ecebea] mb-4 w-[280px] transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
 					<div className="flex justify-between items-center mb-4 w-full">
 						<Link to='/dashboard' className='flex items-center gap-3 transition-transform hover:scale-[1.02] mb-2 dashboard-brand text-[#5f4b96]'>
