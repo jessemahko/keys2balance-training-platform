@@ -16,12 +16,14 @@ const AuthSuccess = () => {
 		const token = params.get('token')
 
 		if (token) {
-			// save token in localStorage
-			localStorage.setItem('loggedUser', JSON.stringify({ token }))
-			setToken(token)
 			const payload = JSON.parse(atob(token.split('.')[1]))
+			const userWithInfo = { token, ...payload }
 
-			dispatch(setUserFn(payload))
+			// save complete user object in localStorage
+			localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
+			setToken(token)
+
+			dispatch(setUserFn(userWithInfo))
 			dispatch(setNotification(`${t('Login successfully')}`, 2))
 
 			// redirect to dashboard

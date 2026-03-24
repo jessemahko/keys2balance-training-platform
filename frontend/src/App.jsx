@@ -12,6 +12,7 @@ import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
+import DiscussionPage from './pages/courses/DiscussionPage'
 
 import { setUserFn, rmUserFn } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
@@ -36,7 +37,12 @@ const App = () => {
 				dispatch(rmUserFn())
 				window.localStorage.removeItem('loggedUser')
 			} else {
-				dispatch(setUserFn(user))
+				// Decode the token to get user info if it's not already in the object
+				const decoded = JSON.parse(atob(user.token.split('.')[1]))
+				const userWithInfo = { ...user, ...decoded }
+				// Update the local storage with the decoded info
+				window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
+				dispatch(setUserFn(userWithInfo))
 				setToken(user.token)
 			}
 		}
@@ -92,6 +98,7 @@ const App = () => {
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard/*' element={<Dashboard />} />
+					<Route path='/courses/:courseId/discussion' element={<DiscussionPage />} />
 				</Route>
 
 				<Route path='*' element={<Navigate replace to='/' />} />

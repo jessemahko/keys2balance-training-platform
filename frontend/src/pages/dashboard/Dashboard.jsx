@@ -360,6 +360,13 @@ const CourseDetail = ({ courses, onError }) => {
 					</div>
 					<div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: 'column' }}>
 						<Link
+							to={`/courses/${course.course_id}/discussion`}
+							className='dashboard-primary-action'
+							style={{ backgroundColor: '#14b8a6', color: '#fff', border: 'none' }}
+						>
+							Go to discussion page
+						</Link>
+						<Link
 							to={`/dashboard/courses/${course.course_id}/lessons`}
 							className='dashboard-primary-action'
 						>
