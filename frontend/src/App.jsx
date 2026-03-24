@@ -40,6 +40,8 @@ const App = () => {
 				// Decode the token to get user info if it's not already in the object
 				const decoded = JSON.parse(atob(user.token.split('.')[1]))
 				const userWithInfo = { ...user, ...decoded }
+				// Update the local storage with the decoded info
+				window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
 				dispatch(setUserFn(userWithInfo))
 				setToken(user.token)
 			}

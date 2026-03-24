@@ -185,16 +185,6 @@ const DiscussionPage = () => {
 										const isOwn = String(msg.user_id) === String(currentUserId)
 										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
 										
-										// DEBUG: Log comparison for first 3 messages
-										if (threads[0]?.messages?.indexOf(msg) < 3) {
-											console.log('Comparison Debug:', {
-												msg_user_id: msg.user_id,
-												currentUserId: currentUserId,
-												isOwn: isOwn,
-												msg_text: msg.message_text
-											})
-										}
-
 										return (
 											<div 
 												key={msg.message_id} 
