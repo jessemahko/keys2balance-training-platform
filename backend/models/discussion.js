@@ -47,7 +47,12 @@ const createThread = async (courseId, title) => {
 		 RETURNING *`,
 		[courseId, title],
 	)
-	return res.rows[0]
+	
+	// Add empty messages array to match the structure expected by the frontend
+	return {
+		...res.rows[0],
+		messages: []
+	}
 }
 
 const createMessage = async (threadId, userId, messageText) => {

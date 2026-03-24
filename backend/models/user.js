@@ -40,9 +40,47 @@ const createUser = async ({ username, email, passwordHash, role }) => {
 	return res.rows[0]
 }
 
+const createUserWithOAuth = async ({
+	username,
+	email,
+	password_hash,
+	is_verified,
+	role,
+	first_name,
+	last_name,
+	gender,
+	avatar_url,
+}) => {
+	const res = await pool.query(
+		`INSERT INTO users
+		 (username, email, password_hash, is_verified, role, first_name, last_name, gender, avatar_url)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		 RETURNING *`,
+		[
+			username,
+			email,
+			password_hash,
+			is_verified,
+			role,
+			first_name,
+			last_name,
+			gender,
+			avatar_url,
+		],
+	)
+
+	return res.rows[0]
+}
+
 // Find all users (for admin)
 const findAll = async () => {
 	const res = await pool.query(`SELECT * FROM users`)
+	return res.rows
+}
+
+// Find only participants (for trainers/admins managing course rosters)
+const findParticipants = async () => {
+	const res = await pool.query(`SELECT * FROM users WHERE role = 'participant'`)
 	return res.rows
 }
 
@@ -110,7 +148,9 @@ module.exports = {
 	findByUsername,
 	findByUsernameOrEmail,
 	createUser,
+	createUserWithOAuth,
 	findAll,
+	findParticipants,
 	verifyEmail,
 	deleteById,
 	updateUserPassword,

@@ -38,16 +38,24 @@ loginRouter.post('/', async (req, res) => {
 		return res.status(401).json({ error: 'Invalid credentials' })
 	}
 
-	// 3. Check if user is verified (for participants)
-	if (user.role !== 'admin' && !user.is_verified) {
-		return res.status(403).json({ error: 'Account not verified' })
-	}
+	// // 3. Check if user is verified (for participants)
+	// if (user.role !== 'admin' && !user.is_verified) {
+	// 	return res.status(403).json({ error: 'Account not verified' })
+	// }
 
-	// 4. Prepare user data for token
+	// 3. Prepare user data for token
 	const userData = {
 		id: user.user_id,
 		email: user.email,
+		username: user.username,
 		role: user.role,
+		is_verified: user.is_verified,
+		gender: user.gender,
+		first_name: user.first_name,
+		last_name: user.last_name,
+		date_of_birth: user.date_of_birth,
+		avatar_url: user.avatar_url,
+		phone: user.phone,
 	}
 
 	// // Add cohorts only for participants
