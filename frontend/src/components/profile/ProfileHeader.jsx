@@ -34,16 +34,7 @@ const ProfileHeader = ({ profile = {} }) => {
 				</div>
 			</div>
 
-			<div className='space-y-1 text-sm text-gray-500'>
-				<p>
-					<span className='font-semibold text-gray-700'>Username:</span>{' '}
-					{profile.username || '-'}
-				</p>
-				<p>
-					<span className='font-semibold text-gray-700'>User ID:</span>{' '}
-					{profile.user_id || profile.id || '-'}
-				</p>
-			</div>
+			
 		</div>
 	)
 }

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getToken } from './authen/loginn'
+import { getToken } from './authen/login'
 
 const baseUrl = 'http://localhost:3001/api/user/me'
 

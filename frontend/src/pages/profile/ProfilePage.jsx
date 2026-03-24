@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import ProfileHeader from '../../components/profile/ProfileHeader'
 import ProfileField from '../../components/profile/ProfileField'
 import { setNotification, setError } from '../../reducers/notiReducer'
-import profileService from '../../services/profile'
-import { editUser } from '../../reducers/userReducer'
+import { updateMyProfile } from '../../reducers/userReducer'
 
 const ProfilePage = () => {
 	const dispatch = useDispatch()
@@ -55,19 +54,11 @@ const ProfilePage = () => {
 	e.preventDefault()
 
 	try {
-		const updatedProfile = await profileService.updateMyProfile(formData)
-
-		setProfile(updatedProfile)
-		setFormData(updatedProfile)
-		dispatch(editUser(updatedProfile))
+		//const updatedProfile = formData;
+		dispatch(updateMyProfile(formData))
 		dispatch(setNotification('Profile updated successfully', 2))
 
-		const loggedUserJSON = window.localStorage.getItem('loggedUser')
-		if (loggedUserJSON) {
-			const loggedUser = JSON.parse(loggedUserJSON)
-			const newLoggedUser = { ...loggedUser, ...updatedProfile }
-			window.localStorage.setItem('loggedUser', JSON.stringify(newLoggedUser))
-		}
+		
 	} catch (error) {
 		dispatch(setError('Failed to save profile', 2))
 	}

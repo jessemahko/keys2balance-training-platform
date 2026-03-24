@@ -10,31 +10,20 @@ import {
 } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded'
-import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import './dashboard.css'
-import { setCoursesFn } from '../../reducers/courseReducer'
+import { setCoursesFn, fetchCourseByIdFn } from '../../reducers/courseReducer'
 import { setError } from '../../reducers/notiReducer'
-import { getCourseById } from '../../services/courses'
 import CourseForm from '../courses/CourseForm'
 import ParticipantModal from '../courses/ParticipantModal'
 
 const navigationItems = [
 	{
-		label: 'Courses',
-		to: '/dashboard',
-		icon: DashboardRoundedIcon,
-	},
-	{
 		label: 'Announcements',
 		to: '/dashboard/announcements',
 		icon: CampaignRoundedIcon,
-	},
-	{
-		label: 'Discussion',
-		to: '/dashboard/discussion',
-		icon: Groups2RoundedIcon,
 	},
 	{
 		label: 'Profile',
@@ -92,41 +81,61 @@ const getLessonStatus = (lesson) => {
 	return getLessonContentCount(lesson) > 0 ? MODULE_FILTERS.ready : MODULE_FILTERS.draft
 }
 
-const DashboardNav = () => {
+const DashboardSidebar = ({ isOpen, onToggle }) => {
+	const navLinkClass = "flex items-center px-4 py-3 text-gray-800 transition-colors font-medium rounded-lg hover:bg-[#5f4b96]/10 hover:text-[#5f4b96]"
+	const activeNavLinkClass = "bg-[#5f4b96] text-white shadow-[0_4px_10px_rgba(81,69,135,0.2)] hover:bg-[#5f4b96] hover:text-white"
+
 	return (
-		<header className='dashboard-topbar'>
-			<Link to='/dashboard' className='dashboard-brand'>
-				<div className='dashboard-brand-mark'>
-					<span>K</span>
-					<span>2</span>
-					<span>B</span>
-				</div>
-				<div>
-					<p className='dashboard-brand-label'>Keys 2 Balance</p>
-					<span className='dashboard-brand-subtitle'>Participant portal</span>
-				</div>
-			</Link>
-
-			<nav className='dashboard-nav' aria-label='Dashboard sections'>
-				{navigationItems.map((item) => {
-					const Icon = item.icon
-
-					return (
-						<NavLink
-							key={item.to}
-							to={item.to}
-							end={item.to === '/dashboard'}
-							className={({ isActive }) =>
-								`dashboard-nav-link ${isActive ? 'dashboard-nav-link-active' : ''}`
-							}
+		<>
+			{/* Mobile/Overlay backdrop when open */}
+			{isOpen && <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[90] md:hidden transition-opacity" onClick={onToggle}></div>}
+			
+			<aside className={`bg-white border-r border-[#ecebea] flex flex-col py-6 shrink-0 z-[100] transition-all duration-300 ease-in-out h-full overflow-hidden ${isOpen ? 'w-[280px] translate-x-0' : 'w-0 -translate-x-full border-r-0'}`}>
+				<div className={`px-6 pb-0 border-b border-[#ecebea] mb-4 w-[280px] transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+					<div className="flex justify-between items-center mb-4 w-full">
+						<Link to='/dashboard' className='flex items-center gap-3 transition-transform hover:scale-[1.02] mb-2 dashboard-brand text-[#5f4b96]'>
+							<div className='dashboard-brand-mark' style={{ borderColor: '#5f4b96', color: '#5f4b96' }}>
+								<span>K</span>
+								<span>2</span>
+								<span>B</span>
+							</div>
+							<div>
+								<p className='dashboard-brand-label' style={{ color: '#5f4b96' }}>Keys 2 Balance</p>
+								<span className='dashboard-brand-subtitle' style={{ color: '#7a7a7a' }}>Participant portal</span>
+							</div>
+						</Link>
+						<button 
+							className="bg-transparent border-none cursor-pointer text-gray-500 flex items-center justify-center p-1 rounded transition hover:bg-[#5f4b96]/10 hover:text-[#5f4b96]" 
+							onClick={onToggle}
+							title="Close Sidebar"
 						>
-							<Icon fontSize='small' />
-							<span>{item.label}</span>
-						</NavLink>
-					)
-				})}
-			</nav>
-		</header>
+							<ChevronLeftRoundedIcon fontSize='small' />
+						</button>
+					</div>
+				</div>
+
+				<nav className="flex-1 overflow-y-auto overflow-x-hidden">
+					<div className="px-6 pb-3 text-xs uppercase tracking-widest text-[#7a7a7a] font-semibold w-[280px]">Menu</div>
+					<ul className="list-none px-4 w-[280px] mb-6 flex flex-col gap-1">
+						{navigationItems.map((item) => {
+							const Icon = item.icon
+							return (
+								<li key={item.to} className="rounded-lg w-full">
+									<NavLink
+										to={item.to}
+										end={item.to === '/dashboard'}
+										className={({ isActive }) => `${navLinkClass} ${isActive ? activeNavLinkClass : ''}`}
+									>
+										<span className="mr-3 flex items-center"><Icon fontSize='small' /></span>
+										<span className="whitespace-nowrap overflow-hidden text-ellipsis">{item.label}</span>
+									</NavLink>
+								</li>
+							)
+						})}
+					</ul>
+				</nav>
+			</aside>
+		</>
 	)
 }
 
@@ -146,6 +155,9 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 	}, [courses, normalizedSearchTerm])
 	const hasActiveSearch = searchTerm.trim().length > 0
 
+	const userRole = user?.role || ''
+	const canCreateCourse = userRole === 'admin' || userRole === 'trainer'
+
 	if (isLoading) {
 		return <section className='dashboard-panel'>Loading courses...</section>
 	}
@@ -158,9 +170,11 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 						<h1>Welcome back!</h1>
 						<p>Search your assigned courses below.</p>
 					</div>
-					<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
-						Create New Course
-					</Link>
+					{canCreateCourse && (
+						<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
+							Create New Course
+						</Link>
+					)}
 				</div>
 			</section>
 
@@ -239,16 +253,16 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 const CourseDetail = ({ courses, onError }) => {
 	const { courseId } = useParams()
 	const cachedCourse = useMemo(
-		() => courses.find((course) => course.course_id === courseId) || null,
+		() => courses.find((course) => String(course.course_id) === String(courseId)) || null,
 		[courses, courseId],
 	)
-	const [course, setCourse] = useState(cachedCourse)
+	const course = cachedCourse
 	const [isLoading, setIsLoading] = useState(!cachedCourse)
 	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false)
 	const user = useSelector((state) => state.user)
-	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
-	const userRole = decodedToken?.role || user?.role || ''
-	const currentUserId = decodedToken?.id || user?.id || ''
+	const userRole = user?.role || ''
+	const currentUserId = user?.id || ''
+	const dispatch = useDispatch()
 	const [loadError, setLoadError] = useState('')
 	const [moduleSearchTerm, setModuleSearchTerm] = useState('')
 	const deferredModuleSearchTerm = useDeferredValue(moduleSearchTerm)
@@ -276,9 +290,7 @@ const CourseDetail = ({ courses, onError }) => {
 			setLoadError('')
 
 			try {
-				const nextCourse = await getCourseById(courseId)
-				if (!isActive) return
-				setCourse(nextCourse)
+				await dispatch(fetchCourseByIdFn(courseId))
 			} catch (error) {
 				if (!isActive) return
 				const message = getErrorMessage(error, 'Unable to load the course')
@@ -296,7 +308,8 @@ const CourseDetail = ({ courses, onError }) => {
 		return () => {
 			isActive = false
 		}
-	}, [courseId, onError])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [courseId, dispatch])
 
 	if (isLoading) {
 		return <section className='dashboard-panel'>Loading course...</section>
@@ -321,8 +334,7 @@ const CourseDetail = ({ courses, onError }) => {
 
 	const handleParticipantsChanged = async () => {
 		try {
-			const nextCourse = await getCourseById(courseId)
-			setCourse(nextCourse)
+			await dispatch(fetchCourseByIdFn(courseId))
 		} catch (err) {
 			console.error(err)
 		}
@@ -530,6 +542,7 @@ const Dashboard = () => {
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course)
 	const [isLoading, setIsLoading] = useState(true)
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
 	useEffect(() => {
 		let isActive = true
@@ -562,10 +575,19 @@ const Dashboard = () => {
 	}
 
 	return (
-		<div className='dashboard-shell'>
-			<DashboardNav />
+		<div className='dashboard-shell flex h-screen overflow-hidden'>
+			<DashboardSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-			<main className='dashboard-main'>
+			<main className='dashboard-main flex-1 overflow-y-auto relative h-screen w-full'>
+				{!isSidebarOpen && (
+					<button
+						className="fixed top-4 left-4 z-[50] bg-white border border-[#ecebea] shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer text-[#4d458d] flex items-center justify-center p-[6px] rounded-lg transition-colors hover:bg-[#5f4b96]/10 hover:text-[#5f4b96]"
+						onClick={() => setIsSidebarOpen(true)}
+						title="Open Sidebar"
+					>
+						<MenuRoundedIcon fontSize='small' />
+					</button>
+				)}
 				<Routes>
 					<Route
 						index
@@ -586,17 +608,6 @@ const Dashboard = () => {
 							<SectionPlaceholder
 								title='Announcements'
 								description='This links to announcements page.'
-								backTo='/dashboard'
-								actionLabel='Back to courses'
-							/>
-						}
-					/>
-					<Route
-						path='discussion'
-						element={
-							<SectionPlaceholder
-								title='Discussion'
-								description='This links to discussion page.'
 								backTo='/dashboard'
 								actionLabel='Back to courses'
 							/>

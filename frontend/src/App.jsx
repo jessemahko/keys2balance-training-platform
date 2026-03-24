@@ -7,6 +7,7 @@ import {
 	Outlet,
 	Navigate,
 	useNavigate,
+	useLocation,
 } from 'react-router-dom'
 import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
@@ -20,6 +21,7 @@ import { setToken, isTokenExpired } from './services/authen/login'
 
 import LogoutIcon from '@mui/icons-material/Logout'
 import ProfilePage from './pages/profile/ProfilePage'
+import { useTranslation } from 'react-i18next'
 
 const App = () => {
 	// using Hooks
@@ -29,7 +31,7 @@ const App = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const { t, i18n } = useTranslation()
-	
+	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -46,20 +48,17 @@ const App = () => {
 				window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
 				dispatch(setUserFn(userWithInfo))
 				setToken(user.token)
+				//navigate('/test-profile')
 			}
 		}
+		setIsLoading(false)
 
-		const user = JSON.parse(loggedUserJSON)
-		if (isTokenExpired(user.token)) {
-			dispatch(rmUserFn())
-			window.localStorage.removeItem('loggedUser')
-		} else {
-			dispatch(setUserFn(user))
-			setToken(user.token)
-			navigate('/test-profile')
+		
 			
-		}
+		
 	}, [])
+	
+	
 
 	const handleLogout = () => {
 		// Logout logic

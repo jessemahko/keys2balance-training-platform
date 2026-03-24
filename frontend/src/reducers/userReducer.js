@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
-// import profile from '../services/profile'
+import profile from '../services/profile'
 
 const userSlice = createSlice({
 	name: 'user',
@@ -45,15 +45,23 @@ export const rmUserFn = () => {
 // 	}
 // }
 
-// export const updateProfile = (user) => {
-// 	return async (dispatch) => {
-// 		if (isTokenExpired(getToken())) {
-// 			dispatch(rmUserFn())
-// 			return
-// 		}
-// 		await profile.updateProfile(user)
-// 		dispatch(editUser(user))
-// 	}
-// }
+export const updateMyProfile = (user) => {
+	return async (dispatch) => {
+		if (isTokenExpired(getToken())) {
+			dispatch(rmUserFn())
+			return
+		}
+		const updatedProfile = await profile.updateMyProfile(user)
+		dispatch(editUser(user))
+		const loggedUserJSON = window.localStorage.getItem('loggedUser')
+				if (loggedUserJSON) {
+					const loggedUser = JSON.parse(loggedUserJSON)
+					const newLoggedUser = { ...loggedUser, ...updatedProfile }
+					window.localStorage.setItem('loggedUser', JSON.stringify(newLoggedUser))
+				}
+	}
+}
+
+
 
 export default userSlice.reducer
