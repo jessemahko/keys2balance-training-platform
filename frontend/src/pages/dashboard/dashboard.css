@@ -13,14 +13,7 @@
 	text-decoration: none;
 }
 
-.dashboard-topbar {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 1rem;
-	padding: 1.1rem 1.5rem;
-	background: #5f4b96;
-}
+
 
 .dashboard-brand {
 	display: inline-flex;
@@ -70,30 +63,7 @@
 	color: rgba(255, 255, 255, 0.8);
 }
 
-.dashboard-nav {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-end;
-	gap: 0.55rem;
-}
 
-.dashboard-nav-link {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.45rem;
-	padding: 0.7rem 0.95rem;
-	border-radius: 999px;
-	color: rgba(255, 255, 255, 0.8);
-	font-size: 0.95rem;
-	font-weight: 600;
-	transition: background-color 160ms ease;
-}
-
-.dashboard-nav-link:hover,
-.dashboard-nav-link-active {
-	background: rgba(255, 255, 255, 0.14);
-	color: #fff;
-}
 
 .dashboard-main {
 	padding: 2rem 1rem 3rem;
@@ -429,15 +399,6 @@
 }
 
 @media (max-width: 719px) {
-	.dashboard-topbar {
-		flex-direction: column;
-		align-items: stretch;
-	}
-
-	.dashboard-nav {
-		justify-content: flex-start;
-	}
-
 	.course-lesson-preview-item {
 		grid-template-columns: auto 1fr;
 	}
