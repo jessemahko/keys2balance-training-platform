@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { getAllUsers } from '../../services/users'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUsersFn } from '../../reducers/usersReducer'
 import { enrollParticipant, removeParticipant } from '../../services/courses'
 
 const ParticipantModal = ({ isOpen, onClose, course, onParticipantsChanged }) => {
-	const [allUsers, setAllUsers] = useState([])
+	const dispatch = useDispatch()
+	const allUsers = useSelector((state) => state.users) || []
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [processingId, setProcessingId] = useState(null)
@@ -14,17 +16,21 @@ const ParticipantModal = ({ isOpen, onClose, course, onParticipantsChanged }) =>
 			const fetchUsers = async () => {
 				setLoading(true)
 				try {
-					const users = await getAllUsers()
-					setAllUsers(users)
+					await dispatch(setUsersFn())
 				} catch (err) {
 					setError('Failed to load participants.')
 				} finally {
 					setLoading(false)
 				}
 			}
-			fetchUsers()
+			if (allUsers.length === 0) {
+				fetchUsers()
+			} else {
+				// Refresh quietly
+				dispatch(setUsersFn()).catch(() => setError('Failed to refresh participants.'))
+			}
 		}
-	}, [isOpen])
+	}, [isOpen, dispatch, allUsers.length])
 
 	if (!isOpen) return null
 

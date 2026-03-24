@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { createCourseFn, updateCourseFn } from '../../reducers/courseReducer'
-import { getCourseById } from '../../services/courses'
-import { getAllUsers } from '../../services/users'
+import { createCourseFn, updateCourseFn, fetchCourseByIdFn } from '../../reducers/courseReducer'
+import { setUsersFn } from '../../reducers/usersReducer'
 
 const CourseForm = () => {
 	const { courseId } = useParams()
@@ -11,10 +10,12 @@ const CourseForm = () => {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
+	const users = useSelector((state) => state.users) || []
+	const courses = useSelector((state) => state.course) || []
+	const courseToEdit = courses.find((c) => String(c.course_id) === String(courseId))
 
-	// In the latest codebase, user ID is only available inside the JWT token
-	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
-	const currentUserId = decodedToken?.id || ''
+	const currentUserId = user?.id || ''
+	const userRole = user?.role || ''
 
 	const [formData, setFormData] = useState({
 		title: '',
@@ -24,40 +25,45 @@ const CourseForm = () => {
 	})
 	const [loading, setLoading] = useState(isEditMode)
 	const [error, setError] = useState(null)
-	const [trainers, setTrainers] = useState([])
-	const userRole = decodedToken?.role || user?.role || ''
 
 	useEffect(() => {
 		if (userRole === 'admin') {
-			getAllUsers()
-				.then((users) => {
-					const fetchedTrainers = users.filter(u => u.role === 'trainer')
-					setTrainers([{ user_id: currentUserId, username: 'Me (Admin)' }, ...fetchedTrainers])
-				})
-				.catch((e) => console.error('Failed to fetch trainers for dropdown', e))
+			dispatch(setUsersFn())
 		}
-	}, [userRole, currentUserId])
+	}, [userRole, dispatch])
+
+	const trainers = useMemo(() => {
+		if (!users.length) return [{ user_id: currentUserId, username: 'Me (Admin)' }]
+		const fetchedTrainers = users.filter(u => u.role === 'trainer')
+		return [{ user_id: currentUserId, username: 'Me (Admin)' }, ...fetchedTrainers]
+	}, [users, currentUserId])
 
 	useEffect(() => {
 		if (isEditMode) {
 			const fetchCourse = async () => {
 				try {
-					const data = await getCourseById(courseId)
-					setFormData({
-						title: data.title,
-						description: data.description || '',
-						thumbnailUrl: data.thumbnail_url || '',
-						teacherId: data.teacher_id,
-					})
-					setLoading(false)
-				} catch {
+					await dispatch(fetchCourseByIdFn(courseId))
+				} catch (err) {
+					console.error(err)
 					setError('Failed to fetch course details')
 					setLoading(false)
 				}
 			}
 			fetchCourse()
 		}
-	}, [courseId, isEditMode])
+	}, [courseId, isEditMode, dispatch])
+
+	useEffect(() => {
+		if (isEditMode && courseToEdit) {
+			setFormData({
+				title: courseToEdit.title,
+				description: courseToEdit.description || '',
+				thumbnailUrl: courseToEdit.thumbnail_url || '',
+				teacherId: courseToEdit.teacher_id,
+			})
+			setLoading(false)
+		}
+	}, [courseToEdit, isEditMode])
 
 	const handleChange = (e) => {
 		const { name, value } = e.target

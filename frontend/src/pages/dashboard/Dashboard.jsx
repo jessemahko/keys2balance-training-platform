@@ -14,9 +14,8 @@ import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import './dashboard.css'
-import { setCoursesFn } from '../../reducers/courseReducer'
+import { setCoursesFn, fetchCourseByIdFn } from '../../reducers/courseReducer'
 import { setError } from '../../reducers/notiReducer'
-import { getCourseById } from '../../services/courses'
 import CourseForm from '../courses/CourseForm'
 import ParticipantModal from '../courses/ParticipantModal'
 
@@ -156,8 +155,7 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 	}, [courses, normalizedSearchTerm])
 	const hasActiveSearch = searchTerm.trim().length > 0
 
-	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
-	const userRole = decodedToken?.role || user?.role || ''
+	const userRole = user?.role || ''
 	const canCreateCourse = userRole === 'admin' || userRole === 'trainer'
 
 	if (isLoading) {
@@ -255,16 +253,16 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 const CourseDetail = ({ courses, onError }) => {
 	const { courseId } = useParams()
 	const cachedCourse = useMemo(
-		() => courses.find((course) => course.course_id === courseId) || null,
+		() => courses.find((course) => String(course.course_id) === String(courseId)) || null,
 		[courses, courseId],
 	)
-	const [course, setCourse] = useState(cachedCourse)
+	const course = cachedCourse
 	const [isLoading, setIsLoading] = useState(!cachedCourse)
 	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false)
 	const user = useSelector((state) => state.user)
-	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
-	const userRole = decodedToken?.role || user?.role || ''
-	const currentUserId = decodedToken?.id || user?.id || ''
+	const userRole = user?.role || ''
+	const currentUserId = user?.id || ''
+	const dispatch = useDispatch()
 	const [loadError, setLoadError] = useState('')
 	const [moduleSearchTerm, setModuleSearchTerm] = useState('')
 	const deferredModuleSearchTerm = useDeferredValue(moduleSearchTerm)
@@ -292,9 +290,7 @@ const CourseDetail = ({ courses, onError }) => {
 			setLoadError('')
 
 			try {
-				const nextCourse = await getCourseById(courseId)
-				if (!isActive) return
-				setCourse(nextCourse)
+				await dispatch(fetchCourseByIdFn(courseId))
 			} catch (error) {
 				if (!isActive) return
 				const message = getErrorMessage(error, 'Unable to load the course')
@@ -312,7 +308,8 @@ const CourseDetail = ({ courses, onError }) => {
 		return () => {
 			isActive = false
 		}
-	}, [courseId, onError])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [courseId, dispatch])
 
 	if (isLoading) {
 		return <section className='dashboard-panel'>Loading course...</section>
@@ -337,8 +334,7 @@ const CourseDetail = ({ courses, onError }) => {
 
 	const handleParticipantsChanged = async () => {
 		try {
-			const nextCourse = await getCourseById(courseId)
-			setCourse(nextCourse)
+			await dispatch(fetchCourseByIdFn(courseId))
 		} catch (err) {
 			console.error(err)
 		}
