@@ -146,6 +146,10 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 	}, [courses, normalizedSearchTerm])
 	const hasActiveSearch = searchTerm.trim().length > 0
 
+	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
+	const userRole = decodedToken?.role || user?.role || ''
+	const canCreateCourse = userRole === 'admin' || userRole === 'trainer'
+
 	if (isLoading) {
 		return <section className='dashboard-panel'>Loading courses...</section>
 	}
@@ -158,9 +162,11 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 						<h1>Welcome back!</h1>
 						<p>Search your assigned courses below.</p>
 					</div>
-					<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
-						Create New Course
-					</Link>
+					{canCreateCourse && (
+						<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
+							Create New Course
+						</Link>
+					)}
 				</div>
 			</section>
 
