@@ -585,7 +585,7 @@ const Dashboard = () => {
 			<main className='dashboard-main flex-1 overflow-y-auto relative h-screen w-full'>
 				{!isSidebarOpen && (
 					<button
-						className="absolute top-4 left-4 z-[50] bg-white border border-[#ecebea] shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer text-[#4d458d] flex items-center justify-center p-[6px] rounded-lg transition-colors hover:bg-[#5f4b96]/10 hover:text-[#5f4b96]"
+						className="fixed top-4 left-4 z-[50] bg-white border border-[#ecebea] shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer text-[#4d458d] flex items-center justify-center p-[6px] rounded-lg transition-colors hover:bg-[#5f4b96]/10 hover:text-[#5f4b96]"
 						onClick={() => setIsSidebarOpen(true)}
 						title="Open Sidebar"
 					>
