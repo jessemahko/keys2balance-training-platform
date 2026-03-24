@@ -3,10 +3,17 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('../../utils/sendEmail') // utility to send emails
 
-// Admin: GET /api/user
+// Admin / Trainer: GET /api/users
 const getUsers = async (req, res) => {
-	const users = await User.findAll()
-	res.json(users)
+	if (req.user.role === 'admin') {
+		const users = await User.findAll()
+		return res.json(users)
+	} else if (req.user.role === 'trainer') {
+		const participants = await User.findParticipants()
+		return res.json(participants)
+	} else {
+		return res.status(403).json({ error: 'forbidden' })
+	}
 }
 
 // Admin: POST /api/user

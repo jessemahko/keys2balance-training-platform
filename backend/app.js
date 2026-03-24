@@ -2,6 +2,8 @@
 const config = require('./utils/config')
 const express = require('express')
 const cors = require('cors') // Cross-Origin Resource Sharing middleware
+const passport = require('./utils/passport')
+
 const path = require('path') // Path module for handling file paths
 
 require('express-async-errors') // Handle async errors automatically
@@ -10,6 +12,8 @@ const app = express()
 // Import routers and utilities
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
+
+const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
 
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
@@ -38,10 +42,14 @@ app.use(cors()) // Enable CORS for all routes
 app.use(express.json()) // Parse incoming JSON requests
 app.use(middleware.tokenExtractor) // Extract token from requests
 
+app.use(passport.initialize()) // Initialize Passport for authentication
+
 // Route handlers
 
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
+
+app.use('/auth', googleAuthRouter) // Routes for Google authentication
 
 // Access code routes
 app.use(
@@ -63,9 +71,9 @@ app.use('/verify-email', emailRouter) // Email verification route
 app.use(
 	'/api/users',
 	middleware.userExtractor,
-	middleware.authorizeRoles('admin'),
+	middleware.authorizeRoles('admin', 'trainer'),
 	userRouter,
-) // User management routes for admin
+) // User management routes
 app.use('/api/discussions', middleware.userExtractor, discussionRouter) // Discussion routes for authenticated users
 app.use('/api/notifications', middleware.userExtractor, notificationsRouter) // Notification routes for authenticated users
 app.use('/api/lessons', middleware.userExtractor, lessonRouter) // Lesson routes for authenticated users

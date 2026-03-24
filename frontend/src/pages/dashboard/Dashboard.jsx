@@ -17,6 +17,8 @@ import './dashboard.css'
 import { setCoursesFn } from '../../reducers/courseReducer'
 import { setError } from '../../reducers/notiReducer'
 import { getCourseById } from '../../services/courses'
+import CourseForm from '../courses/CourseForm'
+import ParticipantModal from '../courses/ParticipantModal'
 
 const navigationItems = [
 	{
@@ -151,9 +153,14 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 	return (
 		<div className='dashboard-content-stack'>
 			<section className='dashboard-intro'>
-				<div>
-					<h1>Welcome back!</h1>
-					<p>Search your assigned courses below.</p>
+				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '1rem', flexWrap: 'wrap' }}>
+					<div>
+						<h1>Welcome back!</h1>
+						<p>Search your assigned courses below.</p>
+					</div>
+					<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
+						Create New Course
+					</Link>
 				</div>
 			</section>
 
@@ -237,6 +244,11 @@ const CourseDetail = ({ courses, onError }) => {
 	)
 	const [course, setCourse] = useState(cachedCourse)
 	const [isLoading, setIsLoading] = useState(!cachedCourse)
+	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false)
+	const user = useSelector((state) => state.user)
+	const decodedToken = user?.token ? JSON.parse(atob(user.token.split('.')[1])) : null
+	const userRole = decodedToken?.role || user?.role || ''
+	const currentUserId = decodedToken?.id || user?.id || ''
 	const [loadError, setLoadError] = useState('')
 	const [moduleSearchTerm, setModuleSearchTerm] = useState('')
 	const deferredModuleSearchTerm = useDeferredValue(moduleSearchTerm)
@@ -304,6 +316,18 @@ const CourseDetail = ({ courses, onError }) => {
 
 	const participants = Array.isArray(course.participants) ? course.participants : []
 
+	const isCourseOwner = String(course.teacher_id) === String(currentUserId)
+	const canManageCourse = userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
+
+	const handleParticipantsChanged = async () => {
+		try {
+			const nextCourse = await getCourseById(courseId)
+			setCourse(nextCourse)
+		} catch (err) {
+			console.error(err)
+		}
+	}
+
 	return (
 		<div className='dashboard-content-stack'>
 			<div className='dashboard-page-header'>
@@ -334,13 +358,49 @@ const CourseDetail = ({ courses, onError }) => {
 							<strong>{participants.length}</strong>
 						</div>
 					</div>
-					<Link
-						to={`/dashboard/courses/${course.course_id}/lessons`}
-						className='dashboard-primary-action'
-					>
-						Go to lessons page
-					</Link>
+					<div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: 'column' }}>
+						<Link
+							to={`/courses/${course.course_id}/discussion`}
+							className='dashboard-primary-action'
+							style={{ backgroundColor: '#14b8a6', color: '#fff', border: 'none' }}
+						>
+							Go to discussion page
+						</Link>
+						<Link
+							to={`/dashboard/courses/${course.course_id}/lessons`}
+							className='dashboard-primary-action'
+						>
+							Go to lessons page
+						</Link>
+						{canManageCourse && (
+							<>
+								<Link
+									to={`/dashboard/courses/${course.course_id}/edit`}
+									className='dashboard-primary-action'
+									style={{ backgroundColor: '#fff', color: '#0f172a', border: '1px solid #cbd5e1' }}
+								>
+									Edit Course
+								</Link>
+								<button
+									onClick={() => setIsParticipantModalOpen(true)}
+									className='dashboard-primary-action'
+									style={{ backgroundColor: '#0f172a', color: '#fff', border: '1px solid #cbd5e1' }}
+								>
+									Manage Participants
+								</button>
+							</>
+						)}
+					</div>
 				</article>
+
+				{isParticipantModalOpen && (
+					<ParticipantModal
+						isOpen={isParticipantModalOpen}
+						onClose={() => setIsParticipantModalOpen(false)}
+						course={course}
+						onParticipantsChanged={handleParticipantsChanged}
+					/>
+				)}
 
 				<article className='dashboard-panel'>
 					<h3>Instructor</h3>
@@ -513,6 +573,8 @@ const Dashboard = () => {
 							<DashboardHome courses={courses} isLoading={isLoading} user={user} />
 						}
 					/>
+					<Route path='courses/new' element={<CourseForm />} />
+					<Route path='courses/:courseId/edit' element={<CourseForm />} />
 					<Route
 						path='courses/:courseId'
 						element={<CourseDetail courses={courses} onError={reportLoadError} />}

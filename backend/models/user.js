@@ -46,6 +46,12 @@ const findAll = async () => {
 	return res.rows
 }
 
+// Find only participants (for trainers/admins managing course rosters)
+const findParticipants = async () => {
+	const res = await pool.query(`SELECT * FROM users WHERE role = 'participant'`)
+	return res.rows
+}
+
 const verifyEmail = async (id) => {
 	await pool.query(`UPDATE users SET is_verified = true WHERE user_id = $1`, [
 		id,
@@ -62,13 +68,46 @@ const updateUserPassword = async (id, newPasswordHash) => {
 		id,
 	])
 }
+
+const createUserWithOAuth = async ({
+	username,
+	email,
+	password_hash,
+	role,
+	is_verified,
+	first_name,
+	last_name,
+	gender,
+	avatar_url,
+}) => {
+	const res = await pool.query(
+		`INSERT INTO users (username, email, password_hash, role, is_verified, first_name, last_name, gender, avatar_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         RETURNING *`,
+		[
+			username,
+			email,
+			password_hash,
+			role,
+			is_verified,
+			first_name,
+			last_name,
+			gender,
+			avatar_url,
+		],
+	)
+	return res.rows[0]
+}
+
 module.exports = {
 	findById,
 	findByEmail,
 	findByUsername,
 	findByUsernameOrEmail,
 	createUser,
+	createUserWithOAuth,
 	findAll,
+	findParticipants,
 	verifyEmail,
 	deleteById,
 	updateUserPassword,

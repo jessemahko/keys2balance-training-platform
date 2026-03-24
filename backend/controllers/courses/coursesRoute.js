@@ -13,4 +13,8 @@ router.post('/', CoursesController.createCourse)
 router.put('/:id', CoursesController.updateCourse)
 router.delete('/:id', CoursesController.deleteCourse)
 
+// Participant enrollment endpoints
+router.post('/:id/enroll', CoursesController.enrollStudent)
+router.delete('/:id/enroll/:userId', CoursesController.removeStudent)
+
 module.exports = router
