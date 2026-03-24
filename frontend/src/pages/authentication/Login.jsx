@@ -40,7 +40,12 @@ const Login = () => {
 			}
 			window.localStorage.setItem('loggedUser', JSON.stringify(user))
 			setToken(user.token)
-			dispatch(setUserFn(user))
+			
+			// Decode the token immediately to ensure the user state is complete
+			const decoded = JSON.parse(atob(user.token.split('.')[1]))
+			const userWithInfo = { ...user, ...decoded }
+			
+			dispatch(setUserFn(userWithInfo))
 			dispatch(setNotification(`${t('Login successfully')}`, 2))
 			rmUsername()
 			rmPassword()

@@ -1,16 +1,50 @@
 const { pool } = require('../utils/config')
 
 const findAll = async () => {
-	const res = await pool.query('SELECT * FROM courses ORDER BY created_at DESC')
+	const res = await pool.query(`
+		SELECT
+			c.*,
+			COUNT(DISTINCT l.lesson_id)::int AS lesson_count
+		FROM courses c
+		LEFT JOIN lessons l
+			ON l.course_id = c.course_id
+		GROUP BY c.course_id
+		ORDER BY c.created_at DESC
+	`)
 	return res.rows
 }
 
 const findAllByTeacherId = async (teacherId) => {
 	const res = await pool.query(
-		`SELECT * FROM courses
-		 WHERE teacher_id = $1
-		 ORDER BY created_at DESC`,
+		`SELECT
+			c.*,
+			COUNT(DISTINCT l.lesson_id)::int AS lesson_count
+		FROM courses c
+		LEFT JOIN lessons l
+			ON l.course_id = c.course_id
+		WHERE c.teacher_id = $1
+		GROUP BY c.course_id
+		ORDER BY c.created_at DESC`,
 		[teacherId],
+	)
+
+	return res.rows
+}
+
+const findAllByParticipantId = async (participantId) => {
+	const res = await pool.query(
+		`SELECT
+			c.*,
+			COUNT(DISTINCT l.lesson_id)::int AS lesson_count
+		FROM courses c
+		INNER JOIN course_enrollments ce
+		 	ON ce.course_id = c.course_id
+		LEFT JOIN lessons l
+			ON l.course_id = c.course_id
+		WHERE ce.user_id = $1
+		GROUP BY c.course_id
+		ORDER BY c.created_at DESC`,
+		[participantId],
 	)
 
 	return res.rows
@@ -168,6 +202,7 @@ const findEnrollment = async (userId, courseId) => {
 module.exports = {
 	findAll,
 	findAllByTeacherId,
+	findAllByParticipantId,
 	findById,
 	createCourse,
 	updateCourse,
