@@ -30,6 +30,7 @@ const App = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const { t, i18n } = useTranslation()
+	
 
 	useEffect(() => {
 		const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -45,6 +46,7 @@ const App = () => {
 		} else {
 			dispatch(setUserFn(user))
 			setToken(user.token)
+			navigate('/test-profile')
 			
 		}
 	}, [])

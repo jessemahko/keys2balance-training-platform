@@ -21,6 +21,7 @@ const lessonRouter = require('./controllers/lessons/lessonRoute') // Lesson rout
 
 const middleware = require('./utils/middleware') // Middleware functions
 const userRouter = require('./controllers/user/userRoute')
+const profileRouter = require('./controllers/profile/profileRoute')
 
 console.log('connecting to PostgreSQL')
 // Connect to Postgresql
@@ -69,6 +70,7 @@ app.use(
 app.use('/api/discussions', middleware.userExtractor, discussionRouter) // Discussion routes for authenticated users
 app.use('/api/notifications', middleware.userExtractor, notificationsRouter) // Notification routes for authenticated users
 app.use('/api/lessons', middleware.userExtractor, lessonRouter) // Lesson routes for authenticated users
+app.use('/api/user', middleware.userExtractor, profileRouter)
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {
@@ -83,6 +85,7 @@ app.use('/api/lessons', middleware.userExtractor, lessonRouter) // Lesson routes
 
 app.use(middleware.unknownEndpoint) // Handle requests to unknown endpoints
 app.use(middleware.errorHandler) // Handle application errors
+
 
 // Export the app for use in other modules
 module.exports = app

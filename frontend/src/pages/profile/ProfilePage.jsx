@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import ProfileHeader from '../../components/profile/ProfileHeader'
 import ProfileField from '../../components/profile/ProfileField'
 import { setNotification, setError } from '../../reducers/notiReducer'
+import profileService from '../../services/profile'
+import { editUser } from '../../reducers/userReducer'
 
 const ProfilePage = () => {
 	const dispatch = useDispatch()
@@ -49,21 +51,27 @@ const ProfilePage = () => {
 		dispatch(setNotification('Form reset successfully', 2))
 	}
 
-	const handleSave = (e) => {
-		e.preventDefault()
+	const handleSave = async (e) => {
+	e.preventDefault()
 
-		try {
-			setProfile(formData)
-			dispatch(
-				setNotification(
-					'Profile saved locally. Backend profile API not ready yet.',
-					2,
-				),
-			)
-		} catch (error) {
-			dispatch(setError('Failed to save profile', 2))
+	try {
+		const updatedProfile = await profileService.updateMyProfile(formData)
+
+		setProfile(updatedProfile)
+		setFormData(updatedProfile)
+		dispatch(editUser(updatedProfile))
+		dispatch(setNotification('Profile updated successfully', 2))
+
+		const loggedUserJSON = window.localStorage.getItem('loggedUser')
+		if (loggedUserJSON) {
+			const loggedUser = JSON.parse(loggedUserJSON)
+			const newLoggedUser = { ...loggedUser, ...updatedProfile }
+			window.localStorage.setItem('loggedUser', JSON.stringify(newLoggedUser))
 		}
+	} catch (error) {
+		dispatch(setError('Failed to save profile', 2))
 	}
+}
 
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>

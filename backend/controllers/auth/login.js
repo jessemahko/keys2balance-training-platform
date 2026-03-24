@@ -63,16 +63,20 @@ loginRouter.post('/', async (req, res) => {
 	// 5. Respond with token + basic info
 	const response = {
 		token,
+		user_id: user.user_id,
+		username: user.username,
 		email: user.email,
 		role: user.role,
-		name: user.name,
-		// username: user.username,
-		// name: user.name,
-		// avatarUrl: user.avatarUrl,
-		// email: user.email,
-		// gender: user.gender,
-		// dateOfBirth: user.dateOfBirth,
-		// phoneNumber: user.phoneNumber,
+		first_name: user.first_name,
+		last_name: user.last_name,
+		gender: user.gender,
+		date_of_birth: user.date_of_birth,
+		phone: user.phone,
+		address: user.address,
+		city: user.city,
+		post_code: user.post_code,
+		country: user.country,
+		avatar_url: user.avatar_url,
 	}
 
 	// // Add cohorts to response only for participants

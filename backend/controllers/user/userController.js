@@ -120,9 +120,39 @@ const deleteUser = async (req, res) => {
 	res.json({ message: 'User deleted successfully' })
 }
 
+const getCurrentUserProfile = async (req, res) => {
+	if (!req.user || !req.user.id) {
+		return res.status(401).json({ error: 'Authentication required' })
+	}
+
+	const user = await User.findById(req.user.id)
+
+	if (!user) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+
+	res.json(user)
+}
+
+const updateCurrentUserProfile = async (req, res) => {
+	if (!req.user || !req.user.id) {
+		return res.status(401).json({ error: 'Authentication required' })
+	}
+
+	const updatedUser = await User.updateUserProfile(req.user.id, req.body)
+
+	if (!updatedUser) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+
+	res.json(updatedUser)
+}
+
 module.exports = {
 	getUsers,
 	createUser,
 	deleteUser,
 	updateUserPassword,
+	getCurrentUserProfile,
+	updateCurrentUserProfile,
 }

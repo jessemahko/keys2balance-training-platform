@@ -62,6 +62,48 @@ const updateUserPassword = async (id, newPasswordHash) => {
 		id,
 	])
 }
+const updateUserProfile = async (id, userData) => {
+	const {
+		first_name,
+		last_name,
+		gender,
+		date_of_birth,
+		phone,
+		address,
+		city,
+		post_code,
+		country,
+	} = userData
+
+	const res = await pool.query(
+		`UPDATE users
+		 SET first_name = $1,
+		     last_name = $2,
+		     gender = $3,
+		     date_of_birth = $4,
+		     phone = $5,
+		     address = $6,
+		     city = $7,
+		     post_code = $8,
+		     country = $9
+		 WHERE user_id = $10
+		 RETURNING *`,
+		[
+			first_name,
+			last_name,
+			gender,
+			date_of_birth,
+			phone,
+			address,
+			city,
+			post_code,
+			country,
+			id,
+		],
+	)
+
+	return res.rows[0] || null
+}
 module.exports = {
 	findById,
 	findByEmail,
@@ -72,4 +114,5 @@ module.exports = {
 	verifyEmail,
 	deleteById,
 	updateUserPassword,
+	updateUserProfile,
 }
