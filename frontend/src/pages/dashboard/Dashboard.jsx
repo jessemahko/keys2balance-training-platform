@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import './dashboard.css'
@@ -21,11 +20,6 @@ import CourseForm from '../courses/CourseForm'
 import ParticipantModal from '../courses/ParticipantModal'
 
 const navigationItems = [
-	{
-		label: 'Courses',
-		to: '/dashboard',
-		icon: DashboardRoundedIcon,
-	},
 	{
 		label: 'Announcements',
 		to: '/dashboard/announcements',
