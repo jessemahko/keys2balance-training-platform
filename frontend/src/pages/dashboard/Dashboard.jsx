@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
-import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import './dashboard.css'
 import { setCoursesFn } from '../../reducers/courseReducer'
@@ -24,11 +23,6 @@ const navigationItems = [
 		label: 'Announcements',
 		to: '/dashboard/announcements',
 		icon: CampaignRoundedIcon,
-	},
-	{
-		label: 'Discussion',
-		to: '/dashboard/discussion',
-		icon: Groups2RoundedIcon,
 	},
 	{
 		label: 'Profile',
@@ -586,17 +580,6 @@ const Dashboard = () => {
 							<SectionPlaceholder
 								title='Announcements'
 								description='This links to announcements page.'
-								backTo='/dashboard'
-								actionLabel='Back to courses'
-							/>
-						}
-					/>
-					<Route
-						path='discussion'
-						element={
-							<SectionPlaceholder
-								title='Discussion'
-								description='This links to discussion page.'
 								backTo='/dashboard'
 								actionLabel='Back to courses'
 							/>
