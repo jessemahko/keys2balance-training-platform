@@ -13,10 +13,17 @@ const getThreads = async (req, res) => {
 	}
 
 	const enrollment = await Course.findEnrollment(user.id, courseId)
+	
 	if (!enrollment) {
-		return res
-			.status(403)
-			.json({ error: 'Forbidden: Not enrolled in this course' })
+		const course = await Course.findById(courseId)
+		const isTeacher = course && String(course.teacher_id) === String(user.id)
+		const isAdmin = user.role === 'admin'
+		
+		if (!isTeacher && !isAdmin) {
+			return res
+				.status(403)
+				.json({ error: 'Forbidden: Not enrolled or authorized for this course' })
+		}
 	}
 
 	const threads = await Discussion.getThreadsByCourse(courseId)
@@ -34,11 +41,23 @@ const createThread = async (req, res) => {
 		return res.status(400).json({ error: 'courseId is required' })
 	}
 
+	// For debugging enrollment issues
+	console.log('Creating thread for user:', user.id, 'course:', courseId)
+
 	const enrollment = await Course.findEnrollment(user.id, courseId)
+	
+	// If the user is an admin or the teacher of the course, they might not be in the course_enrollments table
+	// but should still be allowed to create threads.
 	if (!enrollment) {
-		return res
-			.status(403)
-			.json({ error: 'Forbidden: Not enrolled in this course' })
+		const course = await Course.findById(courseId)
+		const isTeacher = course && String(course.teacher_id) === String(user.id)
+		const isAdmin = user.role === 'admin'
+		
+		if (!isTeacher && !isAdmin) {
+			return res
+				.status(403)
+				.json({ error: 'Forbidden: Not enrolled or authorized for this course' })
+		}
 	}
 
 	const { title } = req.body
@@ -72,10 +91,17 @@ const createMessage = async (req, res) => {
 	}
 
 	const enrollment = await Course.findEnrollment(user.id, thread.course_id)
+	
 	if (!enrollment) {
-		return res
-			.status(403)
-			.json({ error: 'Forbidden: Not enrolled in this course' })
+		const course = await Course.findById(thread.course_id)
+		const isTeacher = course && String(course.teacher_id) === String(user.id)
+		const isAdmin = user.role === 'admin'
+		
+		if (!isTeacher && !isAdmin) {
+			return res
+				.status(403)
+				.json({ error: 'Forbidden: Not enrolled or authorized for this course' })
+		}
 	}
 
 	// FIXED: Using req.user.id exactly how it's formatted in the login token
