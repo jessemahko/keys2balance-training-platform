@@ -54,7 +54,7 @@ const updateLesson = async (lessonId, updates) => {
 const addContentBlock = async (lessonId, block) => {
 	const res = await pool.query(
 		`UPDATE lessons 
-		 SET content_data = content_data || $1::jsonb
+		 SET content_data = content_data || jsonb_build_array($1::jsonb)
 		 WHERE lesson_id = $2
 		 RETURNING *`,
 		[JSON.stringify(block), lessonId],

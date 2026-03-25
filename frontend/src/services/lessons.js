@@ -12,4 +12,42 @@ const getLessonById = async (lessonId) => {
 	return response.data
 }
 
-export { getLessonById }
+const createLesson = async (lessonData) => {
+	const response = await axios.post(baseUrl, lessonData, getConfig())
+	return response.data
+}
+
+const updateLesson = async (id, title) => {
+	const response = await axios.patch(`${baseUrl}/${id}`, { title }, getConfig())
+	return response.data
+}
+
+const deleteLesson = async (id) => {
+	const response = await axios.delete(`${baseUrl}/${id}`, getConfig())
+	return response.data
+}
+
+const addBlock = async (id, blockData) => {
+	const response = await axios.patch(`${baseUrl}/${id}/add-block`, blockData, getConfig())
+	return response.data
+}
+
+const updateBlock = async (id, blockId, blockData) => {
+	const response = await axios.patch(`${baseUrl}/${id}/blocks/${blockId}`, blockData, getConfig())
+	return response.data
+}
+
+const deleteBlock = async (id, blockId) => {
+	const response = await axios.delete(`${baseUrl}/${id}/blocks/${blockId}`, getConfig())
+	return response.data
+}
+
+export { 
+	getLessonById, 
+	createLesson, 
+	updateLesson, 
+	deleteLesson, 
+	addBlock, 
+	updateBlock, 
+	deleteBlock 
+}
