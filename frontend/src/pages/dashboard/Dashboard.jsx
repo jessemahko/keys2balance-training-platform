@@ -16,6 +16,7 @@ import { useMatch } from 'react-router-dom'
 import CourseForm from '../courses/CourseForm'
 import LessonPage from '../courses/LessonPage'
 import DashboardHome from './DashboardHome'
+import ProfilePage from '../profile/ProfilePage'
 import CourseLabel from './CourseLabel'
 import SectionPlaceholder from './SectionPlaceholder'
 import { useTranslation } from 'react-i18next'
@@ -141,17 +142,8 @@ const Dashboard = () => {
 							/>
 						}
 					/>
-					<Route
-						path='profile'
-						element={
-							<SectionPlaceholder
-								title='Profile'
-								description='This links to profile page.'
-								backTo='/dashboard'
-								actionLabel='Back to courses'
-							/>
-						}
-					/>
+					<Route path='profile' element={<ProfilePage />} />
+
 					<Route path='*' element={<Navigate replace to='/dashboard' />} />
 				</Routes>
 			</main>
