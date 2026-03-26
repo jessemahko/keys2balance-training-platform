@@ -5,11 +5,13 @@ import userReducer from './reducers/userReducer'
 import usersReducer from './reducers/usersReducer'
 import notiReducer from './reducers/notiReducer'
 import courseReducer from './reducers/courseReducer'
+import discussionReducer from './reducers/discussionReducer'
 export default configureStore({
 	reducer: {
 		noti: notiReducer,
 		user: userReducer,
 		users: usersReducer,
 		course: courseReducer,
+		discussion: discussionReducer,
 	},
 })

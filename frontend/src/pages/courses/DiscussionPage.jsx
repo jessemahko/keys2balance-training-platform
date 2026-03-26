@@ -2,7 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setError } from '../../reducers/notiReducer'
-import { getThreads, createThread, createMessage } from '../../services/discussion'
+import {
+	fetchThreadsFn,
+	createThreadFn,
+	sendMessageFn,
+	setActiveThread,
+} from '../../reducers/discussionReducer'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
@@ -11,44 +16,32 @@ const DiscussionPage = () => {
 	const dispatch = useDispatch()
 	const { courseId } = useParams()
 	const user = useSelector((state) => state.user)
-	
+
+	// Redux state
+	const threads = useSelector((state) => state.discussion.threads)
+	const activeThreadId = useSelector((state) => state.discussion.activeThreadId)
+	const isLoading = useSelector((state) => state.discussion.isLoading)
+	const isSending = useSelector((state) => state.discussion.isSending)
+
+	// Derived: the full active thread object
+	const activeThread = threads.find(t => t.thread_id === activeThreadId) || null
+
 	// Helper to get the consistent current user ID
 	const currentUserId = user?.user_id || user?.id || user?.sub
 
-	const [threads, setThreads] = useState([])
-	const [activeThread, setActiveThread] = useState(null)
+	// Local UI state (form inputs only)
 	const [newThreadTitle, setNewThreadTitle] = useState('')
 	const [isCreatingThread, setIsCreatingThread] = useState(false)
 	const [newMessage, setNewMessage] = useState('')
-	const [isLoading, setIsLoading] = useState(true)
-	const [isSending, setIsSending] = useState(false)
 	const chatEndRef = useRef(null)
 
 	const scrollToBottom = () => {
 		chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
-	const fetchThreads = async () => {
-		try {
-			const data = await getThreads(courseId)
-			const sorted = [...data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-			setThreads(sorted)
-			if (sorted.length > 0 && !activeThread) {
-				setActiveThread(sorted[0])
-			} else if (activeThread) {
-				const updatedActive = sorted.find(t => t.thread_id === activeThread.thread_id)
-				if (updatedActive) setActiveThread(updatedActive)
-			}
-		} catch (error) {
-			console.error('Error fetching threads:', error)
-		} finally {
-			setIsLoading(false)
-		}
-	}
-
 	useEffect(() => {
-		fetchThreads()
-	}, [courseId])
+		dispatch(fetchThreadsFn(courseId))
+	}, [courseId, dispatch])
 
 	useEffect(() => {
 		scrollToBottom()
@@ -60,15 +53,8 @@ const DiscussionPage = () => {
 
 		setIsCreatingThread(true)
 		try {
-			const created = await createThread(courseId, newThreadTitle)
+			await dispatch(createThreadFn(courseId, newThreadTitle))
 			setNewThreadTitle('')
-			
-			const updatedData = await getThreads(courseId)
-			const sorted = [...updatedData].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-			setThreads(sorted)
-			
-			const newActive = sorted.find(t => t.thread_id === created.thread_id)
-			setActiveThread(newActive || created)
 		} catch (error) {
 			console.error('Error creating thread:', error)
 			dispatch(setError('Failed to create thread. Please try again.', 5))
@@ -83,46 +69,12 @@ const DiscussionPage = () => {
 
 		const messageContent = newMessage.trim()
 		setNewMessage('')
-		setIsSending(true)
-
-		// Optimistic update: Add the message to the UI immediately
-		const tempId = Date.now()
-		const optimisticMessage = {
-			message_id: tempId,
-			user_id: currentUserId,
-			message_text: messageContent,
-			created_at: new Date().toISOString(),
-			user: {
-				user_id: currentUserId,
-				first_name: user?.first_name || 'Me',
-				last_name: user?.last_name || '',
-				avatar_url: user?.avatar_url
-			}
-		}
-
-		// Pre-update the active thread locally
-		const updatedActiveThread = {
-			...activeThread,
-			messages: [...(activeThread.messages || []), optimisticMessage]
-		}
-		setActiveThread(updatedActiveThread)
 
 		try {
-			await createMessage(activeThread.thread_id, messageContent)
-			// Re-fetch to sync with server (get real ID and timestamp)
-			await fetchThreads()
+			await dispatch(sendMessageFn(courseId, activeThread.thread_id, messageContent, user))
 		} catch (error) {
 			console.error('Error sending message:', error)
-			// Rollback on error: remove the optimistic message
-			const rolledBackThread = {
-				...activeThread,
-				messages: activeThread.messages.filter(m => m.message_id !== tempId)
-			}
-			setActiveThread(rolledBackThread)
 			setNewMessage(messageContent) // Restore the text for retry
-			dispatch(setError('Failed to send message. Please try again.', 5))
-		} finally {
-			setIsSending(false)
 		}
 	}
 
@@ -145,7 +97,7 @@ const DiscussionPage = () => {
 						<button 
 							key={thread.thread_id}
 							className={`w-full text-left p-4 bg-transparent border-none rounded-[0.75rem] cursor-pointer transition-all duration-200 mb-1 hover:bg-[#f1f5f9] ${activeThread?.thread_id === thread.thread_id ? 'bg-[#eef2ff] border-l-4 border-l-[#14b8a6]' : ''}`}
-							onClick={() => setActiveThread(thread)}
+							onClick={() => dispatch(setActiveThread(thread.thread_id))}
 						>
 							<div className='flex flex-col gap-1'>
 								<span className='font-semibold text-[#1e293b] text-[0.9375rem]'>{thread.title}</span>
