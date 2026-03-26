@@ -14,6 +14,9 @@ import { useField } from '../../hooks/hook'
 
 // import './authen.css'
 
+// const base_url = ''
+const base_url = 'http://localhost:3001'
+
 const Login = () => {
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -40,22 +43,20 @@ const Login = () => {
 			}
 			window.localStorage.setItem('loggedUser', JSON.stringify(user))
 			setToken(user.token)
-			
+
 			// Decode the token immediately to ensure the user state is complete
 			const decoded = JSON.parse(atob(user.token.split('.')[1]))
 			const userWithInfo = { ...user, ...decoded }
-			
+
 			dispatch(setUserFn(userWithInfo))
-			dispatch(setNotification(`${t('Login successfully')}`, 2))
+			dispatch(setNotification('Login successfully', 2))
 			rmUsername()
 			rmPassword()
 			navigate('/dashboard')
 		} catch (error) {
-			dispatch(setError(`${t('Wrong Credentials')}`, 2))
+			dispatch(setError('Wrong Credentials', 2))
 		}
 	}
-
-	const base_url = 'http://localhost:3001'
 
 	return (
 		<div className='form-box login'>

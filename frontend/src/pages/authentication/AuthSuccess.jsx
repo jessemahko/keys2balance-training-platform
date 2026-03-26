@@ -24,13 +24,13 @@ const AuthSuccess = () => {
 			setToken(token)
 
 			dispatch(setUserFn(userWithInfo))
-			dispatch(setNotification(`${t('Login successfully')}`, 2))
+			dispatch(setNotification('Login successfully', 2))
 
 			// redirect to dashboard
 			navigate('/dashboard')
 		} else {
 			// no token → fallback
-			dispatch(setError(`${t('Something went wrong')}`, 2))
+			dispatch(setError('Something went wrong', 2))
 			navigate('/authentication')
 		}
 	}, [])

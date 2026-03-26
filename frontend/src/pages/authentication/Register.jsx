@@ -72,7 +72,7 @@ const Register = ({ setActive }) => {
 				password: password.value,
 			})
 
-			dispatch(setNotification(`${t('Register successfully')}`, 2))
+			dispatch(setNotification('Register successfully', 2))
 			rmUsername()
 			rmPassword()
 			rmCfPassword()
@@ -83,7 +83,7 @@ const Register = ({ setActive }) => {
 				return
 			}
 
-			dispatch(setError(`${t('Something went wrong')}`, 2))
+			dispatch(setError('Something went wrong', 2))
 		}
 	}
 
