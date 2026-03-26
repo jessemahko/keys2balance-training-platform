@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import LessonTitleModal from '../../components/Sidebar/LessonTitleModal'
 import { Menu as MenuIcon } from 'lucide-react'
-import './dashboard.css'
 import { setCoursesFn, fetchCourseByIdFn } from '../../reducers/courseReducer'
 import { setError } from '../../reducers/notiReducer'
 import CourseForm from '../courses/CourseForm'
@@ -95,15 +94,15 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 	}
 
 	return (
-		<div className='dashboard-content-stack'>
-			<section className='dashboard-intro'>
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '1rem', flexWrap: 'wrap' }}>
+		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
+			<section className='p-[1rem_0_0.35rem]'>
+				<div className='flex justify-between items-center w-full gap-4 flex-wrap'>
 					<div>
-						<h1>Welcome back!</h1>
-						<p>Search your assigned courses below.</p>
+						<h1 className='m-0 text-[#222]'>Welcome back!</h1>
+						<p className='m-0 text-[#666] leading-relaxed'>Search your assigned courses below.</p>
 					</div>
 					{canCreateCourse && (
-						<Link to='/dashboard/courses/new' className='dashboard-primary-action' style={{ whiteSpace: 'nowrap' }}>
+						<Link to='/dashboard/courses/new' className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#33b5aa] text-white transition-opacity hover:opacity-90 whitespace-nowrap'>
 							Create New Course
 						</Link>
 					)}
@@ -111,12 +110,13 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 			</section>
 
 			{courses.length ? (
-				<section className='dashboard-panel dashboard-filter-panel'>
-					<div className='dashboard-filter-bar'>
-						<label className='dashboard-field dashboard-search-field'>
-							<span>Search courses</span>
+				<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-[0.85rem]'>
+					<div className='grid gap-[0.9rem]'>
+						<label className='grid gap-[0.45rem]'>
+							<span className='text-[0.78rem] font-bold uppercase tracking-[0.08em] text-[#7a7a7a]'>Search courses</span>
 							<input
 								type='search'
+								className='w-full p-[0.85rem_1rem] border border-[#4d458d]/[0.16] rounded-[14px] bg-[#f8f8fb] text-[#222] focus:outline-none focus:ring-2 focus:ring-[#5f4b96]/20 focus:border-[#5f4b96]'
 								value={searchTerm}
 								onChange={(event) => setSearchTerm(event.target.value)}
 								placeholder='Search by course title or description'
@@ -124,14 +124,14 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 						</label>
 					</div>
 
-					<div className='dashboard-filter-summary'>
-						<p>
+					<div className='flex flex-wrap items-center justify-between gap-[0.75rem]'>
+						<p className='text-[#666]'>
 							Showing {filteredCourses.length} of {courses.length} courses
 						</p>
 						{hasActiveSearch ? (
 							<button
 								type='button'
-								className='dashboard-filter-reset'
+								className='border-0 p-0 bg-transparent text-[#4d458d] font-bold cursor-pointer hover:underline'
 								onClick={() => setSearchTerm('')}
 							>
 								Clear search
@@ -142,40 +142,40 @@ const DashboardHome = ({ courses, isLoading, user }) => {
 			) : null}
 
 			{filteredCourses.length ? (
-				<section className='course-grid'>
+				<section className='grid gap-4 md:grid-cols-2'>
 					{filteredCourses.map((course) => (
 						<Link
 							key={course.course_id}
 							to={`/dashboard/courses/${course.course_id}`}
-							className='course-card'
+							className='grid gap-4 p-5 bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] rounded-[18px] text-inherit transition-all duration-180 ease-in-out hover:-translate-y-[2px] hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] no-underline'
 						>
-							<div className='course-card-header'>
-								<h3>{course.title}</h3>
-								<span className='course-card-pill'>Course</span>
+							<div className='flex items-start justify-between gap-3'>
+								<h3 className='m-0 text-[#222]'>{course.title}</h3>
+								<span className='p-[0.35rem_0.75rem] rounded-full bg-[#edf5ff] text-[#4d458d] text-[0.8rem] font-bold whitespace-nowrap'>Course</span>
 							</div>
-							<p>
+							<p className='m-0 text-[#666] leading-relaxed'>
 								{course.description ||
 									'Open the course overview to access lessons.'}
 							</p>
-							<div className='course-card-meta'>
+							<div className='flex flex-wrap gap-2 text-[#7a7a7a] text-[0.9rem] font-semibold'>
 								<span>{Number(course.lesson_count ?? 0)} lessons</span>
 							</div>
-							<div className='course-card-footer'>
+							<div className='flex items-center justify-between text-[#27a665] font-bold'>
 								<span>View course</span>
-								<span className='course-card-arrow'>&rsaquo;</span>
+								<span className='text-2xl leading-none'>&rsaquo;</span>
 							</div>
 						</Link>
 					))}
 				</section>
 			) : courses.length ? (
-				<section className='dashboard-panel dashboard-empty-state'>
-					<h2>No matching courses</h2>
-					<p>Try another search term or clear the current search.</p>
+				<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center'>
+					<h2 className='m-0 text-[#222]'>No matching courses</h2>
+					<p className='m-0 text-[#666] leading-relaxed'>Try another search term or clear the current search.</p>
 				</section>
 			) : (
-				<section className='dashboard-panel dashboard-empty-state'>
-					<h2>No active courses yet</h2>
-					<p>Your assigned courses will show here once enrollment is set up.</p>
+				<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center'>
+					<h2 className='m-0 text-[#222]'>No active courses yet</h2>
+					<p className='m-0 text-[#666] leading-relaxed'>Your assigned courses will show here once enrollment is set up.</p>
 				</section>
 			)}
 		</div>
@@ -244,15 +244,15 @@ const CourseDetail = ({ courses, onError }) => {
 	}, [courseId, dispatch])
 
 	if (isLoading) {
-		return <section className='dashboard-panel'>Loading course...</section>
+		return <section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>Loading course...</section>
 	}
 
 	if (loadError || !course) {
 		return (
-			<section className='dashboard-panel dashboard-empty-state'>
-				<h2>We could not open this course</h2>
-				<p>{loadError || 'The requested course does not exist.'}</p>
-				<Link to='/dashboard' className='dashboard-primary-action'>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center'>
+				<h2 className='m-0 text-[#222]'>We could not open this course</h2>
+				<p className='m-0 text-[#666] leading-relaxed'>{loadError || 'The requested course does not exist.'}</p>
+				<Link to='/dashboard' className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#33b5aa] text-white transition-opacity hover:opacity-90'>
 					Back to courses
 				</Link>
 			</section>
@@ -273,40 +273,39 @@ const CourseDetail = ({ courses, onError }) => {
 	}
 
 	return (
-		<div className='dashboard-content-stack'>
-			<div className='dashboard-page-header'>
-				<Link to='/dashboard' className='dashboard-inline-link'>
+		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
+			<div className='grid gap-[0.4rem]'>
+				<Link to='/dashboard' className='w-fit text-[#4d458d] font-bold no-underline hover:underline'>
 					Courses
 				</Link>
-				<h1>{course.title}</h1>
+				<h1 className='m-0 text-[#222]'>{course.title}</h1>
 			</div>
 
-			<section className='dashboard-panel'>
-				<h2>Welcome to {course.title}</h2>
-				<p>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>
+				<h2 className='m-0 text-[#222]'>Welcome to {course.title}</h2>
+				<p className='m-0 text-[#666] leading-relaxed'>
 					{course.description ||
 						'Access your course contents and track your progress below.'}
 				</p>
 			</section>
 
-			<section className='dashboard-detail-grid'>
-				<article className='dashboard-panel'>
-					<h3>Course snapshot</h3>
-					<div className='dashboard-course-metrics'>
-						<div className='dashboard-metric-box'>
-							<span>Total lessons</span>
-							<strong>{lessons.length}</strong>
+			<section className='grid gap-4 md:grid-cols-2'>
+				<article className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>
+					<h3 className='m-0 text-[#222]'>Course snapshot</h3>
+					<div className='grid gap-[0.8rem] md:grid-cols-2'>
+						<div className='p-[0.95rem_1rem] rounded-[14px] bg-[#f5f7fb]'>
+							<span className='block mb-[0.35rem] text-[0.78rem] font-semibold uppercase tracking-[0.08em] text-[#7a7a7a]'>Total lessons</span>
+							<strong className='text-2xl text-[#4d458d]'>{lessons.length}</strong>
 						</div>
-						<div className='dashboard-metric-box'>
-							<span>Participants</span>
-							<strong>{participants.length}</strong>
+						<div className='p-[0.95rem_1rem] rounded-[14px] bg-[#f5f7fb]'>
+							<span className='block mb-[0.35rem] text-[0.78rem] font-semibold uppercase tracking-[0.08em] text-[#7a7a7a]'>Participants</span>
+							<strong className='text-2xl text-[#4d458d]'>{participants.length}</strong>
 						</div>
 					</div>
-					<div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexDirection: 'column' }}>
+					<div className='flex flex-col gap-4 mt-4'>
 						<Link
 							to={`/courses/${course.course_id}/discussion`}
-							className='dashboard-primary-action'
-							style={{ backgroundColor: '#14b8a6', color: '#fff', border: 'none' }}
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#14b8a6] text-white transition-opacity hover:opacity-90 no-underline'
 						>
 							Go to discussions
 						</Link>
@@ -314,15 +313,13 @@ const CourseDetail = ({ courses, onError }) => {
 							<>
 								<Link
 									to={`/dashboard/courses/${course.course_id}/edit`}
-									className='dashboard-primary-action'
-									style={{ backgroundColor: '#fff', color: '#0f172a', border: '1px solid #cbd5e1' }}
+									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-white text-[#0f172a] border border-[#cbd5e1] transition-colors hover:bg-gray-50 no-underline'
 								>
 									Edit Course
 								</Link>
 								<button
 									onClick={() => setIsParticipantModalOpen(true)}
-									className='dashboard-primary-action'
-									style={{ backgroundColor: '#0f172a', color: '#fff', border: '1px solid #cbd5e1' }}
+									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#0f172a] text-white border border-[#cbd5e1] transition-opacity hover:opacity-90'
 								>
 									Manage Participants
 								</button>
@@ -340,8 +337,8 @@ const CourseDetail = ({ courses, onError }) => {
 					/>
 				)}
 
-				<article className='dashboard-panel'>
-					<h3>Instructor</h3>
+				<article className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>
+					<h3 className='m-0 text-[#222]'>Instructor</h3>
 					{course.teacher?.user_id ? (
 						<div className="instructor-profile flex items-center gap-4 mt-4">
 							<div className="instructor-avatar w-12 h-12 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
@@ -365,21 +362,22 @@ const CourseDetail = ({ courses, onError }) => {
 					)}
 				</article>
 
-				<article className='dashboard-panel dashboard-panel-wide'>
-					<div className='dashboard-panel-headline'>
+				<article className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 md:col-span-2'>
+					<div className='flex items-end justify-between gap-4'>
 						<div>
-							<h3>Lesson preview</h3>
-							<p>Quick access to your course lessons.</p>
+							<h3 className='m-0 text-[#222]'>Lesson preview</h3>
+							<p className='m-0 text-[#666] leading-relaxed'>Quick access to your course lessons.</p>
 						</div>
 					</div>
 
 					{lessons.length ? (
 						<>
-							<div className='dashboard-filter-bar'>
-								<label className='dashboard-field dashboard-search-field'>
-									<span>Search lessons</span>
+							<div className='grid gap-[0.9rem]'>
+								<label className='grid gap-[0.45rem]'>
+									<span className='text-[0.78rem] font-bold uppercase tracking-[0.08em] text-[#7a7a7a]'>Search lessons</span>
 									<input
 										type='search'
+										className='w-full p-[0.85rem_1rem] border border-[#4d458d]/[0.16] rounded-[14px] bg-[#f8f8fb] text-[#222] focus:outline-none focus:ring-2 focus:ring-[#5f4b96]/20 focus:border-[#5f4b96]'
 										value={lessonSearchTerm}
 										onChange={(event) =>
 											setLessonSearchTerm(event.target.value)
@@ -389,14 +387,14 @@ const CourseDetail = ({ courses, onError }) => {
 								</label>
 							</div>
 
-							<div className='dashboard-filter-summary'>
-								<p>
+							<div className='flex flex-wrap items-center justify-between gap-[0.75rem]'>
+								<p className='text-[#666]'>
 									Showing {filteredLessons.length} of {lessons.length} lessons
 								</p>
 								{hasActiveLessonSearch ? (
 									<button
 										type='button'
-										className='dashboard-filter-reset'
+										className='border-0 p-0 bg-transparent text-[#4d458d] font-bold cursor-pointer hover:underline'
 										onClick={() => setLessonSearchTerm('')}
 									>
 										Clear search
@@ -407,7 +405,7 @@ const CourseDetail = ({ courses, onError }) => {
 					) : null}
 
 					{filteredLessons.length ? (
-						<div className='course-lesson-preview-list'>
+						<div className='grid gap-[0.8rem]'>
 							{filteredLessons.map((lesson, index) => {
 								const lessonStatus = getLessonStatus(lesson)
 								const lessonNumber = Number(lesson.order_index ?? index + 1)
@@ -416,20 +414,23 @@ const CourseDetail = ({ courses, onError }) => {
 									<Link
 										key={lesson.lesson_id}
 										to={`/dashboard/courses/${course.course_id}/lessons/${lesson.lesson_id}`}
-										className='course-lesson-preview-item'
-										style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}
+										className='flex items-center gap-[0.9rem] p-[0.95rem_1rem] rounded-[16px] bg-[#f7f7f7] no-underline text-inherit group transition-colors hover:bg-gray-100'
 									>
-										<span className='course-lesson-index'>{lessonNumber}</span>
-										<div style={{ flex: 1 }}>
-											<strong>{lesson.title}</strong>
-											<p>
+										<span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#5f4b96] text-white font-bold shrink-0'>{lessonNumber}</span>
+										<div className='flex-1'>
+											<strong className='block mb-[0.2rem]'>{lesson.title}</strong>
+											<p className='m-0 text-[#666] leading-relaxed'>
 												{lessonStatus === LESSON_FILTERS.ready
 													? 'Ready to view'
 													: 'Outline only'}
 											</p>
 										</div>
 										<span
-											className={`course-lesson-status course-lesson-status-${lessonStatus}`}
+											className={`inline-flex items-center justify-center p-[0.4rem_0.75rem] rounded-full text-[0.8rem] font-bold ${
+												lessonStatus === LESSON_FILTERS.ready
+													? 'bg-[#e3f8ed] text-[#157347]'
+													: 'bg-[#fff1da] text-[#915400]'
+											}`}
 										>
 											{lessonStatus === LESSON_FILTERS.ready
 												? 'Ready'
@@ -452,11 +453,11 @@ const CourseDetail = ({ courses, onError }) => {
 
 const SectionPlaceholder = ({ title, description, backTo, actionLabel }) => {
 	return (
-		<section className='dashboard-panel dashboard-empty-state dashboard-placeholder-page'>
-			<p className='dashboard-placeholder-tag'>Reserved section</p>
-			<h2>{title}</h2>
-			<p>{description}</p>
-			<Link to={backTo} className='dashboard-primary-action'>
+		<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center'>
+			<p className='m-0 p-[0.35rem_0.75rem] rounded-full bg-[#edf5ff] text-[#4d458d] text-[0.78rem] font-bold uppercase tracking-[0.08em]'>Reserved section</p>
+			<h2 className='m-0 text-[#222]'>{title}</h2>
+			<p className='m-0 text-[#666] leading-relaxed'>{description}</p>
+			<Link to={backTo} className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#33b5aa] text-white transition-opacity hover:opacity-90'>
 				{actionLabel}
 			</Link>
 		</section>
@@ -574,7 +575,7 @@ const Dashboard = () => {
 				onDeleteLesson={canManageCourse ? handleDeleteLesson : null}
 			/>
 
-			<main className='dashboard-main flex-1 overflow-y-auto relative h-screen w-full'>
+			<main className='flex-1 overflow-y-auto relative h-screen w-full p-6 md:p-8 lg:p-10'>
 				{!isSidebarOpen && (
 					<button
 						className="fixed top-4 left-4 z-[50] bg-white border border-[#ecebea] shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer text-[#4d458d] flex items-center justify-center p-[6px] rounded-lg transition-colors hover:bg-[#5f4b96]/10 hover:text-[#5f4b96]"
@@ -597,7 +598,7 @@ const Dashboard = () => {
 						path='courses/:courseId'
 						element={<CourseDetail courses={courses} onError={reportLoadError} />}
 					/>
-					<Route path='courses/:courseId/lessons/:lessonId' element={<LessonPage isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />} />
+					<Route path='courses/:courseId/lessons/:lessonId' element={<LessonPage />} />
 					<Route
 						path='announcements'
 						element={

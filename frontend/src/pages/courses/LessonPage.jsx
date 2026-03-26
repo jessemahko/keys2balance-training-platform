@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Menu, PlusCircle } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 
-import { fetchCourseByIdFn } from '../../reducers/courseReducer';
-import { setError, setNoti } from '../../reducers/notiReducer';
 import { getLessonById, addBlock, updateBlock, deleteBlock } from '../../services/lessons';
 
 import BlockContainer from '../../components/BlockEditor/BlockContainer';
@@ -15,7 +13,7 @@ import AssessmentBlock from '../../components/ContentBlocks/AssessmentBlock';
 import FileBlock from '../../components/ContentBlocks/FileBlock';
 import LinkEmbedBlock from '../../components/ContentBlocks/LinkEmbedBlock';
 
-const LessonPage = ({ isSidebarOpen, onToggleSidebar }) => {
+const LessonPage = () => {
   const { courseId, lessonId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -81,10 +79,6 @@ const LessonPage = ({ isSidebarOpen, onToggleSidebar }) => {
       if (editingBlock) {
         updatedLesson = await updateBlock(lessonId, editingBlock.block_id, blockData);
       } else {
-        // Logic for inserting after is not fully implemented in backend (it just appends)
-        // requirements say: "appends the new block... to the content_data array"
-        // If we want ordering, we'd need to send the whole array or have a position param.
-        // For now, let's just use the addBlock as defined in services.
         updatedLesson = await addBlock(lessonId, blockData);
       }
       setLesson(updatedLesson);
@@ -119,18 +113,9 @@ const LessonPage = ({ isSidebarOpen, onToggleSidebar }) => {
     <div className="flex flex-col items-center w-full min-h-full">
       <header className="w-full bg-white px-8 md:px-16 py-10 border-b border-[#ecebea] flex items-center justify-between">
          <div className="flex items-center gap-6">
-            {!isSidebarOpen && (
-              <button 
-                className="bg-white border border-[#ecebea] text-[#514587] cursor-pointer p-2 rounded-lg flex items-center justify-center transition-all hover:bg-[#514587]/10 hover:border-[#514587] shadow-sm" 
-                onClick={onToggleSidebar}
-                title="Open Sidebar"
-              >
-                <Menu size={24} />
-              </button>
-            )}
             <div>
                <div className="text-[0.85rem] text-gray-500 uppercase tracking-wide font-semibold mb-1">
-                   Course / Lessons / Lesson {lesson.order_index}
+                   {activeCourse?.title || 'Course'} / {lesson.title}
                </div>
                <h1 className="text-4xl text-[#514587] font-bold tracking-tight">{lesson.title}</h1>
             </div>
