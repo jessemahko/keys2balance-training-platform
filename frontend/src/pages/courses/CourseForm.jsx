@@ -1,18 +1,26 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { createCourseFn, updateCourseFn, fetchCourseByIdFn } from '../../reducers/courseReducer'
+import {
+	createCourseFn,
+	updateCourseFn,
+	fetchCourseByIdFn,
+} from '../../reducers/courseReducer'
 import { setUsersFn } from '../../reducers/usersReducer'
+import { useTranslation } from 'react-i18next'
 
 const CourseForm = () => {
 	const { courseId } = useParams()
+	const { t } = useTranslation()
 	const isEditMode = Boolean(courseId)
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const users = useSelector((state) => state.users) || []
 	const courses = useSelector((state) => state.course.items) || []
-	const courseToEdit = courses.find((c) => String(c.course_id) === String(courseId))
+	const courseToEdit = courses.find(
+		(c) => String(c.course_id) === String(courseId),
+	)
 
 	const currentUserId = user?.id || ''
 	const userRole = user?.role || ''
@@ -33,10 +41,14 @@ const CourseForm = () => {
 	}, [userRole, dispatch])
 
 	const trainers = useMemo(() => {
-		if (!users.length) return [{ user_id: currentUserId, username: 'Me (Admin)' }]
-		const fetchedTrainers = users.filter(u => u.role === 'trainer')
-		return [{ user_id: currentUserId, username: 'Me (Admin)' }, ...fetchedTrainers]
-	}, [users, currentUserId])
+		if (!users.length)
+			return [{ user_id: currentUserId, username: t('Me (Admin)') }]
+		const fetchedTrainers = users.filter((u) => u.role === 'trainer')
+		return [
+			{ user_id: currentUserId, username: t('Me (Admin)') },
+			...fetchedTrainers,
+		]
+	}, [users, currentUserId, t])
 
 	useEffect(() => {
 		if (isEditMode) {
@@ -45,13 +57,13 @@ const CourseForm = () => {
 					await dispatch(fetchCourseByIdFn(courseId))
 				} catch (err) {
 					console.error(err)
-					setError('Failed to fetch course details')
+					setError(t('Failed to fetch course details'))
 					setLoading(false)
 				}
 			}
 			fetchCourse()
 		}
-	}, [courseId, isEditMode, dispatch])
+	}, [courseId, isEditMode, dispatch, t])
 
 	useEffect(() => {
 		if (isEditMode && courseToEdit) {
@@ -80,17 +92,17 @@ const CourseForm = () => {
 			}
 			navigate('/dashboard')
 		} catch (e) {
-			setError(e.response?.data?.error || 'Operation failed')
+			setError(e.response?.data?.error || t('Operation failed'))
 		}
 	}
 
-	if (loading) return <div className='p-8 text-center'>Loading...</div>
+	if (loading) return <div className='p-8 text-center'>{t('Loading...')}</div>
 
 	return (
 		<div className='p-8 max-w-2xl mx-auto'>
 			<div className='bg-white rounded-xl shadow-lg p-8 border border-[#cdd0d8]'>
 				<h1 className='text-3xl font-bold text-[#514587] mb-6'>
-					{isEditMode ? 'Edit Course' : 'Create New Course'}
+					{isEditMode ? t('Edit Course') : t('Create New Course')}
 				</h1>
 
 				{error && (
@@ -102,7 +114,7 @@ const CourseForm = () => {
 				<form onSubmit={handleSubmit} className='space-y-6'>
 					<div>
 						<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
-							Course Title
+							{t('Course Title')}
 						</label>
 						<input
 							type='text'
@@ -111,13 +123,13 @@ const CourseForm = () => {
 							onChange={handleChange}
 							required
 							className='w-full border border-[#cdd0d8] rounded-lg px-4 py-3 focus:outline-none focus:border-[#514587] transition'
-							placeholder='e.g., Intro to Leadership'
+							placeholder={t('e.g., Intro to Leadership')}
 						/>
 					</div>
 
 					<div>
 						<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
-							Description
+							{t('Description')}
 						</label>
 						<textarea
 							name='description'
@@ -125,14 +137,14 @@ const CourseForm = () => {
 							onChange={handleChange}
 							rows='5'
 							className='w-full border border-[#cdd0d8] rounded-lg px-4 py-3 focus:outline-none focus:border-[#514587] transition'
-							placeholder='Describe what students will learn...'
+							placeholder={t('Describe what students will learn...')}
 						></textarea>
 					</div>
 
 					{userRole === 'admin' && (
 						<div>
 							<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
-								Assign Instructor
+								{t('Assign Instructor')}
 							</label>
 							<select
 								name='teacherId'
@@ -140,7 +152,7 @@ const CourseForm = () => {
 								onChange={handleChange}
 								className='w-full border border-[#cdd0d8] rounded-lg px-4 py-3 focus:outline-none focus:border-[#514587] transition bg-white'
 							>
-								{trainers.map(t => (
+								{trainers.map((t) => (
 									<option key={t.user_id} value={t.user_id}>
 										{t.first_name || t.username} {t.last_name || ''}
 									</option>
@@ -151,7 +163,7 @@ const CourseForm = () => {
 
 					<div>
 						<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
-							Thumbnail URL
+							{t('Thumbnail URL')}
 						</label>
 						<input
 							type='url'
@@ -168,14 +180,14 @@ const CourseForm = () => {
 							type='submit'
 							className='flex-grow bg-[#514587] text-white py-3 rounded-lg font-bold hover:bg-[#9484b4] transition shadow-md'
 						>
-							{isEditMode ? 'Update Course' : 'Create Course'}
+							{isEditMode ? t('Update Course') : t('Create Course')}
 						</button>
 						<button
 							type='button'
 							onClick={() => navigate(-1)}
 							className='px-8 py-3 border-2 border-[#cdd0d8] text-[#9484b4] rounded-lg font-bold hover:bg-[#ededed] transition'
 						>
-							Cancel
+							{t('Cancel')}
 						</button>
 					</div>
 				</form>

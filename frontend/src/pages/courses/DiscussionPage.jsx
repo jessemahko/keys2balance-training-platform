@@ -11,8 +11,10 @@ import {
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
+import { useTranslation } from 'react-i18next'
 
 const DiscussionPage = () => {
+	const { t } = useTranslation()
 	const dispatch = useDispatch()
 	const { courseId } = useParams()
 	const user = useSelector((state) => state.user)
@@ -24,7 +26,8 @@ const DiscussionPage = () => {
 	const isSending = useSelector((state) => state.discussion.isSending)
 
 	// Derived: the full active thread object
-	const activeThread = threads.find(t => t.thread_id === activeThreadId) || null
+	const activeThread =
+		threads.find((t) => t.thread_id === activeThreadId) || null
 
 	// Helper to get the consistent current user ID
 	const currentUserId = user?.user_id || user?.id || user?.sub
@@ -71,7 +74,9 @@ const DiscussionPage = () => {
 		setNewMessage('')
 
 		try {
-			await dispatch(sendMessageFn(courseId, activeThread.thread_id, messageContent, user))
+			await dispatch(
+				sendMessageFn(courseId, activeThread.thread_id, messageContent, user),
+			)
 		} catch (error) {
 			console.error('Error sending message:', error)
 			setNewMessage(messageContent) // Restore the text for retry
@@ -79,44 +84,60 @@ const DiscussionPage = () => {
 	}
 
 	if (isLoading) {
-		return <div className='flex items-center justify-center h-full text-[#64748b]'>Loading discussion...</div>
+		return (
+			<div className='flex items-center justify-center h-full text-[#64748b]'>
+				{t('Loading discussion...')}
+			</div>
+		)
 	}
 
 	return (
 		<div className='flex h-screen bg-[#f8fafc] overflow-hidden'>
 			<aside className='w-[300px] bg-white border-r border-[#e2e8f0] flex flex-col z-20'>
 				<header className='p-6 border-b border-[#f1f5f9]'>
-					<Link to={`/dashboard/courses/${courseId}`} className='text-[#64748b] no-underline text-sm hover:underline'>
-						&larr; Course
+					<Link
+						to={`/dashboard/courses/${courseId}`}
+						className='text-[#64748b] no-underline text-sm hover:underline'
+					>
+						&larr; {t('Course')}
 					</Link>
-					<h3 className='mt-2 mb-0 text-xl font-bold text-[#0f172a]'>Threads</h3>
+					<h3 className='mt-2 mb-0 text-xl font-bold text-[#0f172a]'>
+						{t('Threads')}
+					</h3>
 				</header>
-				
+
 				<div className='flex-1 overflow-y-auto p-2'>
-					{threads.map(thread => (
-						<button 
+					{threads.map((thread) => (
+						<button
 							key={thread.thread_id}
 							className={`w-full text-left p-4 bg-transparent border-none rounded-[0.75rem] cursor-pointer transition-all duration-200 mb-1 hover:bg-[#f1f5f9] ${activeThread?.thread_id === thread.thread_id ? 'bg-[#eef2ff] border-l-4 border-l-[#14b8a6]' : ''}`}
 							onClick={() => dispatch(setActiveThread(thread.thread_id))}
 						>
 							<div className='flex flex-col gap-1'>
-								<span className='font-semibold text-[#1e293b] text-[0.9375rem]'>{thread.title}</span>
-								<span className='text-xs text-[#64748b]'>{thread.messages?.length || 0} messages</span>
+								<span className='font-semibold text-[#1e293b] text-[0.9375rem]'>
+									{thread.title}
+								</span>
+								<span className='text-xs text-[#64748b]'>
+									{thread.messages?.length || 0} {t('messages')}
+								</span>
 							</div>
 						</button>
 					))}
 				</div>
 
-				<form className='p-4 border-t border-[#f1f5f9] flex gap-2' onSubmit={handleCreateThread}>
-					<input 
-						type='text' 
+				<form
+					className='p-4 border-t border-[#f1f5f9] flex gap-2'
+					onSubmit={handleCreateThread}
+				>
+					<input
+						type='text'
 						className='flex-1 p-[0.5rem_0.75rem] rounded-[0.5rem] border border-[#e2e8f0] text-[0.875rem] outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6]'
-						placeholder='New thread title...'
+						placeholder={t('New thread title...')}
 						value={newThreadTitle}
 						onChange={(e) => setNewThreadTitle(e.target.value)}
 					/>
-					<button 
-						type='submit' 
+					<button
+						type='submit'
 						disabled={!newThreadTitle.trim() || isCreatingThread}
 						className='bg-[#14b8a6] text-white rounded-[0.5rem] p-2 flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity'
 					>
@@ -127,7 +148,9 @@ const DiscussionPage = () => {
 
 			<div className='flex-1 flex flex-col bg-[#f8fafc]'>
 				<header className='p-[1.25rem_2rem] bg-white border-b border-[#e2e8f0]'>
-					<h1 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>{activeThread?.title || 'Select a thread'}</h1>
+					<h1 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>
+						{activeThread?.title || t('Select a thread')}
+					</h1>
 				</header>
 
 				<div className='flex-1 flex flex-col overflow-hidden relative'>
@@ -136,22 +159,28 @@ const DiscussionPage = () => {
 							<div className='flex-1 overflow-y-auto p-8 flex flex-col gap-5'>
 								{(activeThread.messages || []).length === 0 ? (
 									<div className='flex flex-col items-center justify-center h-full text-[#64748b]'>
-										<p>No messages yet. Start the conversation!</p>
+										<p>{t('No messages yet. Start the conversation!')}</p>
 									</div>
 								) : (
 									(activeThread.messages || []).map((msg) => {
 										const isOwn = String(msg.user_id) === String(currentUserId)
-										const displayName = msg.user ? `${msg.user.first_name} ${msg.user.last_name}`.trim() : 'User'
-										
+										const displayName = msg.user
+											? `${msg.user.first_name} ${msg.user.last_name}`.trim()
+											: t('User')
+
 										return (
-											<div 
-												key={msg.message_id} 
+											<div
+												key={msg.message_id}
 												className={`flex gap-3 max-w-[80%] ${isOwn ? 'self-end flex-row-reverse' : ''}`}
 											>
 												{!isOwn && (
 													<div className='w-9 h-9 rounded-full overflow-hidden shrink-0'>
 														{msg.user?.avatar_url ? (
-															<img src={msg.user.avatar_url} alt={displayName} className='w-full h-full object-cover' />
+															<img
+																src={msg.user.avatar_url}
+																alt={displayName}
+																className='w-full h-full object-cover'
+															/>
 														) : (
 															<div className='w-full h-full bg-[#e2e8f0] text-[#475569] flex items-center justify-center font-semibold text-sm'>
 																{displayName.charAt(0)}
@@ -160,11 +189,24 @@ const DiscussionPage = () => {
 													</div>
 												)}
 												<div className='flex flex-col'>
-													{!isOwn && <span className='text-xs font-semibold text-[#64748b] mb-1 block'>{displayName}</span>}
-													<div className={`p-[0.75rem_1rem] rounded-[1rem] shadow-sm border ${isOwn ? 'bg-[#7c3aed] text-white border-[#7c3aed] rounded-tr-[0.25rem]' : 'bg-white border-[#e2e8f0] rounded-tl-[0.25rem]'}`}>
-														<p className='m-0 text-[0.9375rem] leading-relaxed'>{msg.message_text}</p>
-														<span className={`text-[0.625rem] mt-1 block text-right ${isOwn ? 'text-white/80' : 'text-[#94a3b8]'}`}>
-															{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+													{!isOwn && (
+														<span className='text-xs font-semibold text-[#64748b] mb-1 block'>
+															{displayName}
+														</span>
+													)}
+													<div
+														className={`p-[0.75rem_1rem] rounded-[1rem] shadow-sm border ${isOwn ? 'bg-[#7c3aed] text-white border-[#7c3aed] rounded-tr-[0.25rem]' : 'bg-white border-[#e2e8f0] rounded-tl-[0.25rem]'}`}
+													>
+														<p className='m-0 text-[0.9375rem] leading-relaxed'>
+															{msg.message_text}
+														</p>
+														<span
+															className={`text-[0.625rem] mt-1 block text-right ${isOwn ? 'text-white/80' : 'text-[#94a3b8]'}`}
+														>
+															{new Date(msg.created_at).toLocaleTimeString([], {
+																hour: '2-digit',
+																minute: '2-digit',
+															})}
 														</span>
 													</div>
 												</div>
@@ -175,12 +217,15 @@ const DiscussionPage = () => {
 								<div ref={chatEndRef} />
 							</div>
 
-							<form className='p-[1.5rem_2rem] bg-white border-t border-[#e2e8f0] flex gap-4' onSubmit={handleSendMessage}>
+							<form
+								className='p-[1.5rem_2rem] bg-white border-t border-[#e2e8f0] flex gap-4'
+								onSubmit={handleSendMessage}
+							>
 								<textarea
 									className='flex-1 bg-[#f1f5f9] border border-[#e2e8f0] rounded-[0.75rem] p-[0.75rem_1rem] resize-none h-[44px] outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6]'
 									value={newMessage}
 									onChange={(e) => setNewMessage(e.target.value)}
-									placeholder='Type your message...'
+									placeholder={t('Type your message...')}
 									onKeyDown={(e) => {
 										if (e.key === 'Enter' && !e.shiftKey) {
 											e.preventDefault()
@@ -188,8 +233,8 @@ const DiscussionPage = () => {
 										}
 									}}
 								/>
-								<button 
-									type='submit' 
+								<button
+									type='submit'
 									disabled={!newMessage.trim() || isSending}
 									className='bg-[#14b8a6] text-white w-11 h-11 rounded-full flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity'
 								>
@@ -200,8 +245,12 @@ const DiscussionPage = () => {
 					) : (
 						<div className='flex flex-col items-center justify-center h-full text-[#64748b]'>
 							<Groups2RoundedIcon sx={{ fontSize: 64, color: '#cbd5e1' }} />
-							<h2 className='text-2xl font-bold mt-4'>Start a Discussion</h2>
-							<p>Select an existing thread or create a new one to begin.</p>
+							<h2 className='text-2xl font-bold mt-4'>
+								{t('Start a Discussion')}
+							</h2>
+							<p>
+								{t('Select an existing thread or create a new one to begin.')}
+							</p>
 						</div>
 					)}
 				</div>
