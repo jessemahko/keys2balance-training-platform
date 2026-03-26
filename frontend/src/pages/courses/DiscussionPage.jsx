@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { setError } from '../../reducers/notiReducer'
 import { getThreads, createThread, createMessage } from '../../services/discussion'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
 
 const DiscussionPage = () => {
+	const dispatch = useDispatch()
 	const { courseId } = useParams()
 	const user = useSelector((state) => state.user)
 	
@@ -69,7 +71,7 @@ const DiscussionPage = () => {
 			setActiveThread(newActive || created)
 		} catch (error) {
 			console.error('Error creating thread:', error)
-			alert('Failed to create thread. Please try again.')
+			dispatch(setError('Failed to create thread. Please try again.', 5))
 		} finally {
 			setIsCreatingThread(false)
 		}
@@ -118,7 +120,7 @@ const DiscussionPage = () => {
 			}
 			setActiveThread(rolledBackThread)
 			setNewMessage(messageContent) // Restore the text for retry
-			alert('Failed to send message. Please try again.')
+			dispatch(setError('Failed to send message. Please try again.', 5))
 		} finally {
 			setIsSending(false)
 		}

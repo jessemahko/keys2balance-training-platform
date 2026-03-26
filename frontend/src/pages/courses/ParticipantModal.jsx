@@ -57,48 +57,34 @@ const ParticipantModal = ({ isOpen, onClose, course, onParticipantsChanged }) =>
 	}
 
 	return (
-		<div className="modal-overlay" style={{
-			position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-			backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
-			justifyContent: 'center', alignItems: 'center', zIndex: 1000
-		}}>
-			<div className="modal-content" style={{
-				backgroundColor: 'white', padding: '2rem', borderRadius: '8px',
-				width: '90%', maxWidth: '500px', maxHeight: '80vh', overflowY: 'auto'
-			}}>
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-					<h2 style={{ margin: 0 }}>Manage Participants</h2>
-					<button onClick={onClose} style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.5rem', color: '#000' }}>&times;</button>
+		<div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+			<div className="bg-white p-8 rounded-lg w-[90%] max-w-[500px] max-h-[80vh] overflow-y-auto">
+				<div className="flex justify-between items-center mb-4">
+					<h2 className="m-0">Manage Participants</h2>
+					<button onClick={onClose} className="cursor-pointer bg-transparent border-none text-2xl text-black">&times;</button>
 				</div>
 				
-				{error && <p style={{ color: 'red' }}>{error}</p>}
+				{error && <p className="text-red-500">{error}</p>}
 				{loading ? <p>Loading participants...</p> : (
-					<ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+					<ul className="list-none p-0 m-0">
 						{allUsers.length === 0 ? <p>No participants found.</p> : null}
 						{allUsers.map(user => {
 							const isEnrolled = enrolledUserIds.has(user.user_id)
 							const isProcessing = processingId === user.user_id
 							return (
-								<li key={user.user_id} style={{
-									display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-									padding: '0.75rem 0', borderBottom: '1px solid #eee'
-								}}>
+								<li key={user.user_id} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
 									<div>
-										<strong style={{ display: 'block', color: '#000' }}>{user.first_name || user.username} {user.last_name || ''}</strong>
-										<span style={{ fontSize: '0.85rem', color: '#666' }}>{user.email}</span>
+										<strong className="block text-black">{user.first_name || user.username} {user.last_name || ''}</strong>
+										<span className="text-[0.85rem] text-gray-500">{user.email}</span>
 									</div>
 									<button 
 										onClick={() => handleToggleEnrollment(user)}
 										disabled={isProcessing}
-										style={{
-											padding: '0.5rem 1rem',
-											borderRadius: '4px',
-											cursor: isProcessing ? 'not-allowed' : 'pointer',
-											fontWeight: 'bold',
-											border: 'none',
-											backgroundColor: isEnrolled ? '#fee2e2' : '#e0e7ff',
-											color: isEnrolled ? '#991b1b' : '#3730a3'
-										}}
+										className={`px-4 py-2 rounded font-bold border-none transition-colors ${
+											isProcessing ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+										} ${
+											isEnrolled ? 'bg-red-100 text-red-800 hover:bg-red-200' : 'bg-indigo-100 text-indigo-900 hover:bg-indigo-200'
+										}`}
 									>
 										{isProcessing ? 'Processing...' : isEnrolled ? 'Remove' : 'Enroll'}
 									</button>
