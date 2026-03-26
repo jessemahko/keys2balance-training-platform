@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
-// import profile from '../services/profile'
+import profile from '../services/profile'
 
 const userSlice = createSlice({
 	name: 'user',
@@ -33,27 +33,27 @@ export const rmUserFn = () => {
 	return (dispatch) => dispatch(removeUser())
 }
 
-// export const updateAvatar = (pic) => {
-// 	return async (dispatch) => {
-// 		if (isTokenExpired(getToken())) {
-// 			dispatch(rmUserFn())
-// 			return
-// 		}
-// 		const { avatarUrl } = await profile.updateAvatar(pic) // Extract the avatarUrl
+export const updateAvatar = (pic) => {
+	return async (dispatch) => {
+		if (isTokenExpired(getToken())) {
+			dispatch(rmUserFn())
+			return
+		}
+		const { avatar_url } = await profile.updateAvatar(pic) // Extract the avatar_url
 
-// 		dispatch(editUser({ avatarUrl })) // Pass it as a string
-// 	}
-// }
+		dispatch(editUser({ avatar_url })) // Pass it as a string
+	}
+}
 
-// export const updateProfile = (user) => {
-// 	return async (dispatch) => {
-// 		if (isTokenExpired(getToken())) {
-// 			dispatch(rmUserFn())
-// 			return
-// 		}
-// 		await profile.updateProfile(user)
-// 		dispatch(editUser(user))
-// 	}
-// }
+export const updateProfile = (user) => {
+	return async (dispatch) => {
+		if (isTokenExpired(getToken())) {
+			dispatch(rmUserFn())
+			return
+		}
+		await profile.updateProfile(user)
+		dispatch(editUser(user))
+	}
+}
 
 export default userSlice.reducer
