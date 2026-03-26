@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import {
-	Routes,
-	Route,
-	Outlet,
-	Navigate,
-	useNavigate,
-} from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom'
 import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
@@ -44,28 +38,10 @@ const App = () => {
 		setIsLoading(false)
 	}, [dispatch])
 
-	const handleLogout = () => {
-		// Logout logic
-		window.localStorage.removeItem('loggedUser') // Remove user from localStorage
-		dispatch(rmUserFn()) // Dispatch action to remove user from Redux
-		navigate('/authentication')
-	}
-
 	if (isLoading) return <div>Loading...</div>
 
 	return (
 		<div className='min-h-screen bg-slate-100 text-slate-950'>
-			{user ? (
-				<button
-					type='button'
-					onClick={handleLogout}
-					className='fixed right-5 top-5 z-20 rounded-full bg-white p-3 text-slate-700 shadow-sm transition hover:text-orange-500'
-					aria-label='Log out'
-				>
-					<LogoutIcon />
-				</button>
-			) : null}
-
 			<Notification
 				message={notification.error}
 				className='error'
@@ -78,7 +54,12 @@ const App = () => {
 			/>
 			<Routes>
 				{/* Public Route */}
-				<Route path='/authentication' element={<Authentication />} />
+				<Route
+					path='/authentication'
+					element={
+						user ? <Navigate replace to='/dashboard' /> : <Authentication />
+					}
+				/>
 				<Route path='/auth-success' element={<AuthSuccess />} />
 				<Route
 					path='/auth-failed'
@@ -93,7 +74,10 @@ const App = () => {
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard/*' element={<Dashboard />} />
-					<Route path='/courses/:courseId/discussion' element={<DiscussionPage />} />
+					<Route
+						path='/courses/:courseId/discussion'
+						element={<DiscussionPage />}
+					/>
 				</Route>
 
 				<Route path='*' element={<Navigate replace to='/' />} />
