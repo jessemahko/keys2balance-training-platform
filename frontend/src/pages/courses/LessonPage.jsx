@@ -19,7 +19,7 @@ const LessonPage = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state) => state.user);
-  const courses = useSelector((state) => state.course);
+  const courses = useSelector((state) => state.course.items);
   const activeCourse = courses.find(c => String(c.course_id) === String(courseId));
   
   const [lesson, setLesson] = useState(null);

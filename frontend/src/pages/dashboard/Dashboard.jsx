@@ -13,13 +13,12 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import LessonTitleModal from '../../components/Sidebar/LessonTitleModal'
 import { Menu as MenuIcon } from 'lucide-react'
 import { setCoursesFn, fetchCourseByIdFn } from '../../reducers/courseReducer'
-import { setError } from '../../reducers/notiReducer'
 import CourseForm from '../courses/CourseForm'
 import ParticipantModal from '../courses/ParticipantModal'
 import LessonPage from '../courses/LessonPage'
 import { useMatch } from 'react-router-dom'
 import { createLesson, updateLesson, deleteLesson as deleteLessonService } from '../../services/lessons'
-import { setNoti } from '../../reducers/notiReducer'
+import { setNoti, setError } from '../../reducers/notiReducer'
 
 const LESSON_FILTERS = {
 	ready: 'ready',
@@ -189,13 +188,13 @@ const CourseDetail = ({ courses, onError }) => {
 		[courses, courseId],
 	)
 	const course = cachedCourse
-	const [isLoading, setIsLoading] = useState(true)
+	const isLoading = useSelector((state) => state.course.isLoading)
+	const loadError = useSelector((state) => state.course.error)
 	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false)
 	const user = useSelector((state) => state.user)
 	const userRole = user?.role || ''
 	const currentUserId = user?.id || ''
 	const dispatch = useDispatch()
-	const [loadError, setLoadError] = useState('')
 	const [lessonSearchTerm, setLessonSearchTerm] = useState('')
 	const deferredLessonSearchTerm = useDeferredValue(lessonSearchTerm)
 	const lessons = useMemo(() => sortLessons(course?.lessons), [course])
@@ -215,32 +214,7 @@ const CourseDetail = ({ courses, onError }) => {
 	const hasActiveLessonSearch = lessonSearchTerm.trim().length > 0
 
 	useEffect(() => {
-		let isActive = true
-
-		const loadCourse = async () => {
-			setIsLoading(true)
-			setLoadError('')
-
-			try {
-				await dispatch(fetchCourseByIdFn(courseId))
-			} catch (error) {
-				if (!isActive) return
-				const message = getErrorMessage(error, 'Unable to load the course')
-				setLoadError(message)
-				onError(message)
-			} finally {
-				if (isActive) {
-					setIsLoading(false)
-				}
-			}
-		}
-
-		loadCourse()
-
-		return () => {
-			isActive = false
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		dispatch(fetchCourseByIdFn(courseId))
 	}, [courseId, dispatch])
 
 	if (isLoading) {
@@ -469,41 +443,19 @@ const SectionPlaceholder = ({ title, description, backTo, actionLabel }) => {
 const Dashboard = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
-	const courses = useSelector((state) => state.course)
-	const [isLoading, setIsLoading] = useState(true)
+	const courses = useSelector((state) => state.course.items)
+	const isLoading = useSelector((state) => state.course.isLoading)
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 	const [isLessonModalOpen, setIsLessonModalOpen] = useState(false)
 	const [lessonModalMode, setLessonModalMode] = useState('create')
 	const [selectedLesson, setSelectedLesson] = useState(null)
 
 	useEffect(() => {
-		let isActive = true
-
-		const loadCourses = async () => {
-			setIsLoading(true)
-
-			try {
-				await dispatch(setCoursesFn())
-			} catch (error) {
-				dispatch(
-					setError(getErrorMessage(error, 'Unable to load your courses'), 5),
-				)
-			} finally {
-				if (isActive) {
-					setIsLoading(false)
-				}
-			}
-		}
-
-		loadCourses()
-
-		return () => {
-			isActive = false
-		}
+		dispatch(setCoursesFn())
 	}, [dispatch])
 
-	const reportLoadError = (message) => {
-		dispatch(setError(message, 5))
+	const reportLoadError = () => {
+		// Errors are now handled centrally in the courseReducer thunks
 	}
 
 	const handleAddLesson = () => {

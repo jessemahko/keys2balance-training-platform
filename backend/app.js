@@ -74,9 +74,9 @@ app.use(
 	middleware.authorizeRoles('admin', 'trainer'),
 	userRouter,
 ) // User management routes
-app.use('/api/discussions', middleware.userExtractor, discussionRouter) // Discussion routes for authenticated users
-app.use('/api/notifications', middleware.userExtractor, notificationsRouter) // Notification routes for authenticated users
-app.use('/api/lessons', middleware.userExtractor, lessonRouter) // Lesson routes for authenticated users
+app.use('/api/discussions', middleware.userExtractor, middleware.authorizeRoles('admin', 'trainer', 'participant'), discussionRouter)
+app.use('/api/notifications', middleware.userExtractor, middleware.authorizeRoles('admin', 'trainer', 'participant'), notificationsRouter)
+app.use('/api/lessons', middleware.userExtractor, middleware.authorizeRoles('admin', 'trainer', 'participant'), lessonRouter)
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {

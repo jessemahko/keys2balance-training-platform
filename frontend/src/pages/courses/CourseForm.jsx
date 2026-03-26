@@ -11,7 +11,7 @@ const CourseForm = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const users = useSelector((state) => state.users) || []
-	const courses = useSelector((state) => state.course) || []
+	const courses = useSelector((state) => state.course.items) || []
 	const courseToEdit = courses.find((c) => String(c.course_id) === String(courseId))
 
 	const currentUserId = user?.id || ''
