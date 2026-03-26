@@ -8,7 +8,7 @@ import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
 import DiscussionPage from './pages/courses/DiscussionPage'
 
-import { setUserFn, rmUserFn } from './reducers/userReducer'
+import { setUserFn, rmUserFn, setUser } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
 import { setToken, isTokenExpired } from './services/authen/login'
 
@@ -31,12 +31,23 @@ const App = () => {
 				dispatch(rmUserFn())
 				window.localStorage.removeItem('loggedUser')
 			} else {
-				dispatch(setUserFn(user))
+				dispatch(setUser(user))
 				setToken(user.token)
 			}
 		}
 		setIsLoading(false)
 	}, [dispatch])
+
+	useEffect(() => {
+		const loggedUserJSON = window.localStorage.getItem('loggedUser')
+		if (loggedUserJSON) {
+			const user = JSON.parse(loggedUserJSON)
+
+			dispatch(setUserFn(user))
+			setToken(user.token)
+		}
+		setIsLoading(false)
+	}, [])
 
 	if (isLoading) return <div>Loading...</div>
 

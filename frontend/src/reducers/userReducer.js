@@ -24,8 +24,14 @@ export const { setUser, removeUser, editUser } = userSlice.actions
 
 // Thunks
 export const setUserFn = (user) => {
-	return (dispatch) => {
-		dispatch(setUser(user))
+	return async (dispatch) => {
+		const userData = await profile.getMe(user.id)
+		// console.log('Fetched user data:', userData)
+		window.localStorage.setItem(
+			'loggedUser',
+			JSON.stringify({ ...user, ...userData }),
+		)
+		dispatch(setUser(userData))
 	}
 }
 
@@ -40,7 +46,10 @@ export const updateAvatar = (pic) => {
 			return
 		}
 		const { avatar_url } = await profile.updateAvatar(pic) // Extract the avatar_url
-
+		window.localStorage.setItem(
+			'loggedUser',
+			JSON.stringify((prev) => ({ ...prev, avatar_url })), // Update the stored user with the new avatar_url
+		)
 		dispatch(editUser({ avatar_url })) // Pass it as a string
 	}
 }
@@ -52,6 +61,11 @@ export const updateProfile = (user) => {
 			return
 		}
 		await profile.updateProfile(user)
+		window.localStorage.setItem(
+			'loggedUser',
+			JSON.stringify((prev) => ({ ...prev, ...user })), // Update the stored user with the new profile data
+		)
+
 		dispatch(editUser(user))
 	}
 }

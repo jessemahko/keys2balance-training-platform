@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { setUserFn } from '../../reducers/userReducer'
+import { setUser } from '../../reducers/userReducer'
 import { setError, setNotification } from '../../reducers/notiReducer'
 import loginService, { setToken } from '../../services/authen/login'
 
@@ -41,14 +41,14 @@ const Login = () => {
 					password: password.value,
 				})
 			}
-			window.localStorage.setItem('loggedUser', JSON.stringify(user))
 			setToken(user.token)
 
 			// Decode the token immediately to ensure the user state is complete
 			const decoded = JSON.parse(atob(user.token.split('.')[1]))
 			const userWithInfo = { ...user, ...decoded }
 
-			dispatch(setUserFn(userWithInfo))
+			window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
+			dispatch(setUser(userWithInfo))
 			dispatch(setNotification('Login successfully', 2))
 			rmUsername()
 			rmPassword()

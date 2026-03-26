@@ -37,5 +37,15 @@ export const changePassword = async (data) => {
 	return res.data
 }
 
-export default { updateAvatar, updateProfile }
+export const getMe = async (userId) => {
+	const config = {
+		headers: {
+			Authorization: getToken(),
+		},
+	}
+	const res = await axios.get(`${baseUrl}`, config)
+	return res.data
+}
+
+export default { updateAvatar, updateProfile, getMe }
 

@@ -11,11 +11,6 @@ const ProfilePage = () => {
 
 	const [formData, setFormData] = useState(user)
 
-	// Handle update avatar
-	useEffect(() => {
-		window.localStorage.setItem('loggedUser', JSON.stringify(user))
-	}, [user])
-
 	// Detect click outside of the dialog
 
 	const formatDate = (dateStr) => {
