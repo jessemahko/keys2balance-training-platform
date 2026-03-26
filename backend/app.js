@@ -16,6 +16,7 @@ const registerRouter = require('./controllers/auth/register') // Registration-re
 const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
 
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
+const profileRouter = require('./controllers/user/profileController') // User profile routes
 // const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
 const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
@@ -59,6 +60,9 @@ app.use(
 	accessCodeRouter,
 )
 
+// Profile routes
+app.use('/api/profile', middleware.userExtractor, profileRouter)
+
 // Course routes
 app.use(
 	'/api/courses',
@@ -74,9 +78,26 @@ app.use(
 	middleware.authorizeRoles('admin', 'trainer'),
 	userRouter,
 ) // User management routes
-app.use('/api/discussions', middleware.userExtractor, middleware.authorizeRoles('admin', 'trainer', 'participant'), discussionRouter)
-app.use('/api/notifications', middleware.userExtractor, middleware.authorizeRoles('admin', 'trainer', 'participant'), notificationsRouter)
-app.use('/api/lessons', middleware.userExtractor, middleware.authorizeRoles('admin', 'trainer', 'participant'), lessonRouter)
+app.use(
+	'/api/discussions',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
+	discussionRouter,
+)
+app.use(
+	'/api/notifications',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
+	notificationsRouter,
+)
+app.use(
+	'/api/lessons',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
+	lessonRouter,
+)
+
+app.use('/uploads', express.static('uploads'))
 
 // app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 // app.get('*', (req, res) => {

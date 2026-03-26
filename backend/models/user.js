@@ -99,6 +99,13 @@ const createUserWithOAuth = async ({
 	return res.rows[0]
 }
 
+const saveImageURL = async (userId, imageUrl) => {
+	await pool.query(`UPDATE users SET avatar_url = $1 WHERE user_id = $2`, [
+		imageUrl,
+		userId,
+	])
+}
+
 module.exports = {
 	findById,
 	findByEmail,
@@ -111,4 +118,5 @@ module.exports = {
 	verifyEmail,
 	deleteById,
 	updateUserPassword,
+	saveImageURL,
 }
