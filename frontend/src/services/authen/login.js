@@ -23,5 +23,23 @@ const login = async (credentials) => {
 
 const getToken = () => token
 
-export { getToken, isTokenExpired, setToken }
+const getStoredUser = () => {
+	const loggedUserJSON = window.localStorage.getItem('loggedUser')
+
+	if (!loggedUserJSON || loggedUserJSON === 'undefined') {
+		if (loggedUserJSON === 'undefined') {
+			window.localStorage.removeItem('loggedUser')
+		}
+		return null
+	}
+
+	try {
+		return JSON.parse(loggedUserJSON)
+	} catch (error) {
+		window.localStorage.removeItem('loggedUser')
+		return null
+	}
+}
+
+export { getToken, isTokenExpired, setToken, getStoredUser }
 export default { login }

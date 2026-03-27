@@ -10,7 +10,11 @@ import DiscussionPage from './pages/courses/DiscussionPage'
 
 import { setUserFn, rmUserFn, setUser } from './reducers/userReducer'
 import { clearMessages } from './reducers/notiReducer'
-import { setToken, isTokenExpired } from './services/authen/login'
+import {
+	setToken,
+	isTokenExpired,
+	getStoredUser,
+} from './services/authen/login'
 
 import LogoutIcon from '@mui/icons-material/Logout'
 
@@ -24,9 +28,8 @@ const App = () => {
 	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('loggedUser')
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON)
+		const user = getStoredUser()
+		if (user) {
 			if (isTokenExpired(user.token)) {
 				dispatch(rmUserFn())
 				window.localStorage.removeItem('loggedUser')
@@ -39,10 +42,8 @@ const App = () => {
 	}, [dispatch])
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('loggedUser')
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON)
-
+		const user = getStoredUser()
+		if (user) {
 			dispatch(setUserFn(user))
 			setToken(user.token)
 		}
