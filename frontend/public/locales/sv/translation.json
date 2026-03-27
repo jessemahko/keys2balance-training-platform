@@ -151,5 +151,20 @@
 	"This lesson is currently empty. Add your first content block!": "Den här lektionen är för närvarande tom. Lägg till ditt första innehållsblock!",
 	"Start Building": "Börja bygga",
 	"Add a block at the very top": "Lägg till ett block högst upp",
-	"messages": "meddelanden"
+	"messages": "meddelanden",
+	"Sort by": "Sortera efter",
+	"Newest": "Nyaste",
+	"Oldest": "Äldsta",
+	"Unread": "Olästa",
+	"No notifications yet": "Inga meddelanden ännu",
+	"You're all caught up! Check back later for updates.": "Du är ikapp! Kolla tillbaka senare för uppdateringar.",
+	"Mark as read": "Markera som läst",
+	"Delete": "Ta bort",
+	"Loading notifications...": "Laddar meddelanden...",
+	"Notification deleted": "Meddelandet togs bort",
+	"Notification marked as read": "Meddelandet markerades som läst",
+	"Today": "I dag",
+	"Yesterday": "I går",
+	"daysAgo": "{{count}} dagar sedan",
+	"unreadCount": "{{count}} olästa"
 }
