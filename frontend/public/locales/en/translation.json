@@ -150,5 +150,20 @@
 	"This lesson is currently empty. Add your first content block!": "This lesson is currently empty. Add your first content block!",
 	"Start Building": "Start Building",
 	"Add a block at the very top": "Add a block at the very top",
-	"messages": "messages"
+	"messages": "messages",
+	"Sort by": "Sort by",
+	"Newest": "Newest",
+	"Oldest": "Oldest",
+	"Unread": "Unread",
+	"No notifications yet": "No notifications yet",
+	"You're all caught up! Check back later for updates.": "You're all caught up! Check back later for updates.",
+	"Mark as read": "Mark as read",
+	"Delete": "Delete",
+	"Loading notifications...": "Loading notifications...",
+	"Notification deleted": "Notification deleted",
+	"Notification marked as read": "Notification marked as read",
+	"Today": "Today",
+	"Yesterday": "Yesterday",
+	"daysAgo": "{{count}} days ago",
+	"unreadCount": "{{count}} unread"
 }

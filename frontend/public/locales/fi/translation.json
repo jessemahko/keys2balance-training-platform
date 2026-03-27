@@ -152,5 +152,20 @@
 	"This lesson is currently empty. Add your first content block!": "Tämä oppitunti on tällä hetkellä tyhjä. Lisää ensimmäinen sisältölohko!",
 	"Start Building": "Aloita rakentaminen",
 	"Add a block at the very top": "Lisää lohko aivan yläosaan",
-	"messages": "viestiä"
+	"messages": "viestiä",
+	"Sort by": "Lajittele",
+	"Newest": "Uusimmat",
+	"Oldest": "Vanhimmat",
+	"Unread": "Lukemattomat",
+	"No notifications yet": "Ei ilmoituksia vielä",
+	"You're all caught up! Check back later for updates.": "Kaikki on luettu! Tarkista myöhemmin uudelleen.",
+	"Mark as read": "Merkitse luetuksi",
+	"Delete": "Poista",
+	"Loading notifications...": "Ladataan ilmoituksia...",
+	"Notification deleted": "Ilmoitus poistettu",
+	"Notification marked as read": "Ilmoitus merkitty luetuksi",
+	"Today": "Tänään",
+	"Yesterday": "Eilen",
+	"daysAgo": "{{count}} päivää sitten",
+	"unreadCount": "{{count}} lukematonta"
 }

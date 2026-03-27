@@ -28,6 +28,7 @@ import {
 	isTokenExpired,
 	getStoredUser,
 } from './services/authen/login'
+import { useTranslation } from 'react-i18next'
 
 import LogoutIcon from '@mui/icons-material/Logout'
 
@@ -38,6 +39,7 @@ const App = () => {
 	const notification = useSelector((state) => state.noti)
 	const navigate = useNavigate()
 	const location = useLocation()
+
 	const { t, i18n } = useTranslation()
 
 	const [isLoading, setIsLoading] = useState(true)
@@ -63,9 +65,11 @@ const App = () => {
 			setToken(user.token)
 		}
 		setIsLoading(false)
+		const lang = localStorage.getItem('language') || 'en'
+		i18n.changeLanguage(lang)
 	}, [])
 
-	if (isLoading) return <div>Loading...</div>
+	if (isLoading) return <div>{t('Loading...')}</div>
 
 	return (
 		<div className='min-h-screen bg-slate-100 text-slate-950'>
