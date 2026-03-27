@@ -11,6 +11,7 @@ import {
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useTranslation } from 'react-i18next'
 
 const DiscussionPage = () => {
@@ -70,16 +71,13 @@ const DiscussionPage = () => {
 		e.preventDefault()
 		if (!newMessage.trim() || !activeThread || isSending) return
 
-		const messageContent = newMessage.trim()
-		setNewMessage('')
-
 		try {
 			await dispatch(
-				sendMessageFn(courseId, activeThread.thread_id, messageContent, user),
+				sendMessageFn(courseId, activeThread.thread_id, newMessage.trim()),
 			)
+			setNewMessage('') // Clear only after backend confirms
 		} catch (error) {
 			console.error('Error sending message:', error)
-			setNewMessage(messageContent) // Restore the text for retry
 		}
 	}
 
@@ -238,7 +236,11 @@ const DiscussionPage = () => {
 									disabled={!newMessage.trim() || isSending}
 									className='bg-[#14b8a6] text-white w-11 h-11 rounded-full flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity'
 								>
-									<SendRoundedIcon />
+									{isSending ? (
+										<CircularProgress size={20} sx={{ color: 'white' }} />
+									) : (
+										<SendRoundedIcon />
+									)}
 								</button>
 							</form>
 						</>
