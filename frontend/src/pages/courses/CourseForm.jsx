@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
 	createCourseFn,
@@ -24,6 +24,13 @@ const CourseForm = () => {
 
 	const currentUserId = user?.id || ''
 	const userRole = user?.role || ''
+
+	// Role guard: only admins and trainers can create/edit courses
+	const isCourseOwner = isEditMode && courseToEdit
+		? String(courseToEdit.teacher_id) === String(currentUserId)
+		: true
+	const canAccessForm =
+		userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
 
 	const [formData, setFormData] = useState({
 		title: '',
@@ -94,6 +101,10 @@ const CourseForm = () => {
 		} catch (e) {
 			setError(e.response?.data?.error || t('Operation failed'))
 		}
+	}
+
+	if (!canAccessForm) {
+		return <Navigate replace to='/dashboard' />
 	}
 
 	if (loading) return <div className='p-8 text-center'>{t('Loading...')}</div>
