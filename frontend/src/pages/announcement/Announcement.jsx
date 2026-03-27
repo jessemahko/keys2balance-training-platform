@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setError, setNotification } from '../../reducers/notiReducer'
 import {
@@ -13,16 +13,40 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 const AnnouncementPage = () => {
 	const dispatch = useDispatch()
 	const notifications = useSelector((state) => state.notifications)
+	const [sortBy, setSortBy] = useState('newest')
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
-		const fetchNotifications = async () => {
+		const fetchNotifications = () => {
 			setLoading(true)
-			await dispatch(setNotificationsFn())
+			dispatch(setNotificationsFn())
 			setLoading(false)
 		}
 		fetchNotifications()
 	}, [dispatch])
+
+	const notificationsToDisplay = useMemo(() => {
+		const byCreatedAtDesc = (a, b) =>
+			new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+
+		if (sortBy === 'oldest') {
+			return [...notifications].sort(
+				(a, b) =>
+					new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+			)
+		}
+
+		if (sortBy === 'unread') {
+			return [...notifications].sort((a, b) => {
+				if (a.is_read === b.is_read) {
+					return byCreatedAtDesc(a, b)
+				}
+				return a.is_read ? 1 : -1
+			})
+		}
+
+		return [...notifications].sort(byCreatedAtDesc)
+	}, [notifications, sortBy])
 
 	const handleDelete = (id) => {
 		try {
@@ -77,8 +101,33 @@ const AnnouncementPage = () => {
 	return (
 		<div style={styles.container}>
 			<div style={styles.header}>
-				<h1 style={styles.title}>Announcements</h1>
-				<span style={styles.badge}>{unreadCount} unread</span>
+				<div style={styles.headerLeft}>
+					<h1 style={styles.title}>Announcements</h1>
+					<span style={styles.badge}>{unreadCount} unread</span>
+				</div>
+
+				<div style={styles.sortWrap}>
+					<span style={styles.sortLabel}>Sort by</span>
+					<div style={styles.segmentedControl}>
+						{[
+							{ value: 'newest', label: 'Newest' },
+							{ value: 'oldest', label: 'Oldest' },
+							{ value: 'unread', label: 'Unread' },
+						].map((option) => (
+							<button
+								key={option.value}
+								type='button'
+								onClick={() => setSortBy(option.value)}
+								style={{
+									...styles.segmentBtn,
+									...(sortBy === option.value ? styles.segmentBtnActive : {}),
+								}}
+							>
+								{option.label}
+							</button>
+						))}
+					</div>
+				</div>
 			</div>
 
 			{notifications.length === 0 ? (
@@ -91,7 +140,7 @@ const AnnouncementPage = () => {
 				</div>
 			) : (
 				<div style={styles.listContainer}>
-					{notifications.map((noti) => (
+					{notificationsToDisplay.map((noti) => (
 						<div
 							key={noti.notification_id}
 							style={{
@@ -146,6 +195,8 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		gap: '12px',
+		flexWrap: 'wrap',
 		marginBottom: '24px',
 		maxWidth: '800px',
 		margin: '0 auto 24px auto',
@@ -169,6 +220,41 @@ const styles = {
 		fontSize: '14px',
 		fontWeight: '600',
 	},
+	sortWrap: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: '10px',
+		flexWrap: 'wrap',
+	},
+	sortLabel: {
+		fontSize: '14px',
+		color: '#6a6580',
+		fontWeight: '600',
+	},
+	segmentedControl: {
+		display: 'flex',
+		alignItems: 'center',
+		backgroundColor: '#ebe8f5',
+		padding: '4px',
+		borderRadius: '999px',
+		gap: '4px',
+	},
+	segmentBtn: {
+		border: 'none',
+		backgroundColor: 'transparent',
+		color: '#4f4965',
+		padding: '7px 12px',
+		borderRadius: '999px',
+		fontSize: '13px',
+		fontWeight: '600',
+		cursor: 'pointer',
+		transition: 'all 0.2s ease',
+	},
+	segmentBtnActive: {
+		backgroundColor: '#6b5b95',
+		color: '#fff',
+		boxShadow: '0 2px 8px rgba(75, 57, 128, 0.2)',
+	},
 	listContainer: {
 		maxWidth: '800px',
 		margin: '0 auto',
@@ -181,7 +267,7 @@ const styles = {
 		borderRadius: '12px',
 		padding: '20px',
 		boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-		transition: 'all 0.2s ease',
+		transition: 'all 0.25s ease',
 		border: '1px solid #e8e8ed',
 	},
 	cardUnread: {
@@ -307,4 +393,3 @@ const styles = {
 }
 
 export default AnnouncementPage
-
