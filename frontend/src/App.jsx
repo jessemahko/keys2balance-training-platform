@@ -2,21 +2,32 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
+	BrowserRouter as Router,
 	Routes,
 	Route,
+	Link,
 	Outlet,
 	Navigate,
 	useNavigate,
+	useLocation,
 } from 'react-router-dom'
+
 import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
-import DiscussionPage from './pages/courses/DiscussionPage'
 
-import { setUserFn, rmUserFn } from './reducers/userReducer'
+import DiscussionPage from './pages/courses/DiscussionPage'
+import { useTranslation } from 'react-i18next'
+
+import { setUserFn, rmUserFn, setUser } from './reducers/userReducer'
+
 import { clearMessages } from './reducers/notiReducer'
-import { setToken, isTokenExpired } from './services/authen/login'
+import {
+	setToken,
+	isTokenExpired,
+	getStoredUser,
+} from './services/authen/login'
 
 import LogoutIcon from '@mui/icons-material/Logout'
 
@@ -26,51 +37,39 @@ const App = () => {
 	const user = useSelector((state) => state.user)
 	const notification = useSelector((state) => state.noti)
 	const navigate = useNavigate()
+	const location = useLocation()
+
+	const { t, i18n } = useTranslation()
 
 	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('loggedUser')
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON)
+		const user = getStoredUser()
+		if (user) {
 			if (isTokenExpired(user.token)) {
 				dispatch(rmUserFn())
 				window.localStorage.removeItem('loggedUser')
 			} else {
-				// Decode the token to get user info if it's not already in the object
-				const decoded = JSON.parse(atob(user.token.split('.')[1]))
-				const userWithInfo = { ...user, ...decoded }
-				// Update the local storage with the decoded info
-				window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
-				dispatch(setUserFn(userWithInfo))
+				dispatch(setUser(user))
 				setToken(user.token)
 			}
 		}
 		setIsLoading(false)
 	}, [dispatch])
 
-	const handleLogout = () => {
-		// Logout logic
-		window.localStorage.removeItem('loggedUser') // Remove user from localStorage
-		dispatch(rmUserFn()) // Dispatch action to remove user from Redux
-		navigate('/authentication')
-	}
+	useEffect(() => {
+		const user = getStoredUser()
+		if (user) {
+			dispatch(setUserFn(user))
+			setToken(user.token)
+		}
+		setIsLoading(false)
+	}, [])
 
-	if (isLoading) return <div>Loading...</div>
+	if (isLoading) return <div>{t('Loading...')}</div>
 
 	return (
 		<div className='min-h-screen bg-slate-100 text-slate-950'>
-			{user ? (
-				<button
-					type='button'
-					onClick={handleLogout}
-					className='fixed right-5 top-5 z-20 rounded-full bg-white p-3 text-slate-700 shadow-sm transition hover:text-orange-500'
-					aria-label='Log out'
-				>
-					<LogoutIcon />
-				</button>
-			) : null}
-
 			<Notification
 				message={notification.error}
 				className='error'
@@ -83,7 +82,12 @@ const App = () => {
 			/>
 			<Routes>
 				{/* Public Route */}
-				<Route path='/authentication' element={<Authentication />} />
+				<Route
+					path='/authentication'
+					element={
+						user ? <Navigate replace to='/dashboard' /> : <Authentication />
+					}
+				/>
 				<Route path='/auth-success' element={<AuthSuccess />} />
 				<Route
 					path='/auth-failed'
@@ -98,7 +102,10 @@ const App = () => {
 				>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard/*' element={<Dashboard />} />
-					<Route path='/courses/:courseId/discussion' element={<DiscussionPage />} />
+					<Route
+						path='/courses/:courseId/discussion'
+						element={<DiscussionPage />}
+					/>
 				</Route>
 
 				<Route path='*' element={<Navigate replace to='/' />} />

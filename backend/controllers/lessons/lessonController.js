@@ -18,8 +18,17 @@ const getLesson = async (req, res) => {
 		return res.status(404).json({ error: 'Lesson not found' })
 	}
 
-	const enrollingCourse = await Course.findEnrollment(user.id, lesson.course_id)
-	if (!enrollingCourse) {
+	const course = await Course.findById(lesson.course_id)
+	if (!course) {
+		return res.status(404).json({ error: 'Course not found' })
+	}
+
+	// Authorization check: Admin, Course Trainer, or Enrolled Participant
+	const isEnrolled = await Course.findEnrollment(user.id, lesson.course_id)
+	const isTeacher = String(course.teacher_id) === String(user.id)
+	const isAdmin = user.role === 'admin'
+
+	if (!isEnrolled && !isTeacher && !isAdmin) {
 		return res.status(403).json({ error: 'Access denied to this lesson' })
 	}
 
@@ -42,7 +51,7 @@ const createLesson = async (req, res) => {
 		return res.status(404).json({ error: 'Course not found' })
 	}
 
-	if (course.teacher_id !== user.id && user.role !== 'admin') {
+	if (String(course.teacher_id) !== String(user.id) && user.role !== 'admin') {
 		return res
 			.status(403)
 			.json({ error: 'Only the course creator or an admin can add lessons' })
@@ -71,7 +80,7 @@ const addBlock = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+	if (!course || (String(course.teacher_id) !== String(user.id) && user.role !== 'admin')) {
 		return res
 			.status(403)
 			.json({ error: 'Only the course creator or an admin can modify blocks' })
@@ -82,7 +91,7 @@ const addBlock = async (req, res) => {
 		'zoom_card',
 		'assessment_form',
 		'recording_link',
-		'pdf_attachment',
+		'file_attachment',
 	]
 	if (!allowedTypes.includes(type)) {
 		return res.status(400).json({ error: 'Invalid block type' })
@@ -114,7 +123,7 @@ const updateBlock = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+	if (!course || (String(course.teacher_id) !== String(user.id) && user.role !== 'admin')) {
 		return res
 			.status(403)
 			.json({ error: 'Only the course creator or an admin can modify blocks' })
@@ -142,7 +151,7 @@ const deleteBlock = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+	if (!course || (String(course.teacher_id) !== String(user.id) && user.role !== 'admin')) {
 		return res
 			.status(403)
 			.json({ error: 'Only the course creator or an admin can modify blocks' })
@@ -164,7 +173,7 @@ const deleteLesson = async (req, res) => {
 	}
 
 	const course = await Course.findById(lesson.course_id)
-	if (!course || (course.teacher_id !== user.id && user.role !== 'admin')) {
+	if (!course || (String(course.teacher_id) !== String(user.id) && user.role !== 'admin')) {
 		return res.status(403).json({
 			error: 'Only the course creator or an admin can delete the lesson',
 		})
@@ -174,9 +183,34 @@ const deleteLesson = async (req, res) => {
 	res.status(204).end()
 }
 
+const updateLesson = async (req, res) => {
+	const user = req.user
+	if (!user) {
+		return res.status(401).json({ error: 'Unauthorized' })
+	}
+
+	const { title, order_index } = req.body
+
+	const lesson = await Lesson.findById(req.params.id)
+	if (!lesson) {
+		return res.status(404).json({ error: 'Lesson not found' })
+	}
+
+	const course = await Course.findById(lesson.course_id)
+	if (!course || (String(course.teacher_id) !== String(user.id) && user.role !== 'admin')) {
+		return res
+			.status(403)
+			.json({ error: 'Only the course creator or an admin can update the lesson' })
+	}
+
+	const updatedLesson = await Lesson.updateLesson(req.params.id, { title, order_index })
+	res.json(updatedLesson)
+}
+
 module.exports = {
 	getLesson,
 	createLesson,
+	updateLesson,
 	addBlock,
 	updateBlock,
 	deleteBlock,

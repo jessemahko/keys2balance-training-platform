@@ -56,6 +56,16 @@ const findById = async (courseId) => {
 			SELECT 
 				c.*,
 
+				jsonb_build_object(
+					'user_id', t.user_id,
+					'username', t.username,
+					'email', t.email,
+					'first_name', t.first_name,
+					'last_name', t.last_name,
+					'avatar_url', t.avatar_url,
+					'role', t.role
+				) AS teacher,
+
 				COALESCE(
 					json_agg(DISTINCT l) FILTER (WHERE l.lesson_id IS NOT NULL),
 					'[]'
@@ -78,6 +88,9 @@ const findById = async (courseId) => {
 
 			FROM courses c
 
+			LEFT JOIN users t
+				ON t.user_id = c.teacher_id
+
 			LEFT JOIN lessons l
 				ON l.course_id = c.course_id
 
@@ -89,7 +102,7 @@ const findById = async (courseId) => {
 
 			WHERE c.course_id = $1
 
-			GROUP BY c.course_id
+			GROUP BY c.course_id, t.user_id
 		`,
 		[courseId],
 	)

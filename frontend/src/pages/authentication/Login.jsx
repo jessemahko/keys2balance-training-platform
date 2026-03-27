@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { setUserFn } from '../../reducers/userReducer'
+import { setUser } from '../../reducers/userReducer'
 import { setError, setNotification } from '../../reducers/notiReducer'
 import loginService, { setToken } from '../../services/authen/login'
 
@@ -13,6 +13,9 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useField } from '../../hooks/hook'
 
 // import './authen.css'
+
+// const base_url = ''
+const base_url = 'http://localhost:3001'
 
 const Login = () => {
 	const dispatch = useDispatch()
@@ -38,24 +41,22 @@ const Login = () => {
 					password: password.value,
 				})
 			}
-			window.localStorage.setItem('loggedUser', JSON.stringify(user))
 			setToken(user.token)
-			
+
 			// Decode the token immediately to ensure the user state is complete
 			const decoded = JSON.parse(atob(user.token.split('.')[1]))
 			const userWithInfo = { ...user, ...decoded }
-			
-			dispatch(setUserFn(userWithInfo))
-			dispatch(setNotification(`${t('Login successfully')}`, 2))
+
+			window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
+			dispatch(setUser(userWithInfo))
+			dispatch(setNotification('Login successfully', 5))
 			rmUsername()
 			rmPassword()
 			navigate('/dashboard')
 		} catch (error) {
-			dispatch(setError(`${t('Wrong Credentials')}`, 2))
+			dispatch(setError('Wrong Credentials', 5))
 		}
 	}
-
-	const base_url = 'http://localhost:3001'
 
 	return (
 		<div className='form-box login'>

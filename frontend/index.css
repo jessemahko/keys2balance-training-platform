@@ -24,10 +24,6 @@
 	}
 }
 
-.navbar {
-	box-shadow: 1px 0 10px rgba(56, 55, 55, 0.3);
-}
-
 .box {
 	box-shadow: 1px 1px 10px rgba(56, 55, 55, 0.3);
 }
@@ -40,25 +36,21 @@
 	color: gray;
 }
 
-.editing {
-	background: #d4d92f;
-	border: 2px black;
-}
-
-.faded {
-	opacity: 0.5;
-}
 .active {
 	opacity: 1;
-	font-weight: bold; /* Optional: Make selected button stand out */
+	font-weight: bold;
+	/* Optional: Make selected button stand out */
 }
 
 /* Custom thin scrollbar */
 ::-webkit-scrollbar {
-	width: 6px; /* Thin width */
+	width: 6px;
+	/* Thin width */
 }
+
 ::-webkit-scrollbar {
-	height: 6px; /* Thin height */
+	height: 6px;
+	/* Thin height */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -72,17 +64,8 @@
 }
 
 ::-webkit-scrollbar-button {
-	display: block; /* Ensure buttons/arrows are visible */
-}
-
-.search {
-	visibility: hidden;
-	transform: translate3d(94%, 0, 0);
-	transition: all 0.5s ease-out;
-}
-.search-open {
-	visibility: visible;
-	transform: translate3d(0, 0, 0);
+	display: block;
+	/* Ensure buttons/arrows are visible */
 }
 
 /*  */
@@ -125,14 +108,17 @@ canvas {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	100% {
 		transform: rotate(360deg);
 	}
 }
+
 @keyframes wave-anti-clockwise {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	100% {
 		transform: rotate(-360deg);
 	}
@@ -141,10 +127,15 @@ canvas {
 .p-dialog-mask {
 	background-color: rgba(129, 127, 127, 0.9) !important;
 	z-index: 9999 !important;
-	position: fixed !important; /* Ensure it's positioned relative to the viewport */
-	left: 60px !important; /* Offset the mask from the left by 60px */
-	top: 0 !important; /* Ensure it stretches from the top */
-	right: 0 !important; /* Stretch to the right */
-	bottom: 0 !important; /* Stretch to the bottom */
+	position: fixed !important;
+	/* Ensure it's positioned relative to the viewport */
+	left: 60px !important;
+	/* Offset the mask from the left by 60px */
+	top: 0 !important;
+	/* Ensure it stretches from the top */
+	right: 0 !important;
+	/* Stretch to the right */
+	bottom: 0 !important;
+	/* Stretch to the bottom */
 	border-radius: 10px !important;
 }

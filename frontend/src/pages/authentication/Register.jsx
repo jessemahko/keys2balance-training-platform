@@ -54,7 +54,7 @@ const Register = ({ setActive }) => {
 
 		for (const rule of rules) {
 			if (rule.condition) {
-				dispatch(setError(rule.message, 2))
+				dispatch(setError(rule.message, 5))
 				return false
 			}
 		}
@@ -72,18 +72,18 @@ const Register = ({ setActive }) => {
 				password: password.value,
 			})
 
-			dispatch(setNotification(`${t('Register successfully')}`, 2))
+			dispatch(setNotification('Register successfully', 5))
 			rmUsername()
 			rmPassword()
 			rmCfPassword()
 			setActive(false)
 		} catch (err) {
 			if (err.response.data.error) {
-				dispatch(setError(err.response.data.error, 2))
+				dispatch(setError(err.response.data.error, 5))
 				return
 			}
 
-			dispatch(setError(`${t('Something went wrong')}`, 2))
+			dispatch(setError('Something went wrong', 5))
 		}
 	}
 

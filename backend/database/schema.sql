@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 	is_verified BOOLEAN NOT NULL DEFAULT FALSE,
 	is_active BOOLEAN NOT NULL DEFAULT TRUE,
+	is_login_with_google BOOLEAN NOT NULL DEFAULT FALSE,
 
 	first_name TEXT,
 	last_name TEXT,

@@ -12,6 +12,13 @@ lessonRouter.post(
 	lessonController.createLesson,
 )
 
+// PATCH a lesson (e.g., update title)
+lessonRouter.patch(
+	'/:id',
+	middleware.authorizeRoles('admin', 'trainer'),
+	lessonController.updateLesson,
+)
+
 // PATCH a lesson to add a content block (Zoom, PDF, etc.)
 lessonRouter.patch(
 	'/:id/add-block',

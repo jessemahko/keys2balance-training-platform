@@ -47,6 +47,16 @@ const markAsRead = async (userId) => {
 	const { rows } = await pool.query(query, [userId])
 	return rows || []
 }
+const markAsReadById = async (notificationId) => {
+	const query = `
+            UPDATE notifications
+            SET is_read = TRUE
+            WHERE notification_id = $1
+            RETURNING *
+        `
+	const { rows } = await pool.query(query, [notificationId])
+	return rows[0]
+}
 const deleteNotification = async (notificationId) => {
 	const query = `
             DELETE FROM notifications
@@ -63,5 +73,6 @@ module.exports = {
 	getByUser,
 	create,
 	markAsRead,
+	markAsReadById,
 	deleteNotification,
 }

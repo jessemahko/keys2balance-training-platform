@@ -46,16 +46,7 @@ loginRouter.post('/', async (req, res) => {
 	// 3. Prepare user data for token
 	const userData = {
 		id: user.user_id,
-		email: user.email,
-		username: user.username,
 		role: user.role,
-		is_verified: user.is_verified,
-		gender: user.gender,
-		first_name: user.first_name,
-		last_name: user.last_name,
-		date_of_birth: user.date_of_birth,
-		avatar_url: user.avatar_url,
-		phone: user.phone,
 	}
 
 	// // Add cohorts only for participants
@@ -71,6 +62,17 @@ loginRouter.post('/', async (req, res) => {
 	// 5. Respond with token + basic info
 	const response = {
 		token,
+		email: user.email,
+		username: user.username,
+		role: user.role,
+		is_verified: user.is_verified,
+		gender: user.gender,
+		first_name: user.first_name,
+		last_name: user.last_name,
+		date_of_birth: user.date_of_birth,
+		avatar_url: user.avatar_url,
+		phone: user.phone,
+		is_login_with_google: user.is_login_with_google,
 	}
 
 	// // Add cohorts to response only for participants
