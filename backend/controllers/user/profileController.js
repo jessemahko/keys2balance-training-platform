@@ -72,11 +72,12 @@ profileRouter.get('/', async (req, res) => {
 	if (!userRequest) {
 		return res.status(401).json({ error: 'token invalid' })
 	}
-	const user = await User.findById(userRequest.id)
-	if (!user) {
+	const safeUser = await User.findMeById(userRequest.id)
+	if (!safeUser) {
 		return res.status(404).json({ error: 'User not found' })
 	}
-	res.json({ id: user.user_id, ...user })
+
+	res.json({ id: safeUser.user_id, ...safeUser })
 })
 
 // profileRouter.put('/', async (req, res) => {

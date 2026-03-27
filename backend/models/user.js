@@ -106,6 +106,17 @@ const saveImageURL = async (userId, imageUrl) => {
 	])
 }
 
+// Find user by id
+const findMeById = async (id) => {
+	const res = await pool.query(
+		`SELECT user_id, username, email, role, is_verified, is_active, gender, first_name, last_name, date_of_birth, avatar_url, phone, address, city, post_code, created_at, updated_at
+		FROM users
+		WHERE user_id = $1`,
+		[id],
+	)
+	return res.rows[0] || null
+}
+
 module.exports = {
 	findById,
 	findByEmail,
@@ -119,4 +130,5 @@ module.exports = {
 	deleteById,
 	updateUserPassword,
 	saveImageURL,
+	findMeById,
 }

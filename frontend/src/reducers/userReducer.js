@@ -26,12 +26,11 @@ export const { setUser, removeUser, editUser } = userSlice.actions
 export const setUserFn = (user) => {
 	return async (dispatch) => {
 		const userData = await profile.getMe(user.id)
-		// console.log('Fetched user data:', userData)
 		window.localStorage.setItem(
 			'loggedUser',
 			JSON.stringify({ ...user, ...userData }),
 		)
-		dispatch(setUser(userData))
+		dispatch(setUser({ ...user, ...userData }))
 	}
 }
 
