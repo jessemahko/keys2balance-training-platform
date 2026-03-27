@@ -18,6 +18,9 @@ import LessonPage from '../courses/LessonPage'
 import DashboardHome from './DashboardHome'
 import ProfilePage from '../profile/ProfilePage'
 import CourseLabel from './CourseLabel'
+
+import AnnoucementPage from '../announcement/Announcement'
+
 import SectionPlaceholder from './SectionPlaceholder'
 import { useTranslation } from 'react-i18next'
 
@@ -131,17 +134,7 @@ const Dashboard = () => {
 						path='courses/:courseId/lessons/:lessonId'
 						element={<LessonPage />}
 					/>
-					<Route
-						path='announcements'
-						element={
-							<SectionPlaceholder
-								title='Announcements'
-								description='This links to announcements page.'
-								backTo='/dashboard'
-								actionLabel='Back to courses'
-							/>
-						}
-					/>
+					<Route path='announcements' element={<AnnoucementPage />} />
 					<Route path='profile' element={<ProfilePage />} />
 
 					<Route path='*' element={<Navigate replace to='/dashboard' />} />

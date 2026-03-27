@@ -4,15 +4,23 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: #514587;
-  --color-primary-light: #9484b4;
-  --color-secondary: #e3b465;
-  --color-success: #2ea49c;
-  --color-border-color: #cdd0d8;
-  --color-sidebar-bg: #ededed;
-  --color-bg-main: #f8f9fa;
+	--color-primary: #514587;
+	--color-primary-light: #9484b4;
+	--color-secondary: #e3b465;
+	--color-success: #2ea49c;
+	--color-border-color: #cdd0d8;
+	--color-sidebar-bg: #ededed;
+	--color-bg-main: #f8f9fa;
 }
 
 body {
-  @apply bg-bg-main text-gray-800 font-sans;
+	@apply bg-bg-main text-gray-800 font-sans;
+}
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
