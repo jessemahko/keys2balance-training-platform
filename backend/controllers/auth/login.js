@@ -72,6 +72,7 @@ loginRouter.post('/', async (req, res) => {
 		date_of_birth: user.date_of_birth,
 		avatar_url: user.avatar_url,
 		phone: user.phone,
+		is_login_with_google: user.is_login_with_google,
 	}
 
 	// // Add cohorts to response only for participants

@@ -59,6 +59,7 @@ passport.use(
 					last_name: profile.name.familyName || '',
 					gender: profile.gender || '',
 					avatar_url: avatarPath || '',
+					is_login_with_google: true, // Custom field to indicate Google login
 				}
 				const newUser = await User.createUserWithOAuth(user) // Save the new user to the database
 

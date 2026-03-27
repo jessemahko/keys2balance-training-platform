@@ -30,6 +30,9 @@ router.get(
 				date_of_birth: req.user.date_of_birth,
 				avatar_url: req.user.avatar_url,
 				phone: req.user.phone,
+				created_at: req.user.created_at,
+				updated_at: req.user.updated_at,
+				is_login_with_google: req.user.is_login_with_google,
 			},
 			process.env.SECRET,
 			{
@@ -44,4 +47,3 @@ router.get(
 )
 
 module.exports = router
-

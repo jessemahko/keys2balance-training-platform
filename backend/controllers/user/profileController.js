@@ -115,39 +115,72 @@ profileRouter.get('/', async (req, res) => {
 // 	res.status(204).end()
 // })
 
-// profileRouter.put('/password', async (req, res) => {
-// 	const userRequest = req.user
-// 	// Check if the user is authenticated
-// 	// If not, return a 401 Unauthorized response
-// 	if (!userRequest) {
-// 		return res.status(401).json({ error: 'token invalid', success: false })
-// 	}
+profileRouter.put('/password', async (req, res) => {
+	const userRequest = req.user
+	// Check if the user is authenticated
+	// If not, return a 401 Unauthorized response
+	if (!userRequest) {
+		return res.status(401).json({ error: 'token invalid', success: false })
+	}
 
-// 	const user = await User.findById(userRequest.id)
-// 	if (!user) {
-// 		return res.status(404).json({ error: 'User not found', success: false })
-// 	}
+	const user = await User.findById(userRequest.id)
+	if (!user) {
+		return res.status(404).json({ error: 'User not found', success: false })
+	}
 
-// 	const { oldPassword, newPassword } = req.body
-// 	if (newPassword.length < 3) {
-// 		return res.status(403).json({
-// 			error: 'new password length must be at least 3',
-// 			success: false,
-// 		})
-// 	}
-// 	const passwordCorrect = await bcrypt.compare(oldPassword, user.passwordHash)
-// 	if (!passwordCorrect) {
-// 		return res.status(200).json({
-// 			error: 'Incorect old password',
-// 		})
-// 	}
-// 	const saltRounds = 10
-// 	const passwordHash = await bcrypt.hash(newPassword, saltRounds)
+	const { oldPassword, newPassword } = req.body
+	if (newPassword.length < 8) {
+		return res.status(403).json({
+			error: 'new password length must be at least 8',
+			success: false,
+		})
+	}
+	if (!/\d/.test(newPassword)) {
+		return res.status(403).json({
+			error: 'new password must contain at least one number',
+			success: false,
+		})
+	}
+	if (!/[A-Z]/.test(newPassword)) {
+		return res.status(403).json({
+			error: 'new password must contain a capital letter',
+			success: false,
+		})
+	}
+	if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+		return res.status(403).json({
+			error: 'new password must contain at least one special character',
+			success: false,
+		})
+	}
+	if (/\s/.test(newPassword)) {
+		return res.status(403).json({
+			error: 'new password must not contain whitespace',
+			success: false,
+		})
+	}
 
-// 	await User.findByIdAndUpdate(userRequest.id, { passwordHash }, { new: true })
+	const passwordCorrect = await bcrypt.compare(oldPassword, user.password_hash)
+	if (!passwordCorrect) {
+		return res.status(200).json({
+			error: 'Incorrect old password',
+			success: false,
+		})
+	}
+	const saltRounds = 10
+	const password_hash = await bcrypt.hash(newPassword, saltRounds)
 
-// 	return res.status(200).json({ success: true })
-// })
+	const updatedUser = await User.findByIdAndUpdate(userRequest.id, {
+		password_hash,
+	})
+
+	if (!updatedUser) {
+		return res
+			.status(500)
+			.json({ error: 'Failed to update password', success: false })
+	}
+	return res.status(200).json({ success: true })
+})
 
 // Export the profileRouter to be used in other parts of the application
 module.exports = profileRouter

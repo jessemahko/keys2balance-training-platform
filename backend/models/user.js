@@ -79,10 +79,11 @@ const createUserWithOAuth = async ({
 	last_name,
 	gender,
 	avatar_url,
+	is_login_with_google,
 }) => {
 	const res = await pool.query(
-		`INSERT INTO users (username, email, password_hash, role, is_verified, first_name, last_name, gender, avatar_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		`INSERT INTO users (username, email, password_hash, role, is_verified, first_name, last_name, gender, avatar_url, is_login_with_google)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING *`,
 		[
 			username,
@@ -94,6 +95,7 @@ const createUserWithOAuth = async ({
 			last_name,
 			gender,
 			avatar_url,
+			is_login_with_google,
 		],
 	)
 	return res.rows[0]
@@ -117,6 +119,15 @@ const findMeById = async (id) => {
 	return res.rows[0] || null
 }
 
+const findByIdAndUpdate = async (id, updateFields) => {
+	const res = await pool.query(
+		`UPDATE users SET ${Object.keys(updateFields)
+			.map((key, idx) => `${key} = $${idx + 2}`)
+			.join(', ')} WHERE user_id = $1 RETURNING *`,
+		[id, ...Object.values(updateFields)],
+	)
+	return res.rows[0] || null
+}
 module.exports = {
 	findById,
 	findByEmail,
@@ -131,4 +142,5 @@ module.exports = {
 	updateUserPassword,
 	saveImageURL,
 	findMeById,
+	findByIdAndUpdate,
 }
