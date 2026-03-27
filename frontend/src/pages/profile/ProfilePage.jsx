@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import ProfileHeader from '../../components/profile/ProfileHeader'
 import ProfileField from '../../components/profile/ProfileField'
 import { setNotification, setError } from '../../reducers/notiReducer'
@@ -16,6 +17,7 @@ import { changePassword } from '../../services/profile'
 
 const ProfilePage = () => {
 	const dispatch = useDispatch()
+	const { t } = useTranslation()
 	const user = useSelector((state) => state.user)
 	const [currentPassword, setCurrentPassword] = useState('')
 	const [newPassword, setNewPassword] = useState('')
@@ -58,7 +60,7 @@ const ProfilePage = () => {
 
 	const handleReset = () => {
 		setFormData(user)
-		dispatch(setNotification('Form reset successfully', 2))
+		dispatch(setNotification(t('Form reset successfully'), 5))
 	}
 
 	const handleSave = async (e) => {
@@ -67,9 +69,9 @@ const ProfilePage = () => {
 		try {
 			//const updatedProfile = formData;
 			// dispatch(updateProfile(formData))
-			dispatch(setNotification('Profile updated successfully', 2))
+			dispatch(setNotification('Profile updated successfully', 5))
 		} catch (error) {
-			dispatch(setError('Failed to save profile', 2))
+			dispatch(setError('Failed to save profile', 5))
 		}
 	}
 
@@ -117,14 +119,14 @@ const ProfilePage = () => {
 			})
 
 			if (res.success) {
-				dispatch(setNotification('Password updated successfully', 2))
+				dispatch(setNotification('Password updated successfully', 5))
 				handleCancelEditPassword()
 			} else {
-				dispatch(setError(res.error || 'Failed to update password', 2))
+				dispatch(setError(res.error || 'Failed to update password', 5))
 				return
 			}
 		} catch (error) {
-			dispatch(setError('Failed to update password', 2))
+			dispatch(setError('Failed to update password', 5))
 		}
 	}
 	return (
@@ -139,7 +141,7 @@ const ProfilePage = () => {
 							<div className={`${isEdittingPassword ? 'border-b pb-10' : ''}`}>
 								<div className='flex gap-4'>
 									<h3 className='mb-4 text-lg font-semibold text-gray-800'>
-										Security
+										{t('Security')}
 									</h3>
 									{isEdittingPassword ? (
 										<>
@@ -166,7 +168,7 @@ const ProfilePage = () => {
 									{isEdittingPassword ? (
 										<>
 											<ProfileField
-												label='Current Password'
+												label={t('Current Password')}
 												name='currentPassword'
 												type={isPasswordVisible ? 'text' : 'password'}
 												value={currentPassword}
@@ -174,7 +176,7 @@ const ProfilePage = () => {
 												required={true}
 											/>
 											<ProfileField
-												label='New Password'
+												label={t('New Password')}
 												name='newPassword'
 												type={isPasswordVisible ? 'text' : 'password'}
 												value={newPassword}
@@ -187,12 +189,12 @@ const ProfilePage = () => {
 														key={v.message}
 														className={`text-sm ${v.condition ? 'text-red-500' : 'text-green-500'}`}
 													>
-														{v.message}
+														{t(v.message)}
 													</li>
 												))}
 											</ul>
 											<ProfileField
-												label='Confirm Password'
+												label={t('Confirm Password')}
 												name='confirmPassword'
 												type={isPasswordVisible ? 'text' : 'password'}
 												value={confirmPassword}
@@ -216,7 +218,7 @@ const ProfilePage = () => {
 													onClick={handleSavePassword}
 													disabled={!isAllowSave}
 												>
-													Save
+													{t('Save')}
 												</button>
 
 												<button
@@ -224,13 +226,13 @@ const ProfilePage = () => {
 													onClick={handleCancelEditPassword}
 													className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50'
 												>
-													Cancel
+													{t('Cancel')}
 												</button>
 											</div>
 										</>
 									) : (
 										<ProfileField
-											label='Password'
+											label={t('Password')}
 											name='password'
 											type='password'
 											value='********'
@@ -244,32 +246,32 @@ const ProfilePage = () => {
 						{/* Basic Information */}
 						<div className={`${isEdittingPassword ? 'opacity-20' : ''}`}>
 							<h3 className='mb-4 text-lg font-semibold text-gray-800'>
-								Basic Information
+								{t('Basic Information')}
 							</h3>
 							<div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
 								<ProfileField
-									label='Username'
+									label={t('Username')}
 									name='username'
 									value={formData.username || ''}
 									onChange={handleFormChange}
 									disabled
 								/>
 								<ProfileField
-									label='Email'
+									label={t('Email')}
 									name='email'
 									value={formData.email || ''}
 									onChange={handleFormChange}
 									disabled
 								/>
 								<ProfileField
-									label='Role'
+									label={t('Role')}
 									name='role'
 									value={formData.role || ''}
 									onChange={handleFormChange}
 									disabled
 								/>
 								<ProfileField
-									label='Phone'
+									label={t('Phone')}
 									name='phone'
 									type='number'
 									pattern='^\+?[0-9\s\-()]+$'
@@ -284,32 +286,32 @@ const ProfilePage = () => {
 						{/* Personal Details */}
 						<div className={`${isEdittingPassword ? 'opacity-20' : ''}`}>
 							<h3 className='mb-4 text-lg font-semibold text-gray-800'>
-								Personal Details
+								{t('Personal Details')}
 							</h3>
 							<div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
 								<ProfileField
-									label='First Name'
+									label={t('First Name')}
 									name='first_name'
 									value={formData.first_name || ''}
 									onChange={handleFormChange}
 									disabled={isEdittingPassword}
 								/>
 								<ProfileField
-									label='Last Name'
+									label={t('Last Name')}
 									name='last_name'
 									value={formData.last_name || ''}
 									onChange={handleFormChange}
 									disabled={isEdittingPassword}
 								/>
 								<ProfileField
-									label='Gender'
+									label={t('Gender')}
 									name='gender'
 									value={formData.gender || ''}
 									onChange={handleFormChange}
 									disabled={isEdittingPassword}
 								/>
 								<ProfileField
-									label='Date of Birth'
+									label={t('Date of Birth')}
 									name='date_of_birth'
 									type='date'
 									value={formData.date_of_birth || ''}
@@ -327,7 +329,7 @@ const ProfilePage = () => {
 								className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90'
 								disabled={isEdittingPassword}
 							>
-								Save Changes
+								{t('Save Changes')}
 							</button>
 
 							<button
@@ -336,7 +338,7 @@ const ProfilePage = () => {
 								className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50'
 								disabled={isEdittingPassword}
 							>
-								Reset
+								{t('Reset')}
 							</button>
 						</div>
 					</form>

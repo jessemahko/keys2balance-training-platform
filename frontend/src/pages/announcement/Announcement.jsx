@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 import { setError, setNotification } from '../../reducers/notiReducer'
 import {
 	markAsReadFn,
@@ -12,6 +13,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 
 const AnnouncementPage = () => {
 	const dispatch = useDispatch()
+	const { t } = useTranslation()
 	const notifications = useSelector((state) => state.notifications)
 	const [sortBy, setSortBy] = useState('newest')
 	const [loading, setLoading] = useState(true)
@@ -53,7 +55,7 @@ const AnnouncementPage = () => {
 			dispatch(deleteNotificationFn(id))
 			dispatch(setNotification('Notification deleted', 1))
 		} catch (error) {
-			dispatch(setError('Something went wrong', 2))
+			dispatch(setError('Something went wrong', 5))
 		}
 	}
 
@@ -62,7 +64,7 @@ const AnnouncementPage = () => {
 			dispatch(markAsReadFn(id))
 			dispatch(setNotification('Notification marked as read', 1))
 		} catch (error) {
-			dispatch(setError('Something went wrong', 2))
+			dispatch(setError('Something went wrong', 5))
 		}
 	}
 
@@ -73,11 +75,11 @@ const AnnouncementPage = () => {
 		const days = Math.floor(diff / (1000 * 60 * 60 * 24))
 
 		if (days === 0) {
-			return 'Today'
+			return t('Today')
 		} else if (days === 1) {
-			return 'Yesterday'
+			return t('Yesterday')
 		} else if (days < 7) {
-			return `${days} days ago`
+			return t('daysAgo', { count: days })
 		} else {
 			return date.toLocaleDateString('en-US', {
 				month: 'short',
@@ -93,7 +95,7 @@ const AnnouncementPage = () => {
 		return (
 			<div style={styles.loadingContainer}>
 				<div style={styles.loadingSpinner}></div>
-				<p style={styles.loadingText}>Loading notifications...</p>
+				<p style={styles.loadingText}>{t('Loading notifications...')}</p>
 			</div>
 		)
 	}
@@ -102,17 +104,19 @@ const AnnouncementPage = () => {
 		<div style={styles.container}>
 			<div style={styles.header}>
 				<div style={styles.headerLeft}>
-					<h1 style={styles.title}>Announcements</h1>
-					<span style={styles.badge}>{unreadCount} unread</span>
+					<h1 style={styles.title}>{t('Announcements')}</h1>
+					<span style={styles.badge}>
+						{t('unreadCount', { count: unreadCount })}
+					</span>
 				</div>
 
 				<div style={styles.sortWrap}>
-					<span style={styles.sortLabel}>Sort by</span>
+					<span style={styles.sortLabel}>{t('Sort by')}</span>
 					<div style={styles.segmentedControl}>
 						{[
-							{ value: 'newest', label: 'Newest' },
-							{ value: 'oldest', label: 'Oldest' },
-							{ value: 'unread', label: 'Unread' },
+							{ value: 'newest', label: t('Newest') },
+							{ value: 'oldest', label: t('Oldest') },
+							{ value: 'unread', label: t('Unread') },
 						].map((option) => (
 							<button
 								key={option.value}
@@ -133,9 +137,9 @@ const AnnouncementPage = () => {
 			{notifications.length === 0 ? (
 				<div style={styles.emptyContainer}>
 					<NotificationsNoneIcon style={styles.emptyIcon} />
-					<p style={styles.emptyText}>No notifications yet</p>
+					<p style={styles.emptyText}>{t('No notifications yet')}</p>
 					<p style={styles.emptySubtext}>
-						You're all caught up! Check back later for updates.
+						{t("You're all caught up! Check back later for updates.")}
 					</p>
 				</div>
 			) : (
@@ -165,7 +169,7 @@ const AnnouncementPage = () => {
 										onClick={() => handleMarkAsRead(noti.notification_id)}
 									>
 										<DoneIcon style={styles.btnIcon} />
-										Mark as read
+										{t('Mark as read')}
 									</button>
 								)}
 								<button
@@ -173,7 +177,7 @@ const AnnouncementPage = () => {
 									onClick={() => handleDelete(noti.notification_id)}
 								>
 									<DeleteIcon style={styles.btnIcon} />
-									Delete
+									{t('Delete')}
 								</button>
 							</div>
 						</div>

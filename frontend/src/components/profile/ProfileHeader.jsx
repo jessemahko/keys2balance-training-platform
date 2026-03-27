@@ -93,7 +93,7 @@ const ProfileHeader = () => {
 
 		// Dispatch updateAvatar to upload the cropped image
 		dispatch(updateAvatar(file))
-		dispatch(setNotification('Profile photo updated successfully.', 2))
+		dispatch(setNotification('Profile photo updated successfully.', 5))
 		// setProfileImage(pview)
 		setImageCrop(false)
 	}

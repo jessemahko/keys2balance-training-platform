@@ -64,8 +64,6 @@ const App = () => {
 			setToken(user.token)
 		}
 		setIsLoading(false)
-		const lang = localStorage.getItem('language') || 'en'
-		i18n.changeLanguage(lang)
 	}, [])
 
 	if (isLoading) return <div>{t('Loading...')}</div>

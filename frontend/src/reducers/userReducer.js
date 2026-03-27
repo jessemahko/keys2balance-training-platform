@@ -38,7 +38,7 @@ export const setUserFn = (user) => {
 			)
 			dispatch(setUser({ ...user, ...userData }))
 		} catch (err) {
-			dispatch(setError('Failed to fetch user data', 2))
+			dispatch(setError('Failed to fetch user data', 5))
 			dispatch(rmUserFn())
 			return
 		}

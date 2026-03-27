@@ -49,12 +49,12 @@ const Login = () => {
 
 			window.localStorage.setItem('loggedUser', JSON.stringify(userWithInfo))
 			dispatch(setUser(userWithInfo))
-			dispatch(setNotification('Login successfully', 2))
+			dispatch(setNotification('Login successfully', 5))
 			rmUsername()
 			rmPassword()
 			navigate('/dashboard')
 		} catch (error) {
-			dispatch(setError('Wrong Credentials', 2))
+			dispatch(setError('Wrong Credentials', 5))
 		}
 	}
 
