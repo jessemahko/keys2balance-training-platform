@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
+import { setError } from './notiReducer'
 import profile from '../services/profile'
 
 const userSlice = createSlice({
@@ -25,17 +26,30 @@ export const { setUser, removeUser, editUser } = userSlice.actions
 // Thunks
 export const setUserFn = (user) => {
 	return async (dispatch) => {
-		const userData = await profile.getMe(user.id)
-		window.localStorage.setItem(
-			'loggedUser',
-			JSON.stringify({ ...user, ...userData }),
-		)
-		dispatch(setUser({ ...user, ...userData }))
+		if (isTokenExpired(getToken())) {
+			dispatch(rmUserFn())
+			return
+		}
+		try {
+			const userData = await profile.getMe(user.id)
+			window.localStorage.setItem(
+				'loggedUser',
+				JSON.stringify({ ...user, ...userData }),
+			)
+			dispatch(setUser({ ...user, ...userData }))
+		} catch (err) {
+			dispatch(setError('Failed to fetch user data', 2))
+			dispatch(rmUserFn())
+			return
+		}
 	}
 }
 
 export const rmUserFn = () => {
-	return (dispatch) => dispatch(removeUser())
+	return (dispatch) => {
+		window.localStorage.removeItem('loggedUser')
+		dispatch(removeUser())
+	}
 }
 
 export const updateAvatar = (pic) => {
