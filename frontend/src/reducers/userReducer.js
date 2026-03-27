@@ -59,9 +59,11 @@ export const updateAvatar = (pic) => {
 			return
 		}
 		const { avatar_url } = await profile.updateAvatar(pic) // Extract the avatar_url
+		const storedUser = window.localStorage.getItem('loggedUser')
+		const parsedUser = storedUser ? JSON.parse(storedUser) : null
 		window.localStorage.setItem(
 			'loggedUser',
-			JSON.stringify((prev) => ({ ...prev, avatar_url })), // Update the stored user with the new avatar_url
+			JSON.stringify({ ...(parsedUser || {}), avatar_url }),
 		)
 		dispatch(editUser({ avatar_url })) // Pass it as a string
 	}
@@ -74,9 +76,11 @@ export const updateProfile = (user) => {
 			return
 		}
 		await profile.updateProfile(user)
+		const storedUser = window.localStorage.getItem('loggedUser')
+		const parsedUser = storedUser ? JSON.parse(storedUser) : null
 		window.localStorage.setItem(
 			'loggedUser',
-			JSON.stringify((prev) => ({ ...prev, ...user })), // Update the stored user with the new profile data
+			JSON.stringify({ ...(parsedUser || {}), ...user }),
 		)
 
 		dispatch(editUser(user))
