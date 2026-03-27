@@ -1,14 +1,27 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom'
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Link,
+	Outlet,
+	Navigate,
+	useNavigate,
+	useLocation,
+} from 'react-router-dom'
+
 import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
+
 import DiscussionPage from './pages/courses/DiscussionPage'
+import { useTranslation } from 'react-i18next'
 
 import { setUserFn, rmUserFn, setUser } from './reducers/userReducer'
+
 import { clearMessages } from './reducers/notiReducer'
 import {
 	setToken,
@@ -24,6 +37,8 @@ const App = () => {
 	const user = useSelector((state) => state.user)
 	const notification = useSelector((state) => state.noti)
 	const navigate = useNavigate()
+	const location = useLocation()
+	const { t, i18n } = useTranslation()
 
 	const [isLoading, setIsLoading] = useState(true)
 
