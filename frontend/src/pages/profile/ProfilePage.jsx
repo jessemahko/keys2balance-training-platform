@@ -66,7 +66,7 @@ const ProfilePage = () => {
 
 		try {
 			//const updatedProfile = formData;
-			dispatch(updateProfile(formData))
+			// dispatch(updateProfile(formData))
 			dispatch(setNotification('Profile updated successfully', 2))
 		} catch (error) {
 			dispatch(setError('Failed to save profile', 2))
@@ -271,9 +271,12 @@ const ProfilePage = () => {
 								<ProfileField
 									label='Phone'
 									name='phone'
+									type='number'
+									pattern='^\+?[0-9\s\-()]+$'
 									value={formData.phone || ''}
 									onChange={handleFormChange}
 									disabled={isEdittingPassword}
+									placeholder='+1234567890'
 								/>
 							</div>
 						</div>
