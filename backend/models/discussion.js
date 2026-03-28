@@ -12,11 +12,18 @@ const getThreadsByCourse = async (courseId) => {
 					'message_id', dm.message_id,
 					'user_id', dm.user_id,
 					'message_text', dm.message_text,
-					'created_at', dm.created_at
+					'created_at', dm.created_at,
+					'user', json_build_object(
+						'username', u.username,
+						'first_name', u.first_name,
+						'last_name', u.last_name,
+						'avatar_url', u.avatar_url
+					)
 				) ORDER BY dm.created_at ASC
 			) FILTER (WHERE dm.message_id IS NOT NULL) as messages
 		FROM discussion_threads dt
 		LEFT JOIN discussion_messages dm ON dt.thread_id = dm.thread_id
+		LEFT JOIN users u ON dm.user_id = u.user_id
 		WHERE dt.course_id = $1
 		GROUP BY dt.thread_id, dt.course_id, dt.title, dt.created_at
 		ORDER BY dt.created_at DESC`,
