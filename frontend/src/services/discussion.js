@@ -17,8 +17,8 @@ const createThread = async (courseId, title) => {
 	return response.data
 }
 
-const createMessage = async (threadId, message) => {
-	const response = await axios.post(`${baseUrl}/${threadId}`, { message }, getConfig())
+const createMessage = async (threadId, messageText) => {
+	const response = await axios.post(`${baseUrl}/${threadId}`, { messageText }, getConfig())
 	return response.data
 }
 

@@ -26,24 +26,14 @@ const getThreadsByCourse = async (courseId) => {
 }
 
 const createThread = async (courseId, title) => {
-	const insertRes = await pool.query(
+	const res = await pool.query(
 		`INSERT INTO discussion_threads (course_id, title)
 		 VALUES ($1, $2)
-		 ON CONFLICT (course_id) DO NOTHING
 		 RETURNING *`,
 		[courseId, title],
 	)
 
-	if (insertRes.rows.length > 0) {
-		return { thread: insertRes.rows[0], created: true }
-	}
-
-	const existingRes = await pool.query(
-		'SELECT * FROM discussion_threads WHERE course_id = $1',
-		[courseId],
-	)
-
-	return { thread: existingRes.rows[0] || null, created: false }
+	return { thread: res.rows[0], created: true }
 }
 
 const createMessage = async (threadId, userId, messageText) => {
