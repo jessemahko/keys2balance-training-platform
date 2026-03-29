@@ -7,16 +7,20 @@ const getThreads = async (req, res) => {
 		return res.status(401).json({ error: 'Unauthorized' })
 	}
 
-	const { courseId } = req.body
+	const { courseId } = req.query
 	if (!courseId) {
 		return res.status(400).json({ error: 'courseId is required' })
 	}
 
-	const enrollment = await Course.findEnrollment(user.id, courseId)
-	if (!enrollment) {
-		return res
-			.status(403)
-			.json({ error: 'Forbidden: Not enrolled in this course' })
+	// Admins and trainers can access any course's discussions;
+	// participants must be enrolled.
+	if (user.role === 'participant') {
+		const enrollment = await Course.findEnrollment(user.id, courseId)
+		if (!enrollment) {
+			return res
+				.status(403)
+				.json({ error: 'Forbidden: Not enrolled in this course' })
+		}
 	}
 
 	const threads = await Discussion.getThreadsByCourse(courseId)
