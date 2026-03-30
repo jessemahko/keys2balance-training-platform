@@ -11,10 +11,18 @@ const ProfileField = ({
 	placeholder = '',
 	icon = null,
 	required = false,
+	maxLength = null,
 }) => {
 	return (
 		<div className='flex flex-col gap-2 relative'>
-			<label className='text-sm font-semibold text-gray-700'>{label}</label>
+			<div className='flex'>
+				<label className='text-sm font-semibold text-gray-700'>{label}</label>
+				{required && !value ? (
+					<span className='text-sm font-semibold text-red-500 ml-3'>
+						*{'  '}required
+					</span>
+				) : null}
+			</div>
 			<input
 				className={`${icon !== null ? 'pr-15' : ''} rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-[#514587] focus:ring-2 focus:ring-[#9484b4] disabled:bg-gray-100 disabled:text-gray-500 `}
 				type={type}
@@ -24,6 +32,7 @@ const ProfileField = ({
 				disabled={disabled}
 				placeholder={placeholder}
 				required={required}
+				maxLength={maxLength}
 			/>
 			{icon && <div className='absolute right-3 top-1/2 transform'>{icon}</div>}
 		</div>
@@ -39,6 +48,7 @@ ProfileField.propTypes = {
 	disabled: PropTypes.bool,
 	placeholder: PropTypes.string,
 	icon: PropTypes.node,
+	required: PropTypes.bool,
 }
 
 export default ProfileField

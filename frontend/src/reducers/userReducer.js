@@ -75,7 +75,11 @@ export const updateProfile = (user) => {
 			dispatch(rmUserFn())
 			return
 		}
-		await profile.updateProfile(user)
+		const status = await profile.updateProfile(user)
+		if (status !== 204) {
+			dispatch(setError('Failed to update profile', 5))
+			return
+		}
 		const storedUser = window.localStorage.getItem('loggedUser')
 		const parsedUser = storedUser ? JSON.parse(storedUser) : null
 		window.localStorage.setItem(

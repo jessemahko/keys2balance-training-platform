@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, use } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import ProfileHeader from '../../components/profile/ProfileHeader'
 import ProfileField from '../../components/profile/ProfileField'
+import PhoneDisplay from './PhoneDisplay'
 import { setNotification, setError } from '../../reducers/notiReducer'
 import { updateProfile } from '../../reducers/userReducer'
 import EditIcon from '@mui/icons-material/Edit'
@@ -15,10 +16,13 @@ import { getToken, isTokenExpired } from '../../services/authen/login'
 import { rmUserFn } from '../../reducers/userReducer'
 import { changePassword } from '../../services/profile'
 
+import { isValidPhoneNumber } from 'libphonenumber-js'
+
 const ProfilePage = () => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
 	const user = useSelector((state) => state.user)
+	const [isEditting, setIsEditting] = useState(false)
 	const [currentPassword, setCurrentPassword] = useState('')
 	const [newPassword, setNewPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
@@ -26,9 +30,18 @@ const ProfilePage = () => {
 	const [isEdittingPassword, setIsEdittingPassword] = useState(false)
 	const [isAllowSave, setIsAllowSave] = useState(false)
 
-	const [formData, setFormData] = useState(user)
+	const [formData, setFormData] = useState({
+		...user,
+		date_of_birth: user.date_of_birth
+			? new Date(user.date_of_birth).toISOString().split('T')[0]
+			: '',
+	})
 
-	// Detect click outside of the dialog
+	useEffect(() => {
+		if (!user.first_name || !user.last_name || !user.phone) {
+			setIsEditting(true)
+		}
+	}, [user])
 
 	useEffect(() => {
 		const passwordValidationRules = [
@@ -44,6 +57,7 @@ const ProfilePage = () => {
 	}, [currentPassword, newPassword, confirmPassword])
 
 	const formatDate = (dateStr) => {
+		if (!dateStr) return ''
 		const d = new Date(dateStr)
 		return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
 			.toString()
@@ -52,24 +66,76 @@ const ProfilePage = () => {
 
 	const handleFormChange = (e) => {
 		const { name, value } = e.target
+
+		if (name === 'phone') {
+			setFormData((prev) => ({
+				...prev,
+				[name]: value.replace(/[^\d ]/g, '').replace(/\s+/g, ' '),
+			}))
+			return
+		}
+
+		if (name === 'first_name' || name === 'last_name') {
+			setFormData((prev) => ({
+				...prev,
+				[name]: value.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' '),
+			}))
+			return
+		}
+
+		if (name === 'date_of_birth') {
+			setFormData((prev) => ({
+				...prev,
+				[name]: new Date(value).toISOString().split('T')[0],
+			}))
+			return
+		}
+
 		setFormData((prev) => ({
 			...prev,
-			[name]: value,
+			[name]: value.replace(/\s+/g, ' '),
 		}))
 	}
 
-	const handleReset = () => {
+	const handleCancelEdit = () => {
+		setIsEditting(false)
 		setFormData(user)
-		dispatch(setNotification(t('Form reset successfully'), 5))
 	}
 
 	const handleSave = async (e) => {
 		e.preventDefault()
+		if (!formData.phone) {
+			dispatch(setError('Phone number is required', 5))
+			return
+		}
+
+		if (!formData.first_name) {
+			dispatch(setError('First name is required', 5))
+			return
+		}
+
+		if (!formData.last_name) {
+			dispatch(setError('Last name is required', 5))
+			return
+		}
+
+		if (!isValidPhoneNumber(`+${formData.phone}`)) {
+			dispatch(setError('Invalid phone number', 5))
+			return
+		}
 
 		try {
-			//const updatedProfile = formData;
-			// dispatch(updateProfile(formData))
+			const profileToUpdate = {
+				phone: formData.phone,
+				first_name: formData.first_name,
+				last_name: formData.last_name,
+				gender: formData.gender || null,
+				date_of_birth: formData.date_of_birth || null,
+			}
+			dispatch(updateProfile(profileToUpdate))
+
 			dispatch(setNotification('Profile updated successfully', 5))
+			setIsEditting(false)
 		} catch (error) {
 			dispatch(setError('Failed to save profile', 5))
 		}
@@ -103,7 +169,6 @@ const ProfilePage = () => {
 		setNewPassword('')
 		setConfirmPassword('')
 		setIsPasswordVisible(false)
-		setIsEdittingPassword(false)
 	}
 	const handleSavePassword = async (e) => {
 		e.preventDefault()
@@ -135,7 +200,7 @@ const ProfilePage = () => {
 				<ProfileHeader profile={user} />
 
 				<div className='rounded-2xl bg-white p-6 shadow-md'>
-					<form onSubmit={handleSave} className='space-y-8'>
+					<div className='space-y-8'>
 						{/* Security */}
 						{!user.is_login_with_google && (
 							<div className={`${isEdittingPassword ? 'border-b pb-10' : ''}`}>
@@ -248,6 +313,7 @@ const ProfilePage = () => {
 							<h3 className='mb-4 text-lg font-semibold text-gray-800'>
 								{t('Basic Information')}
 							</h3>
+
 							<div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
 								<ProfileField
 									label={t('Username')}
@@ -261,6 +327,8 @@ const ProfilePage = () => {
 									name='email'
 									value={formData.email || ''}
 									onChange={handleFormChange}
+									placeholder='Enter your email'
+									required={true}
 									disabled
 								/>
 								<ProfileField
@@ -270,16 +338,21 @@ const ProfilePage = () => {
 									onChange={handleFormChange}
 									disabled
 								/>
-								<ProfileField
-									label={t('Phone')}
-									name='phone'
-									type='number'
-									pattern='^\+?[0-9\s\-()]+$'
-									value={formData.phone || ''}
-									onChange={handleFormChange}
-									disabled={isEdittingPassword}
-									placeholder='+1234567890'
-								/>
+								{isEditting ? (
+									<ProfileField
+										label={t('Phone')}
+										name='phone'
+										type='text'
+										value={formData.phone ? `+${formData.phone}` : ''}
+										onChange={handleFormChange}
+										disabled={isEdittingPassword || !isEditting}
+										placeholder={isEditting ? 'eg. +358 123 4567' : ''}
+										required={true}
+										maxLength={15}
+									/>
+								) : (
+									<PhoneDisplay />
+								)}
 							</div>
 						</div>
 
@@ -294,21 +367,29 @@ const ProfilePage = () => {
 									name='first_name'
 									value={formData.first_name || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword}
+									disabled={isEdittingPassword || !isEditting}
+									required={true}
+									placeholder={t('Enter your first name')}
+									error={formData.first_name === ''}
+									errorMessage={t('First name is required')}
 								/>
 								<ProfileField
 									label={t('Last Name')}
 									name='last_name'
 									value={formData.last_name || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword}
+									disabled={isEdittingPassword || !isEditting}
+									required={true}
+									placeholder={t('Enter your last name')}
+									error={formData.last_name === ''}
+									errorMessage={t('Last name is required')}
 								/>
 								<ProfileField
 									label={t('Gender')}
 									name='gender'
 									value={formData.gender || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword}
+									disabled={isEdittingPassword || !isEditting}
 								/>
 								<ProfileField
 									label={t('Date of Birth')}
@@ -316,32 +397,47 @@ const ProfilePage = () => {
 									type='date'
 									value={formData.date_of_birth || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword}
+									disabled={isEdittingPassword || !isEditting}
 								/>
 							</div>
 						</div>
 
-						<div
-							className={`flex flex-wrap gap-4 pt-2 ${isEdittingPassword ? 'opacity-20' : ''}`}
-						>
-							<button
-								type='submit'
-								className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90'
-								disabled={isEdittingPassword}
-							>
-								{t('Save Changes')}
-							</button>
+						{/* Actions */}
 
-							<button
-								type='button'
-								onClick={handleReset}
-								className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50'
-								disabled={isEdittingPassword}
+						{isEditting ? (
+							<div
+								className={`flex flex-wrap gap-4 pt-2 ${isEdittingPassword ? 'opacity-20' : ''}`}
 							>
-								{t('Reset')}
-							</button>
-						</div>
-					</form>
+								<button
+									type='button'
+									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'
+									disabled={isEdittingPassword}
+									onClick={handleSave}
+								>
+									{t('Save Changes')}
+								</button>
+								<button
+									type='button'
+									onClick={handleCancelEdit}
+									className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 mt-5'
+									disabled={isEdittingPassword}
+								>
+									{t('Cancel')}
+								</button>
+							</div>
+						) : (
+							<div className='flex w-full justify-center'>
+								<button
+									type='button'
+									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'
+									disabled={isEdittingPassword}
+									onClick={() => setIsEditting(true)}
+								>
+									{t('Edit Profile')}
+								</button>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

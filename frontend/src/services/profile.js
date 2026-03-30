@@ -25,7 +25,8 @@ const updateProfile = async (data) => {
 		},
 	}
 	const res = await axios.put(`${baseUrl}`, data, config)
-	return res.data
+
+	return res.status
 }
 export const changePassword = async (data) => {
 	const config = {
@@ -48,4 +49,3 @@ export const getMe = async (userId) => {
 }
 
 export default { updateAvatar, updateProfile, getMe }
-
