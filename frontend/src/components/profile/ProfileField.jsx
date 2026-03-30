@@ -15,13 +15,15 @@ const ProfileField = ({
 }) => {
 	return (
 		<div className='flex flex-col gap-2 relative'>
-			<div className='flex'>
+			<div className='flex justify-between'>
 				<label className='text-sm font-semibold text-gray-700'>{label}</label>
-				{required && !value ? (
-					<span className='text-sm font-semibold text-red-500 ml-3'>
-						*{'  '}required
-					</span>
-				) : null}
+				{required && !value && (
+					<>
+						<span className='text-sm font-semibold text-red-500'>
+							*{'  '}required
+						</span>
+					</>
+				)}
 			</div>
 			<input
 				className={`${icon !== null ? 'pr-15' : ''} rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-[#514587] focus:ring-2 focus:ring-[#9484b4] disabled:bg-gray-100 disabled:text-gray-500 `}
@@ -49,6 +51,8 @@ ProfileField.propTypes = {
 	placeholder: PropTypes.string,
 	icon: PropTypes.node,
 	required: PropTypes.bool,
+	editEmail: PropTypes.func,
+	verified: PropTypes.bool,
 }
 
 export default ProfileField

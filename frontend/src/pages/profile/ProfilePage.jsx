@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import ProfileHeader from '../../components/profile/ProfileHeader'
 import ProfileField from '../../components/profile/ProfileField'
+import EmailField from './EmailField'
 import PhoneDisplay from './PhoneDisplay'
 import { setNotification, setError } from '../../reducers/notiReducer'
 import { updateProfile } from '../../reducers/userReducer'
@@ -37,11 +38,11 @@ const ProfilePage = () => {
 			: '',
 	})
 
-	useEffect(() => {
-		if (!user.first_name || !user.last_name || !user.phone) {
-			setIsEditting(true)
-		}
-	}, [user])
+	// useEffect(() => {
+	// 	if (!user.first_name || !user.last_name || !user.phone) {
+	// 		setIsEditting(true)
+	// 	}
+	// }, [user])
 
 	useEffect(() => {
 		const passwordValidationRules = [
@@ -55,14 +56,6 @@ const ProfilePage = () => {
 
 		setIsAllowSave(currentPassword && passwordValidationRules.every(Boolean))
 	}, [currentPassword, newPassword, confirmPassword])
-
-	const formatDate = (dateStr) => {
-		if (!dateStr) return ''
-		const d = new Date(dateStr)
-		return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1)
-			.toString()
-			.padStart(2, '0')}/${d.getFullYear()}`
-	}
 
 	const handleFormChange = (e) => {
 		const { name, value } = e.target
@@ -168,6 +161,7 @@ const ProfilePage = () => {
 		setCurrentPassword('')
 		setNewPassword('')
 		setConfirmPassword('')
+		setIsEdittingPassword(false)
 		setIsPasswordVisible(false)
 	}
 	const handleSavePassword = async (e) => {
@@ -194,6 +188,12 @@ const ProfilePage = () => {
 			dispatch(setError('Failed to update password', 5))
 		}
 	}
+
+	const isAllowSaveProfile =
+		formData.first_name &&
+		formData.last_name &&
+		formData.phone &&
+		isValidPhoneNumber(`+${formData.phone}`)
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
@@ -322,15 +322,7 @@ const ProfilePage = () => {
 									onChange={handleFormChange}
 									disabled
 								/>
-								<ProfileField
-									label={t('Email')}
-									name='email'
-									value={formData.email || ''}
-									onChange={handleFormChange}
-									placeholder='Enter your email'
-									required={true}
-									disabled
-								/>
+								<EmailField disabled={isEdittingPassword} />
 								<ProfileField
 									label={t('Role')}
 									name='role'
@@ -410,9 +402,9 @@ const ProfilePage = () => {
 							>
 								<button
 									type='button'
-									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'
-									disabled={isEdittingPassword}
-									onClick={handleSave}
+									className={`rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5 ${!isAllowSaveProfile ? 'opacity-50 cursor-not-allowed' : ''}`}
+									disabled={isEdittingPassword || !isAllowSaveProfile}
+									onClick={isAllowSaveProfile ? handleSave : null}
 								>
 									{t('Save Changes')}
 								</button>
@@ -426,7 +418,9 @@ const ProfilePage = () => {
 								</button>
 							</div>
 						) : (
-							<div className='flex w-full justify-center'>
+							<div
+								className={`flex w-full justify-center ${isEdittingPassword ? 'opacity-20' : ''}`}
+							>
 								<button
 									type='button'
 									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'

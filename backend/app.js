@@ -71,7 +71,7 @@ app.use(
 	coursesRouter,
 )
 
-app.use('/verify-email', emailRouter) // Email verification route
+app.use('/verify-email', middleware.userExtractor, emailRouter) // Email verification route
 app.use(
 	'/api/users',
 	middleware.userExtractor,

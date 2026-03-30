@@ -91,12 +91,35 @@ profileRouter.put('/', async (req, res) => {
 	if (!user) {
 		return res.status(404).json({ error: 'User not found' })
 	}
-	const { first_name, last_name, gender, phone, date_of_birth } = req.body
+	const { first_name, last_name, gender, phone, date_of_birth, email } =
+		req.body
+
+	if (email) {
+		if (email !== user.email) {
+			if (!validator.isEmail(email)) {
+				return res.status(400).send({ error: 'Invalid email format' })
+			}
+			const emailExists = await User.findByEmail(email)
+			if (emailExists) {
+				return res.status(400).send({ error: 'Email already in use' })
+			}
+
+			await User.findByIdAndUpdate(user.user_id, { email, is_verified: false })
+			return res.status(204).end()
+		} else {
+			return res
+				.status(400)
+				.send({ error: 'Email is the same as the current one' })
+		}
+	}
+
 	// Validate the input data
-	if (!first_name) return res.status(400).send('First name is required')
-	if (!last_name) return res.status(400).send('Last name is required')
+	if (!first_name)
+		return res.status(400).send({ error: 'First name is required' })
+	if (!last_name)
+		return res.status(400).send({ error: 'Last name is required' })
 	if (phone?.length > 0 && !isValidPhoneNumber(`+${phone}`))
-		return res.status(400).send('Invalid phone')
+		return res.status(400).send({ error: 'Invalid phone' })
 
 	const d = new Date(date_of_birth)
 	const date = date_of_birth && d instanceof Date && !isNaN(d) ? d : null
