@@ -17,7 +17,7 @@ const ProfileField = ({
 		<div className='flex flex-col gap-2 relative'>
 			<div className='flex justify-between'>
 				<label className='text-sm font-semibold text-gray-700'>{label}</label>
-				{required && !value && (
+				{required && (!value || value === '+') && (
 					<>
 						<span className='text-sm font-semibold text-red-500'>
 							*{'  '}required
