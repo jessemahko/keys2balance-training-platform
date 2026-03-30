@@ -17,11 +17,10 @@ const ProtectedRoute = () => {
 			location.pathname !== '/dashboard/profile' &&
 			(!user.first_name || !user.last_name || !user.phone || !user.is_verified)
 		) {
-			if (
-				window.confirm(
-					'Your profile is incomplete or your email is not verified. Complete it now? Cancel will log you out.',
-				)
-			) {
+			const message = user.is_verified
+				? 'Please complete your profile information before accessing other pages. Choosing "Cancel" will log you out.'
+				: 'Your account is not verified. Please verify your account or contact support. Choosing "Cancel" will log you out.'
+			if (window.confirm(message)) {
 				navigate('/dashboard/profile')
 			} else {
 				dispatch(rmUserFn())
