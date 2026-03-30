@@ -12,7 +12,7 @@ const EmailVerify = () => {
 	const { t } = useTranslation()
 
 	useEffect(() => {
-		document.title = t('Email Verification - Keys2Balance')
+		document.title = t('Email Verification')
 	}, [t])
 
 	useEffect(() => {
