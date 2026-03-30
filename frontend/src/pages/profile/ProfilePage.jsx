@@ -29,11 +29,9 @@ const ProfilePage = () => {
 			: '',
 	})
 
-	// useEffect(() => {
-	// 	if (!user.first_name || !user.last_name || !user.phone) {
-	// 		setIsEditting(true)
-	// 	}
-	// }, [user])
+	useEffect(() => {
+		document.title = t('Profile')
+	}, [])
 
 	const handleFormChange = (e) => {
 		const { name, value } = e.target

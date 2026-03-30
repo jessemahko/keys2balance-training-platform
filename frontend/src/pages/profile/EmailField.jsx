@@ -15,6 +15,8 @@ import { setNotification, setError } from '../../reducers/notiReducer'
 import { updateProfile } from '../../reducers/userReducer'
 import { useDispatch } from 'react-redux'
 
+import profile from '../../services/profile'
+
 const ProfileField = ({ disabled }) => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
@@ -90,7 +92,7 @@ const ProfileField = ({ disabled }) => {
 
 		setIsSending(true)
 		try {
-			// await dispatch(sendVerificationEmail()) // or your function
+			await profile.requestEmailVerification()
 			dispatch(setNotification('Verification email sent!', 5))
 		} catch (err) {
 			dispatch(

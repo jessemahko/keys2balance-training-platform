@@ -17,6 +17,7 @@ import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
+import EmailVerify from './pages/profile/EmailVerify'
 
 import DiscussionPage from './pages/courses/DiscussionPage'
 import { useTranslation } from 'react-i18next'
@@ -94,6 +95,8 @@ const App = () => {
 					path='/auth-failed'
 					element={<Navigate replace to='/authentication' />}
 				/>
+
+				<Route path='/verify-email' element={<EmailVerify />} />
 
 				{/* Protected Routes */}
 				<Route element={<ProtectedRoute />}>
