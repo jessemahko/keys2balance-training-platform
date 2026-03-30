@@ -12,6 +12,7 @@ import {
 	useLocation,
 } from 'react-router-dom'
 
+import ProtectedRoute from './components/ProtectedRoute'
 import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
 import Notification from './components/Notification'
@@ -95,11 +96,7 @@ const App = () => {
 				/>
 
 				{/* Protected Routes */}
-				<Route
-					element={
-						user ? <Outlet /> : <Navigate replace to='/authentication' />
-					}
-				>
+				<Route element={<ProtectedRoute />}>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard/*' element={<Dashboard />} />
 					<Route
