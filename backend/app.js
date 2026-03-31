@@ -17,7 +17,7 @@ const googleAuthRouter = require('./controllers/auth/googleAuth') // Google auth
 
 const coursesRouter = require('./controllers/courses/coursesRoute') // Courses routes
 const profileRouter = require('./controllers/user/profileController') // User profile routes
-// const assessmentRouter = require('./controllers/assessment/assessmentRoute') //Assessments
+const assessmentRouter = require('./controllers/assessment/assessmentRoute')
 const notificationsRouter = require('./controllers/notifications/notificationsRouter')
 const discussionRouter = require('./controllers/discussion/discussionRoute') // Discussion routes
 const accessCodeRouter = require('./controllers/access-code/accessCodeRoute') // Access code routes
@@ -95,6 +95,12 @@ app.use(
 	middleware.userExtractor,
 	middleware.authorizeRoles('admin', 'trainer', 'participant'),
 	lessonRouter,
+)
+app.use(
+	'/api/assessments',
+	middleware.userExtractor,
+	middleware.authorizeRoles('admin', 'trainer', 'participant'),
+	assessmentRouter,
 )
 
 app.use('/uploads', express.static('uploads'))

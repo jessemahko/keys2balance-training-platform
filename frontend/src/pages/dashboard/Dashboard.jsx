@@ -21,6 +21,10 @@ import CourseLabel from './CourseLabel'
 
 import AnnoucementPage from '../announcement/Announcement'
 
+import QuizEditor from '../assessments/QuizEditor'
+import QuizTake from '../assessments/QuizTake'
+import QuizResults from '../assessments/QuizResults'
+
 import SectionPlaceholder from './SectionPlaceholder'
 import { useTranslation } from 'react-i18next'
 
@@ -133,6 +137,22 @@ const Dashboard = () => {
 					<Route
 						path='courses/:courseId/lessons/:lessonId'
 						element={<LessonPage />}
+					/>
+					<Route
+						path='courses/:courseId/lessons/:lessonId/quiz/new'
+						element={<QuizEditor />}
+					/>
+					<Route
+						path='courses/:courseId/lessons/:lessonId/quiz/:assessmentId/edit'
+						element={<QuizEditor />}
+					/>
+					<Route
+						path='courses/:courseId/lessons/:lessonId/quiz/:assessmentId'
+						element={<QuizTake />}
+					/>
+					<Route
+						path='courses/:courseId/lessons/:lessonId/quiz/:assessmentId/results'
+						element={<QuizResults />}
 					/>
 					<Route path='announcements' element={<AnnoucementPage />} />
 					<Route path='profile' element={<ProfilePage />} />
