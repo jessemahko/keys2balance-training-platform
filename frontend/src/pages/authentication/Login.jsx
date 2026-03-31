@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { setUser } from '../../reducers/userReducer'
 import { setError, setNotification } from '../../reducers/notiReducer'
 import loginService, { setToken } from '../../services/authen/login'
@@ -89,9 +89,9 @@ const Login = () => {
 					</i>
 				</div>
 				<div className='forgot-link '>
-					<a href='#' className='hover:underline! text-blue-500!'>
+					<Link to='/reset-password' className='hover:underline! text-blue-500!'>
 						{t('Forgot Password?')}
-					</a>
+					</Link>
 				</div>
 				<button className='btn  hover:opacity-80!' type='submit'>
 					{t('Sign In')}
