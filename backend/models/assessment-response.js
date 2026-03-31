@@ -1,7 +1,7 @@
 const { pool } = require('../utils/config')
 
 const AssessmentResponse = {
-	async submit({ assessmentId, userId, answersJson, score, totalQuestions }) {
+	async submit({ assessmentId, userId, answersJson, score, totalQuestions, maxScore, manualScores, gradingStatus }) {
 		const query = `
             INSERT INTO assessment_responses
                 (assessment_id, user_id, answers_json)
@@ -14,12 +14,22 @@ const AssessmentResponse = {
 			answers: answersJson,
 			score,
 			total_questions: totalQuestions,
+			max_score: maxScore,
+			total_score: score,
+			manual_scores: manualScores || {},
+			grading_status: gradingStatus || 'complete',
 		}
 		const { rows } = await pool.query(query, [
 			assessmentId,
 			userId,
 			JSON.stringify(answers),
 		])
+		return rows[0]
+	},
+
+	async getById(responseId) {
+		const query = `SELECT * FROM assessment_responses WHERE response_id = $1`
+		const { rows } = await pool.query(query, [responseId])
 		return rows[0]
 	},
 
@@ -57,6 +67,27 @@ const AssessmentResponse = {
         `
 		const { rows } = await pool.query(query, [userId])
 		return rows
+	},
+
+	async updateGrading(responseId, { manualScores, totalScore, gradingStatus }) {
+		const query = `
+            UPDATE assessment_responses
+            SET answers_json = answers_json
+              || jsonb_build_object(
+                'manual_scores', $2::jsonb,
+                'grading_status', $3::text,
+                'total_score', $4::numeric
+              )
+            WHERE response_id = $1
+            RETURNING *
+        `
+		const { rows } = await pool.query(query, [
+			responseId,
+			JSON.stringify(manualScores),
+			gradingStatus,
+			totalScore,
+		])
+		return rows[0]
 	},
 }
 

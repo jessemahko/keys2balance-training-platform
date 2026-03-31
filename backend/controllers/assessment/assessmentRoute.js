@@ -10,5 +10,6 @@ router.delete('/:id', AssessmentController.deleteAssessment)
 router.post('/:id/submit', AssessmentController.submitAssessment)
 router.get('/:id/results', AssessmentController.getResults)
 router.get('/:id/my-result', AssessmentController.getMyResult)
+router.patch('/:id/responses/:responseId/grade', AssessmentController.gradeOpenText)
 
 module.exports = router

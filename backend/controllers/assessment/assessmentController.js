@@ -1,5 +1,6 @@
 const Assessment = require('../../models/assessment')
 const AssessmentResponse = require('../../models/assessment-response')
+const { calculateScore } = require('./scoring')
 
 // GET /api/assessments?lessonId=...
 const getAssessments = async (req, res) => {
@@ -93,25 +94,25 @@ const submitAssessment = async (req, res) => {
 
 	// Calculate score
 	const questions = assessment.assessment_json.questions || []
-	let correctCount = 0
-	for (const q of questions) {
-		if (answers[q.id] === q.correct) {
-			correctCount++
-		}
-	}
+	const { autoScore, maxScore, hasOpenText } = calculateScore(questions, answers)
 
 	const response = await AssessmentResponse.submit({
 		assessmentId: req.params.id,
 		userId: user.id,
 		answersJson: answers,
-		score: correctCount,
+		score: autoScore,
 		totalQuestions: questions.length,
+		maxScore,
+		manualScores: {},
+		gradingStatus: hasOpenText ? 'pending' : 'complete',
 	})
 
 	res.json({
 		...response,
-		score: correctCount,
+		score: autoScore,
 		total_questions: questions.length,
+		max_score: maxScore,
+		grading_status: hasOpenText ? 'pending' : 'complete',
 	})
 }
 
@@ -144,6 +145,52 @@ const getMyResult = async (req, res) => {
 	res.json(response)
 }
 
+// PATCH /api/assessments/:id/responses/:responseId/grade
+const gradeOpenText = async (req, res) => {
+	const user = req.user
+	if (!user) return res.status(401).json({ error: 'invalid token' })
+	if (user.role === 'participant')
+		return res.status(403).json({ error: 'Only admin/trainer can grade' })
+
+	const { questionId, score } = req.body
+	if (questionId === undefined || score === undefined)
+		return res.status(400).json({ error: 'questionId and score are required' })
+
+	const assessment = await Assessment.getById(req.params.id)
+	if (!assessment)
+		return res.status(404).json({ error: 'Assessment not found' })
+
+	const questions = assessment.assessment_json.questions || []
+	const question = questions.find((q) => String(q.id) === String(questionId))
+	if (!question || (question.type || 'single_choice') !== 'open_text')
+		return res.status(400).json({ error: 'Question is not open_text' })
+
+	const maxPoints = question.max_points || 1
+	if (score < 0 || score > maxPoints)
+		return res.status(400).json({ error: `Score must be between 0 and ${maxPoints}` })
+
+	const responseRecord = await AssessmentResponse.getById(req.params.responseId)
+	if (!responseRecord)
+		return res.status(404).json({ error: 'Response not found' })
+
+	const answersJson = responseRecord.answers_json
+	const manualScores = { ...(answersJson.manual_scores || {}), [questionId]: score }
+
+	const openTextQuestions = questions.filter((q) => (q.type || 'single_choice') === 'open_text')
+	const allGraded = openTextQuestions.every((q) => manualScores[q.id] !== undefined)
+
+	const manualTotal = Object.values(manualScores).reduce((sum, s) => sum + s, 0)
+	const totalScore = (answersJson.score || 0) + manualTotal
+
+	const updated = await AssessmentResponse.updateGrading(req.params.responseId, {
+		manualScores,
+		totalScore,
+		gradingStatus: allGraded ? 'complete' : 'pending',
+	})
+
+	res.json(updated)
+}
+
 module.exports = {
 	getAssessments,
 	getAssessment,
@@ -153,4 +200,5 @@ module.exports = {
 	submitAssessment,
 	getResults,
 	getMyResult,
+	gradeOpenText,
 }

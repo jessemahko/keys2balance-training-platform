@@ -230,7 +230,7 @@ const LessonPage = () => {
 					</div>
 				)}
 
-				{blocks.length > 0 && canEdit && (
+				{(blocks.length > 0 || assessments.length > 0) && canEdit && (
 					<div className='flex justify-center mb-6'>
 						<button
 							className='bg-white border border-[#9484b4] text-[#514587] rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-sm transition-all hover:bg-[#514587] hover:text-white hover:scale-110 hover:shadow-md'

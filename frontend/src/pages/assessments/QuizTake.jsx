@@ -41,14 +41,30 @@ const QuizTake = () => {
 		load()
 	}, [assessmentId])
 
-	const handleSelect = (questionId, option) => {
-		if (result) return // Can't change answers after submission
-		setAnswers((prev) => ({ ...prev, [questionId]: option }))
+	const handleSelect = (questionId, option, questionType) => {
+		if (result) return
+		if (questionType === 'multiple_choice') {
+			setAnswers((prev) => {
+				const current = Array.isArray(prev[questionId]) ? prev[questionId] : []
+				const updated = current.includes(option)
+					? current.filter((o) => o !== option)
+					: [...current, option]
+				return { ...prev, [questionId]: updated }
+			})
+		} else {
+			setAnswers((prev) => ({ ...prev, [questionId]: option }))
+		}
 	}
 
 	const handleSubmit = async () => {
 		const questions = assessment.assessment_json?.questions || []
-		const unanswered = questions.filter((q) => !answers[q.id])
+		const unanswered = questions.filter((q) => {
+			const a = answers[q.id]
+			const qType = q.type || 'single_choice'
+			if (qType === 'open_text') return !a || !a.trim()
+			if (qType === 'multiple_choice') return !Array.isArray(a) || a.length === 0
+			return !a
+		})
 		if (unanswered.length > 0) {
 			setError(`Please answer all questions (${unanswered.length} remaining)`)
 			return
@@ -87,8 +103,13 @@ const QuizTake = () => {
 	}
 
 	const questions = assessment.assessment_json?.questions || []
-	const score = result?.answers_json?.score ?? result?.score
-	const total = result?.answers_json?.total_questions ?? result?.total_questions ?? questions.length
+	const gradingStatus = result?.answers_json?.grading_status
+	const maxScore = result?.answers_json?.max_score ?? result?.answers_json?.total_questions ?? questions.length
+	const totalScore = gradingStatus === 'complete'
+		? (result?.answers_json?.total_score ?? result?.answers_json?.score ?? 0)
+		: (result?.answers_json?.score ?? 0)
+	const score = totalScore
+	const total = maxScore
 
 	return (
 		<div className="flex flex-col items-center w-full min-h-full">
@@ -112,9 +133,15 @@ const QuizTake = () => {
 				{result && (
 					<div className="text-right">
 						<div className="text-sm text-gray-500 font-medium">Your Score</div>
-						<div className={`text-3xl font-bold ${score === total ? 'text-success' : score >= total / 2 ? 'text-secondary' : 'text-red-500'}`}>
-							{score}/{total}
-						</div>
+						{gradingStatus === 'pending' ? (
+							<div className="text-lg font-bold text-secondary">
+								Grading in progress
+							</div>
+						) : (
+							<div className={`text-3xl font-bold ${score === total ? 'text-success' : score >= total / 2 ? 'text-secondary' : 'text-red-500'}`}>
+								{score}/{total}
+							</div>
+						)}
 					</div>
 				)}
 			</header>
@@ -127,36 +154,68 @@ const QuizTake = () => {
 				)}
 
 				{result && (
-					<div className={`mb-8 p-6 rounded-xl border-2 ${score === total ? 'bg-emerald-50 border-success' : 'bg-amber-50 border-secondary'}`}>
-						<h2 className="text-xl font-bold mb-1">
-							{score === total
-								? 'Perfect Score!'
-								: score >= total / 2
-									? 'Good job!'
-									: 'Keep studying!'}
-						</h2>
-						<p className="text-gray-600">
-							You scored {score} out of {total} ({Math.round((score / total) * 100)}%)
-						</p>
+					<div className={`mb-8 p-6 rounded-xl border-2 ${
+						gradingStatus === 'pending'
+							? 'bg-amber-50 border-secondary'
+							: score === total
+								? 'bg-emerald-50 border-success'
+								: 'bg-amber-50 border-secondary'
+					}`}>
+						{gradingStatus === 'pending' ? (
+							<>
+								<h2 className="text-xl font-bold mb-1">Submitted!</h2>
+								<p className="text-gray-600">
+									Some questions require manual grading by the trainer. Auto-scored: {result?.answers_json?.score ?? 0} points.
+								</p>
+							</>
+						) : (
+							<>
+								<h2 className="text-xl font-bold mb-1">
+									{score === total
+										? 'Perfect Score!'
+										: score >= total / 2
+											? 'Good job!'
+											: 'Keep studying!'}
+								</h2>
+								<p className="text-gray-600">
+									You scored {score} out of {total} ({Math.round((score / total) * 100)}%)
+								</p>
+							</>
+						)}
 					</div>
 				)}
 
 				<div className="flex flex-col gap-6">
 					{questions.map((q, index) => {
 						const userAnswer = answers[q.id]
-						const isCorrect = result && userAnswer === q.correct
-						const isWrong = result && userAnswer && userAnswer !== q.correct
+						const qType = q.type || 'single_choice'
+						const isOpenText = qType === 'open_text'
+						const isMultiple = qType === 'multiple_choice'
+						let isCorrect, isWrong
+						if (isOpenText) {
+							isCorrect = false
+							isWrong = false
+						} else if (isMultiple) {
+							const sorted = (arr) => [...(arr || [])].sort().join(',')
+							isCorrect = result && sorted(userAnswer) === sorted(q.correct)
+							isWrong = result && !isCorrect && Array.isArray(userAnswer) && userAnswer.length > 0
+						} else {
+							isCorrect = result && userAnswer === q.correct
+							isWrong = result && userAnswer && userAnswer !== q.correct
+						}
 
 						return (
 							<div
 								key={q.id}
 								className={`bg-white border rounded-xl p-6 shadow-sm ${
 									result
-										? isCorrect
-											? 'border-success border-2'
-											: isWrong
-												? 'border-red-400 border-2'
-												: 'border-border-color'
+										? isOpenText
+											? 'border-border-color'
+											: isCorrect
+												? 'border-success border-2'
+												: isWrong
+													? 'border-red-400 border-2'
+													: 'border-border-color'
 										: 'border-border-color'
 								}`}
 							>
@@ -169,66 +228,111 @@ const QuizTake = () => {
 									</h3>
 								</div>
 
-								<div className="flex flex-col gap-2 ml-11">
-									{q.options.map((opt) => {
-										const isSelected = userAnswer === opt
-										const isCorrectOpt = result && opt === q.correct
-										const isWrongSelection =
-											result && isSelected && opt !== q.correct
+								{isOpenText ? (
+									<div className="ml-11">
+										<textarea
+											value={answers[q.id] || ''}
+											onChange={(e) => {
+												if (result) return
+												setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+											}}
+											placeholder="Type your answer here..."
+											rows={5}
+											disabled={!!result}
+											className="w-full px-4 py-3 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-y disabled:bg-gray-50 disabled:text-gray-600"
+										/>
+										{result && (
+											<div className="mt-2 text-sm text-gray-500">
+												{result.answers_json?.manual_scores?.[q.id] !== undefined
+													? `Score: ${result.answers_json.manual_scores[q.id]}/${q.max_points || 1}`
+													: 'Awaiting trainer grading'}
+											</div>
+										)}
+									</div>
+								) : (
+									<div className="flex flex-col gap-2 ml-11">
+										{q.options.map((opt) => {
+											const isSelected = isMultiple
+												? Array.isArray(userAnswer) && userAnswer.includes(opt)
+												: userAnswer === opt
+											const isCorrectOpt = result && (
+												isMultiple
+													? Array.isArray(q.correct) && q.correct.includes(opt)
+													: opt === q.correct
+											)
+											const isWrongSelection =
+												result && isSelected && !isCorrectOpt
 
-										let optionClass =
-											'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all '
-										if (isCorrectOpt && result) {
-											optionClass +=
-												'bg-emerald-50 border-success text-emerald-800'
-										} else if (isWrongSelection) {
-											optionClass += 'bg-red-50 border-red-300 text-red-800'
-										} else if (isSelected && !result) {
-											optionClass +=
-												'bg-primary/10 border-primary text-primary'
-										} else {
-											optionClass +=
-												'border-border-color hover:border-primary-light hover:bg-gray-50'
-										}
+											let optionClass =
+												'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all '
+											if (isCorrectOpt && result) {
+												optionClass +=
+													'bg-emerald-50 border-success text-emerald-800'
+											} else if (isWrongSelection) {
+												optionClass += 'bg-red-50 border-red-300 text-red-800'
+											} else if (isSelected && !result) {
+												optionClass +=
+													'bg-primary/10 border-primary text-primary'
+											} else {
+												optionClass +=
+													'border-border-color hover:border-primary-light hover:bg-gray-50'
+											}
 
-										if (result) {
-											optionClass += ' cursor-default'
-										}
+											if (result) {
+												optionClass += ' cursor-default'
+											}
 
-										return (
-											<div
-												key={opt}
-												className={optionClass}
-												onClick={() => handleSelect(q.id, opt)}
-											>
+											return (
 												<div
-													className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-														isSelected
-															? 'border-primary bg-primary'
-															: 'border-gray-300'
-													}`}
+													key={opt}
+													className={optionClass}
+													onClick={() => handleSelect(q.id, opt, qType)}
 												>
-													{isSelected && (
-														<div className="w-2 h-2 rounded-full bg-white" />
+													{isMultiple ? (
+														<div
+															className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ${
+																isSelected
+																	? 'border-primary bg-primary'
+																	: 'border-gray-300'
+															}`}
+														>
+															{isSelected && (
+																<svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+																	<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+																</svg>
+															)}
+														</div>
+													) : (
+														<div
+															className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+																isSelected
+																	? 'border-primary bg-primary'
+																	: 'border-gray-300'
+															}`}
+														>
+															{isSelected && (
+																<div className="w-2 h-2 rounded-full bg-white" />
+															)}
+														</div>
+													)}
+													<span className="font-medium">{opt}</span>
+													{isCorrectOpt && result && (
+														<CheckCircle
+															size={18}
+															className="ml-auto text-success"
+														/>
+													)}
+													{isWrongSelection && (
+														<XCircle
+															size={18}
+															className="ml-auto text-red-500"
+														/>
 													)}
 												</div>
-												<span className="font-medium">{opt}</span>
-												{isCorrectOpt && result && (
-													<CheckCircle
-														size={18}
-														className="ml-auto text-success"
-													/>
-												)}
-												{isWrongSelection && (
-													<XCircle
-														size={18}
-														className="ml-auto text-red-500"
-													/>
-												)}
-											</div>
-										)
-									})}
-								</div>
+											)
+										})}
+									</div>
+								)}
 							</div>
 						)
 					})}

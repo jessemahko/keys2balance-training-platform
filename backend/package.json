@@ -3,7 +3,9 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "jest --verbose --testPathIgnorePatterns=integration",
+		"test:integration": "NODE_ENV=test jest --verbose --testPathPatterns=integration --testPathIgnorePatterns=helpers --forceExit",
+		"test:all": "NODE_ENV=test jest --verbose --forceExit",
 		"dev": "nodemon index.js",
 		"start": "node index.js",
 		"lint": "eslint ."
@@ -29,6 +31,8 @@
 		"validator": "^13.15.26"
 	},
 	"devDependencies": {
-		"nodemon": "^3.1.11"
+		"jest": "^30.3.0",
+		"nodemon": "^3.1.11",
+		"supertest": "^7.2.2"
 	}
 }

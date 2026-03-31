@@ -6,6 +6,7 @@ import * as assessmentService from '../../services/assessments'
 
 const emptyQuestion = () => ({
 	id: Date.now(),
+	type: 'single_choice',
 	question: '',
 	options: ['', ''],
 	correct: '',
@@ -105,26 +106,44 @@ const QuizEditor = () => {
 				setError(`Question ${i + 1} is empty`)
 				return
 			}
+			const qType = q.type || 'single_choice'
+			if (qType === 'open_text') continue
 			const filledOptions = q.options.filter((o) => o.trim())
 			if (filledOptions.length < 2) {
 				setError(`Question ${i + 1} needs at least 2 options`)
 				return
 			}
-			if (!q.correct) {
-				setError(`Question ${i + 1} has no correct answer selected`)
-				return
+			if (qType === 'multiple_choice') {
+				if (!Array.isArray(q.correct) || q.correct.length === 0) {
+					setError(`Question ${i + 1} has no correct answers selected`)
+					return
+				}
+			} else {
+				if (!q.correct) {
+					setError(`Question ${i + 1} has no correct answer selected`)
+					return
+				}
 			}
 		}
 
 		setSaving(true)
 		try {
 			const assessmentJson = {
-				questions: questions.map((q, i) => ({
-					id: i + 1,
-					question: q.question,
-					options: q.options.filter((o) => o.trim()),
-					correct: q.correct,
-				})),
+				questions: questions.map((q, i) => {
+					const base = {
+						id: i + 1,
+						type: q.type || 'single_choice',
+						question: q.question,
+					}
+					if ((q.type || 'single_choice') === 'open_text') {
+						return { ...base, max_points: q.max_points || 1 }
+					}
+					return {
+						...base,
+						options: q.options.filter((o) => o.trim()),
+						correct: q.correct,
+					}
+				}),
 			}
 
 			if (assessmentId) {
@@ -236,57 +255,132 @@ const QuizEditor = () => {
 								className="w-full px-4 py-3 mb-4 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
 							/>
 
-							<div className="flex flex-col gap-2 mb-4">
+							<div className="flex items-center gap-3 mb-4">
 								<label className="text-sm font-semibold text-gray-600">
-									Options (click radio to set correct answer):
+									Type:
 								</label>
-								{q.options.map((opt, oIndex) => (
-									<div
-										key={oIndex}
-										className="flex items-center gap-3"
-									>
-										<input
-											type="radio"
-											name={`correct-${q.id}`}
-											checked={q.correct === opt && opt !== ''}
-											onChange={() =>
-												updateQuestion(qIndex, 'correct', opt)
-											}
-											disabled={!opt.trim()}
-											className="w-4 h-4 accent-primary"
-										/>
-										<input
-											type="text"
-											value={opt}
-											onChange={(e) => {
-												const oldVal = opt
-												updateOption(qIndex, oIndex, e.target.value)
-												if (q.correct === oldVal) {
-													updateQuestion(qIndex, 'correct', e.target.value)
-												}
-											}}
-											placeholder={`Option ${oIndex + 1}`}
-											className="flex-1 px-3 py-2 border border-border-color rounded-lg text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-										/>
-										{q.options.length > 2 && (
-											<button
-												onClick={() => removeOption(qIndex, oIndex)}
-												className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-												title="Remove option"
-											>
-												<Trash2 size={16} />
-											</button>
-										)}
-									</div>
-								))}
+								<select
+									value={q.type || 'single_choice'}
+									onChange={(e) => {
+										const newType = e.target.value
+										updateQuestion(qIndex, 'type', newType)
+										if (newType === 'multiple_choice') {
+											updateQuestion(qIndex, 'correct', [])
+										} else if (newType === 'open_text') {
+											updateQuestion(qIndex, 'correct', null)
+											updateQuestion(qIndex, 'options', [])
+											if (!q.max_points) updateQuestion(qIndex, 'max_points', 1)
+										} else {
+											updateQuestion(qIndex, 'correct', '')
+										}
+									}}
+									className="px-3 py-2 border border-border-color rounded-lg text-sm bg-white focus:outline-none focus:border-primary"
+								>
+									<option value="single_choice">Single Choice</option>
+									<option value="multiple_choice">Multiple Choice</option>
+									<option value="open_text">Open Text</option>
+								</select>
 							</div>
 
-							<button
-								onClick={() => addOption(qIndex)}
-								className="text-sm text-primary font-medium hover:underline"
-							>
-								+ Add Option
-							</button>
+							{(q.type || 'single_choice') === 'open_text' ? (
+								<div className="flex items-center gap-3 mb-4">
+									<label className="text-sm font-semibold text-gray-600">
+										Max Points:
+									</label>
+									<input
+										type="number"
+										min={1}
+										value={q.max_points || 1}
+										onChange={(e) =>
+											updateQuestion(qIndex, 'max_points', parseInt(e.target.value) || 1)
+										}
+										className="w-24 px-3 py-2 border border-border-color rounded-lg text-sm bg-white focus:outline-none focus:border-primary"
+									/>
+									<span className="text-sm text-gray-400">
+										(Trainer will grade manually)
+									</span>
+								</div>
+							) : (
+								<>
+									<div className="flex flex-col gap-2 mb-4">
+										<label className="text-sm font-semibold text-gray-600">
+											{(q.type || 'single_choice') === 'multiple_choice'
+												? 'Options (check all correct answers):'
+												: 'Options (click radio to set correct answer):'}
+										</label>
+										{q.options.map((opt, oIndex) => (
+											<div
+												key={oIndex}
+												className="flex items-center gap-3"
+											>
+												{(q.type || 'single_choice') === 'multiple_choice' ? (
+													<input
+														type="checkbox"
+														checked={Array.isArray(q.correct) && q.correct.includes(opt) && opt !== ''}
+														onChange={() => {
+															if (!opt.trim()) return
+															const current = Array.isArray(q.correct) ? q.correct : []
+															const updated = current.includes(opt)
+																? current.filter((c) => c !== opt)
+																: [...current, opt]
+															updateQuestion(qIndex, 'correct', updated)
+														}}
+														disabled={!opt.trim()}
+														className="w-4 h-4 accent-primary"
+													/>
+												) : (
+													<input
+														type="radio"
+														name={`correct-${q.id}`}
+														checked={q.correct === opt && opt !== ''}
+														onChange={() =>
+															updateQuestion(qIndex, 'correct', opt)
+														}
+														disabled={!opt.trim()}
+														className="w-4 h-4 accent-primary"
+													/>
+												)}
+												<input
+													type="text"
+													value={opt}
+													onChange={(e) => {
+														const oldVal = opt
+														updateOption(qIndex, oIndex, e.target.value)
+														if ((q.type || 'single_choice') === 'multiple_choice') {
+															if (Array.isArray(q.correct) && q.correct.includes(oldVal)) {
+																const updated = q.correct.map((c) => c === oldVal ? e.target.value : c)
+																updateQuestion(qIndex, 'correct', updated)
+															}
+														} else {
+															if (q.correct === oldVal) {
+																updateQuestion(qIndex, 'correct', e.target.value)
+															}
+														}
+													}}
+													placeholder={`Option ${oIndex + 1}`}
+													className="flex-1 px-3 py-2 border border-border-color rounded-lg text-sm bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+												/>
+												{q.options.length > 2 && (
+													<button
+														onClick={() => removeOption(qIndex, oIndex)}
+														className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+														title="Remove option"
+													>
+														<Trash2 size={16} />
+													</button>
+												)}
+											</div>
+										))}
+									</div>
+
+									<button
+										onClick={() => addOption(qIndex)}
+										className="text-sm text-primary font-medium hover:underline"
+									>
+										+ Add Option
+									</button>
+								</>
+							)}
 						</div>
 					))}
 				</div>

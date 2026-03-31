@@ -23,8 +23,9 @@ const errorHandler = (error, request, response, next) => {
 	if (error.code === '22P02') {
 		return response.status(400).json({ error: 'malformatted id' }) // Handle malformed ID
 	} else if (error.code === '23505') {
+		const detail = error.detail || 'A record with this value already exists'
 		return response.status(400).json({
-			error: 'expected `username` to be unique', // Handle duplicate username error
+			error: detail,
 		})
 	} else if (error.name === 'JsonWebTokenError') {
 		return response.status(401).json({ error: 'token invalid' }) // Handle invalid JWT

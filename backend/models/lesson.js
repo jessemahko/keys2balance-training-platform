@@ -11,11 +11,20 @@ const findById = async (lessonId) => {
 
 // Create an empty lesson with JSONB container for blocks
 const createLesson = async ({ course_id, title, order_index }) => {
+	let idx = order_index
+	if (idx === undefined || idx === null) {
+		const maxRes = await pool.query(
+			'SELECT MAX(order_index) AS max FROM lessons WHERE course_id = $1',
+			[course_id],
+		)
+		const maxIdx = maxRes.rows[0].max
+		idx = maxIdx !== null ? maxIdx + 1 : 0
+	}
 	const res = await pool.query(
 		`INSERT INTO lessons (course_id, title, content_data, order_index)
 		 VALUES ($1, $2, '[]'::jsonb, $3)
 		 RETURNING *`,
-		[course_id, title, order_index],
+		[course_id, title, idx],
 	)
 	return res.rows[0]
 }

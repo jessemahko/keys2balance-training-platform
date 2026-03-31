@@ -47,6 +47,15 @@ const getMyResult = async (id) => {
 	return response.data
 }
 
+const gradeQuestion = async (assessmentId, responseId, questionId, score) => {
+	const response = await axios.patch(
+		`${baseUrl}/${assessmentId}/responses/${responseId}/grade`,
+		{ questionId, score },
+		getConfig(),
+	)
+	return response.data
+}
+
 export {
 	getByLesson,
 	getById,
@@ -56,4 +65,5 @@ export {
 	submit,
 	getResults,
 	getMyResult,
+	gradeQuestion,
 }
