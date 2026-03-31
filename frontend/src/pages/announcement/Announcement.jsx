@@ -10,6 +10,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete'
 import DoneIcon from '@mui/icons-material/Done'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import { styles } from './style.js'
 
 const AnnouncementPage = () => {
 	const dispatch = useDispatch()
@@ -18,6 +19,9 @@ const AnnouncementPage = () => {
 	const [sortBy, setSortBy] = useState('newest')
 	const [loading, setLoading] = useState(true)
 
+	useEffect(() => {
+		document.title = t('Announcements')
+	}, [])
 	useEffect(() => {
 		const fetchNotifications = () => {
 			setLoading(true)
@@ -186,214 +190,6 @@ const AnnouncementPage = () => {
 			)}
 		</div>
 	)
-}
-
-const styles = {
-	container: {
-		minHeight: '100vh',
-		backgroundColor: '#f5f5f7',
-		padding: '32px',
-		fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-	},
-	header: {
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: '12px',
-		flexWrap: 'wrap',
-		marginBottom: '24px',
-		maxWidth: '800px',
-		margin: '0 auto 24px auto',
-	},
-	headerLeft: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '12px',
-	},
-	title: {
-		fontSize: '28px',
-		fontWeight: '700',
-		color: '#4a3f6b',
-		margin: 0,
-	},
-	badge: {
-		backgroundColor: '#6b5b95',
-		color: '#fff',
-		padding: '6px 14px',
-		borderRadius: '20px',
-		fontSize: '14px',
-		fontWeight: '600',
-	},
-	sortWrap: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '10px',
-		flexWrap: 'wrap',
-	},
-	sortLabel: {
-		fontSize: '14px',
-		color: '#6a6580',
-		fontWeight: '600',
-	},
-	segmentedControl: {
-		display: 'flex',
-		alignItems: 'center',
-		backgroundColor: '#ebe8f5',
-		padding: '4px',
-		borderRadius: '999px',
-		gap: '4px',
-	},
-	segmentBtn: {
-		border: 'none',
-		backgroundColor: 'transparent',
-		color: '#4f4965',
-		padding: '7px 12px',
-		borderRadius: '999px',
-		fontSize: '13px',
-		fontWeight: '600',
-		cursor: 'pointer',
-		transition: 'all 0.2s ease',
-	},
-	segmentBtnActive: {
-		backgroundColor: '#6b5b95',
-		color: '#fff',
-		boxShadow: '0 2px 8px rgba(75, 57, 128, 0.2)',
-	},
-	listContainer: {
-		maxWidth: '800px',
-		margin: '0 auto',
-		display: 'flex',
-		flexDirection: 'column',
-		gap: '16px',
-	},
-	card: {
-		backgroundColor: '#fff',
-		borderRadius: '12px',
-		padding: '20px',
-		boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-		transition: 'all 0.25s ease',
-		border: '1px solid #e8e8ed',
-	},
-	cardUnread: {
-		borderLeft: '4px solid #6b5b95',
-		backgroundColor: '#faf9ff',
-	},
-	cardRead: {
-		opacity: 0.75,
-	},
-	cardHeader: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'flex-start',
-		marginBottom: '12px',
-	},
-	titleRow: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '10px',
-	},
-	unreadDot: {
-		width: '10px',
-		height: '10px',
-		borderRadius: '50%',
-		backgroundColor: '#6b5b95',
-		flexShrink: 0,
-	},
-	cardTitle: {
-		fontSize: '18px',
-		fontWeight: '600',
-		color: '#2d2d3a',
-		margin: 0,
-	},
-	date: {
-		fontSize: '13px',
-		color: '#8e8e9d',
-		fontWeight: '500',
-	},
-	cardMessage: {
-		fontSize: '15px',
-		color: '#5c5c6d',
-		lineHeight: '1.6',
-		margin: '0 0 16px 0',
-	},
-	cardFooter: {
-		display: 'flex',
-		gap: '12px',
-		justifyContent: 'flex-end',
-	},
-	markReadBtn: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '6px',
-		backgroundColor: '#6b5b95',
-		color: '#fff',
-		border: 'none',
-		padding: '8px 16px',
-		borderRadius: '8px',
-		fontSize: '14px',
-		fontWeight: '500',
-		cursor: 'pointer',
-		transition: 'background-color 0.2s ease',
-	},
-	deleteBtn: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '6px',
-		backgroundColor: 'transparent',
-		color: '#dc3545',
-		border: '1px solid #dc3545',
-		padding: '8px 16px',
-		borderRadius: '8px',
-		fontSize: '14px',
-		fontWeight: '500',
-		cursor: 'pointer',
-		transition: 'all 0.2s ease',
-	},
-	btnIcon: {
-		fontSize: '18px',
-	},
-	emptyContainer: {
-		textAlign: 'center',
-		padding: '60px 20px',
-		maxWidth: '400px',
-		margin: '40px auto',
-	},
-	emptyIcon: {
-		fontSize: '64px',
-		color: '#c5c5d5',
-		marginBottom: '16px',
-	},
-	emptyText: {
-		fontSize: '20px',
-		fontWeight: '600',
-		color: '#4a3f6b',
-		margin: '0 0 8px 0',
-	},
-	emptySubtext: {
-		fontSize: '15px',
-		color: '#8e8e9d',
-		margin: 0,
-	},
-	loadingContainer: {
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'center',
-		minHeight: '60vh',
-	},
-	loadingSpinner: {
-		width: '40px',
-		height: '40px',
-		border: '4px solid #e8e8ed',
-		borderTop: '4px solid #6b5b95',
-		borderRadius: '50%',
-		animation: 'spin 1s linear infinite',
-	},
-	loadingText: {
-		marginTop: '16px',
-		color: '#6b5b95',
-		fontSize: '16px',
-	},
 }
 
 export default AnnouncementPage

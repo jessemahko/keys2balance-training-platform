@@ -12,6 +12,7 @@ const app = express()
 // Import routers and utilities
 const loginRouter = require('./controllers/auth/login') // Login-related routes
 const registerRouter = require('./controllers/auth/register') // Registration-related routes
+const resetPasswordRouter = require('./controllers/auth/resetPassword')
 
 const googleAuthRouter = require('./controllers/auth/googleAuth') // Google authentication routes
 
@@ -49,6 +50,7 @@ app.use(passport.initialize()) // Initialize Passport for authentication
 
 app.use('/login', loginRouter) // Routes for login operations
 app.use('/register', registerRouter) // Routes for registration operations
+app.use('/reset-password', resetPasswordRouter)
 
 app.use('/auth', googleAuthRouter) // Routes for Google authentication
 
@@ -71,7 +73,7 @@ app.use(
 	coursesRouter,
 )
 
-app.use('/verify-email', emailRouter) // Email verification route
+app.use('/verify-email', middleware.userExtractor, emailRouter) // Email verification route
 app.use(
 	'/api/users',
 	middleware.userExtractor,
