@@ -22,19 +22,19 @@ const EmailVerify = () => {
 
 			if (!token) {
 				setStatus('error')
-				setMessage('No verification token found.')
+				setMessage(t('No verification token found.'))
 				return
 			}
 
 			try {
 				const res = await profileService.VerifyEmail(token)
 				setStatus('success')
-				setMessage(res.message || 'Your account has been verified!')
+				setMessage(res.message || t('Your account has been verified!'))
 			} catch (err) {
 				setStatus('error')
 				setMessage(
 					err?.response?.data?.error ||
-						'Verification failed. The link may have expired.',
+						t('Verification failed. The link may have expired.'),
 				)
 			}
 		}

@@ -13,8 +13,8 @@ const Authentication = () => {
 	const { t, i18n } = useTranslation()
 
 	useEffect(() => {
-		document.title = active ? 'Register' : 'Login'
-	}, [active])
+		document.title = active ? t('Register') : t('Login')
+	}, [active, t])
 
 	return (
 		<div className='authen-body relative'>
