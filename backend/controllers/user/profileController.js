@@ -80,40 +80,58 @@ profileRouter.get('/', async (req, res) => {
 	res.json({ id: safeUser.user_id, ...safeUser })
 })
 
-// profileRouter.put('/', async (req, res) => {
-// 	const userRequest = req.user
-// 	if (!userRequest) {
-// 		return res.status(401).json({ error: 'token invalid' })
-// 	}
-// 	// Check if the user is authenticated
-// 	// If not, return a 401 Unauthorized response
-// 	const user = await User.findById(userRequest.id)
-// 	if (!user) {
-// 		return res.status(404).json({ error: 'User not found' })
-// 	}
-// 	const { name, email, gender, phoneNumber, dateOfBirth } = req.body
-// 	// Validate the input data
-// 	if (!email) return res.status(400).send('Email is required')
-// 	if (email?.length > 0 && !validator.isEmail(email))
-// 		return res.status(400).send('Invalid email')
-// 	if (phoneNumber?.length > 0 && !isValidPhoneNumber(`+${phoneNumber}`))
-// 		return res.status(400).send('Invalid phone')
+profileRouter.put('/', async (req, res) => {
+	const userRequest = req.user
+	if (!userRequest) {
+		return res.status(401).json({ error: 'token invalid' })
+	}
+	// Check if the user is authenticated
+	// If not, return a 401 Unauthorized response
+	const user = await User.findById(userRequest.id)
+	if (!user) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+	const { first_name, last_name, gender, phone, date_of_birth, email } =
+		req.body
 
-// 	const d = new Date(dateOfBirth)
-// 	const date = dateOfBirth && d instanceof Date && !isNaN(d) ? d : null
-// 	await User.findByIdAndUpdate(
-// 		userRequest.id,
-// 		{
-// 			name,
-// 			email: email?.length > 0 ? email : null,
-// 			gender,
-// 			dateOfBirth: date,
-// 			phoneNumber: phoneNumber?.length > 0 ? phoneNumber : null,
-// 		},
-// 		{ new: true },
-// 	)
-// 	res.status(204).end()
-// })
+	if (email) {
+		if (email !== user.email) {
+			if (!validator.isEmail(email)) {
+				return res.status(400).send({ error: 'Invalid email format' })
+			}
+			const emailExists = await User.findByEmail(email)
+			if (emailExists) {
+				return res.status(400).send({ error: 'Email already in use' })
+			}
+
+			await User.findByIdAndUpdate(user.user_id, { email, is_verified: false })
+			return res.status(204).end()
+		} else {
+			return res
+				.status(400)
+				.send({ error: 'Email is the same as the current one' })
+		}
+	}
+
+	// Validate the input data
+	if (!first_name)
+		return res.status(400).send({ error: 'First name is required' })
+	if (!last_name)
+		return res.status(400).send({ error: 'Last name is required' })
+	if (phone?.length > 0 && !isValidPhoneNumber(`+${phone}`))
+		return res.status(400).send({ error: 'Invalid phone' })
+
+	const d = new Date(date_of_birth)
+	const date = date_of_birth && d instanceof Date && !isNaN(d) ? d : null
+	await User.findByIdAndUpdate(userRequest.id, {
+		first_name,
+		last_name,
+		gender,
+		date_of_birth: date,
+		phone: phone?.length > 0 ? phone : null,
+	})
+	res.status(204).end()
+})
 
 profileRouter.put('/password', async (req, res) => {
 	const userRequest = req.user
@@ -184,4 +202,3 @@ profileRouter.put('/password', async (req, res) => {
 
 // Export the profileRouter to be used in other parts of the application
 module.exports = profileRouter
-

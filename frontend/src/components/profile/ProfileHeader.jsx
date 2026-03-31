@@ -6,7 +6,10 @@ import { setNotification, setError } from '../../reducers/notiReducer'
 import Avatar from 'react-avatar-edit'
 import profilePicNull from '../../assets/profile-picture-null.png'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
-import NotListedLocationIcon from '@mui/icons-material/NotListedLocation'
+
+import NewReleasesIcon from '@mui/icons-material/NewReleases'
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
+
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import PropTypes from 'prop-types'
@@ -199,7 +202,18 @@ const ProfileHeader = () => {
 
 				<div>
 					<h1 className='text-2xl font-bold text-gray-800'>{fullName}</h1>
-					<p className='text-gray-500'>{user.email || 'No email'}</p>
+					<div className='flex'>
+						<p className='text-gray-500'>{user.email || 'No email'}</p>
+						{user.is_verified ? (
+							<div className='flex items-center gap-1 ml-2 text-green-500'>
+								<VerifiedUserIcon fontSize='small' />
+							</div>
+						) : (
+							<div className='flex items-center gap-1 ml-2 text-red-500'>
+								<NewReleasesIcon fontSize='small' />
+							</div>
+						)}
+					</div>
 
 					<div className='mt-3 flex flex-wrap gap-2'>
 						<span className='rounded-full bg-[#514587] px-3 py-1 text-sm text-white capitalize'>

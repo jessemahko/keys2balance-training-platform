@@ -192,5 +192,27 @@
 	"Password must contain at least one number": "Password must contain at least one number",
 	"Password must contain a capital letter": "Password must contain a capital letter",
 	"Password must contain at least one special character": "Password must contain at least one special character",
-	"Password must not contain whitespace": "Password must not contain whitespace"
+	"Password must not contain whitespace": "Password must not contain whitespace",
+
+	"Login": "Login",
+	"Forgot Password": "Forgot Password",
+	"Enter your email for a reset link.": "Enter your email for a reset link.",
+	"Sending...": "Sending...",
+	"Send Reset Link": "Send Reset Link",
+	"If this email exists, a reset link has been sent to your inbox.": "If this email exists, a reset link has been sent to your inbox.",
+	"Something went wrong": "Something went wrong",
+	"Create New Password": "Create New Password",
+	"Enter your new password below.": "Enter your new password below.",
+	"Confirm New Password": "Confirm New Password",
+	"Updating...": "Updating...",
+	"Reset Password": "Reset Password",
+	"Email Verification": "Email Verification",
+	"Verifying your email\u2026": "Verifying your email\u2026",
+	"Email Verified!": "Email Verified!",
+	"Continue to Dashboard": "Continue to Dashboard",
+	"Verification Failed": "Verification Failed",
+	"Back to Login": "Back to Login",
+	"No verification token found.": "No verification token found.",
+	"Your account has been verified!": "Your account has been verified!",
+	"Verification failed. The link may have expired.": "Verification failed. The link may have expired."
 }

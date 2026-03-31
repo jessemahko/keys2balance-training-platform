@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
-import { setError } from './notiReducer'
+import { setError, setNotification } from './notiReducer'
 import profile from '../services/profile'
 
 const userSlice = createSlice({
@@ -58,14 +58,23 @@ export const updateAvatar = (pic) => {
 			dispatch(rmUserFn())
 			return
 		}
-		const { avatar_url } = await profile.updateAvatar(pic) // Extract the avatar_url
-		const storedUser = window.localStorage.getItem('loggedUser')
-		const parsedUser = storedUser ? JSON.parse(storedUser) : null
-		window.localStorage.setItem(
-			'loggedUser',
-			JSON.stringify({ ...(parsedUser || {}), avatar_url }),
-		)
-		dispatch(editUser({ avatar_url })) // Pass it as a string
+		try {
+			const { avatar_url } = await profile.updateAvatar(pic) // Extract the avatar_url
+			const storedUser = window.localStorage.getItem('loggedUser')
+			const parsedUser = storedUser ? JSON.parse(storedUser) : null
+			window.localStorage.setItem(
+				'loggedUser',
+				JSON.stringify({ ...(parsedUser || {}), avatar_url }),
+			)
+			dispatch(editUser({ avatar_url })) // Pass it as a string
+		} catch (err) {
+			dispatch(
+				setError(
+					err.response?.data?.error || err.message || 'Failed to update avatar',
+					5,
+				),
+			)
+		}
 	}
 }
 
@@ -75,15 +84,32 @@ export const updateProfile = (user) => {
 			dispatch(rmUserFn())
 			return
 		}
-		await profile.updateProfile(user)
-		const storedUser = window.localStorage.getItem('loggedUser')
-		const parsedUser = storedUser ? JSON.parse(storedUser) : null
-		window.localStorage.setItem(
-			'loggedUser',
-			JSON.stringify({ ...(parsedUser || {}), ...user }),
-		)
-
-		dispatch(editUser(user))
+		try {
+			await profile.updateProfile(user)
+			const storedUser = window.localStorage.getItem('loggedUser')
+			const parsedUser = storedUser ? JSON.parse(storedUser) : null
+			window.localStorage.setItem(
+				'loggedUser',
+				JSON.stringify({
+					...(parsedUser || {}),
+					...user,
+					is_verified: user.email === parsedUser.email,
+				}),
+			)
+			if (user.email) {
+				dispatch(
+					setNotification(
+						'Email updated. Please verify your new email address.',
+						5,
+					),
+				)
+			}
+			dispatch(
+				editUser({ ...user, is_verified: user.email === parsedUser.email }),
+			)
+		} catch (err) {
+			throw err
+		}
 	}
 }
 

@@ -193,5 +193,27 @@
 	"Password must contain at least one number": "Lösenordet måste innehålla minst ett nummer",
 	"Password must contain a capital letter": "Lösenordet måste innehålla en stor bokstav",
 	"Password must contain at least one special character": "Lösenordet måste innehålla minst ett specialtecken",
-	"Password must not contain whitespace": "Lösenordet får inte innehålla mellanslag"
+	"Password must not contain whitespace": "Lösenordet får inte innehålla mellanslag",
+
+	"Login": "Logga in",
+	"Forgot Password": "Glömt lösenordet",
+	"Enter your email for a reset link.": "Ange din e-post för en återställningslänk.",
+	"Sending...": "Skickar...",
+	"Send Reset Link": "Skicka återställningslänk",
+	"If this email exists, a reset link has been sent to your inbox.": "Om den här e-postadressen finns har en återställningslänk skickats till din inkorg.",
+	"Something went wrong": "Något gick fel",
+	"Create New Password": "Skapa nytt lösenord",
+	"Enter your new password below.": "Ange ditt nya lösenord nedan.",
+	"Confirm New Password": "Bekräfta nytt lösenord",
+	"Updating...": "Uppdaterar...",
+	"Reset Password": "Återställ lösenord",
+	"Email Verification": "E-postverifiering",
+	"Verifying your email\u2026": "Verifierar din e-post\u2026",
+	"Email Verified!": "E-post verifierad!",
+	"Continue to Dashboard": "Fortsätt till instrumentpanelen",
+	"Verification Failed": "Verifiering misslyckades",
+	"Back to Login": "Tillbaka till inloggning",
+	"No verification token found.": "Ingen verifieringstoken hittades.",
+	"Your account has been verified!": "Ditt konto har verifierats!",
+	"Verification failed. The link may have expired.": "Verifiering misslyckades. Länken kan ha gått ut."
 }

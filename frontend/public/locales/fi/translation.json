@@ -194,5 +194,27 @@
 	"Password must contain at least one number": "Salasanan on sisällettävä vähintään yksi numero",
 	"Password must contain a capital letter": "Salasanan on sisällettävä iso kirjain",
 	"Password must contain at least one special character": "Salasanan on sisällettävä vähintään yksi erikoismerkki",
-	"Password must not contain whitespace": "Salasana ei saa sisältää välilyöntejä"
+	"Password must not contain whitespace": "Salasana ei saa sisältää välilyöntejä",
+
+	"Login": "Kirjaudu",
+	"Forgot Password": "Unohditko salasanasi",
+	"Enter your email for a reset link.": "Syötä sähköpostisi palautuslinkkiä varten.",
+	"Sending...": "Lähetetään...",
+	"Send Reset Link": "Lähetä palautuslinkki",
+	"If this email exists, a reset link has been sent to your inbox.": "Jos tämä sähköpostiosoite on olemassa, palautuslinkki on lähetetty postilaatikkoosi.",
+	"Something went wrong": "Jokin meni pieleen",
+	"Create New Password": "Luo uusi salasana",
+	"Enter your new password below.": "Kirjoita uusi salasanasi alle.",
+	"Confirm New Password": "Vahvista uusi salasana",
+	"Updating...": "Päivitetään...",
+	"Reset Password": "Nollaa salasana",
+	"Email Verification": "Sähköpostivahvistus",
+	"Verifying your email\u2026": "Vahvistetaan sähköpostia\u2026",
+	"Email Verified!": "Sähköposti vahvistettu!",
+	"Continue to Dashboard": "Siirry kojelautaan",
+	"Verification Failed": "Vahvistus epäonnistui",
+	"Back to Login": "Takaisin kirjautumiseen",
+	"No verification token found.": "Vahvistustunnusta ei löytynyt.",
+	"Your account has been verified!": "Tilisi on vahvistettu!",
+	"Verification failed. The link may have expired.": "Vahvistus epäonnistui. Linkki on saattanut vanhentua."
 }

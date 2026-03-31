@@ -12,10 +12,14 @@ import {
 	useLocation,
 } from 'react-router-dom'
 
+import ProtectedRoute from './components/ProtectedRoute'
 import Authentication from './pages/authentication/Authentication'
 import AuthSuccess from './pages/authentication/AuthSuccess'
+import ResetPasswordRequest from './pages/authentication/ResetPasswordRequest'
+import ResetPasswordConfirm from './pages/authentication/ResetPasswordConfirm'
 import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
+import EmailVerify from './pages/profile/EmailVerify'
 
 import DiscussionPage from './pages/courses/DiscussionPage'
 import { useTranslation } from 'react-i18next'
@@ -93,13 +97,16 @@ const App = () => {
 					path='/auth-failed'
 					element={<Navigate replace to='/authentication' />}
 				/>
+				<Route path='/reset-password' element={<ResetPasswordRequest />} />
+				<Route
+					path='/reset-password/confirm'
+					element={<ResetPasswordConfirm />}
+				/>
+
+				<Route path='/verify-email' element={<EmailVerify />} />
 
 				{/* Protected Routes */}
-				<Route
-					element={
-						user ? <Outlet /> : <Navigate replace to='/authentication' />
-					}
-				>
+				<Route element={<ProtectedRoute />}>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard/*' element={<Dashboard />} />
 					<Route
