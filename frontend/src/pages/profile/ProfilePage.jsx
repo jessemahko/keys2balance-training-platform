@@ -6,7 +6,7 @@ import ProfileField from '../../components/profile/ProfileField'
 import EmailField from './EmailField'
 import PhoneDisplay from './PhoneDisplay'
 import { setNotification, setError } from '../../reducers/notiReducer'
-import { updateProfile } from '../../reducers/userReducer'
+import { updateProfileFn } from '../../reducers/userReducer'
 
 import { getToken, isTokenExpired } from '../../services/authen/login'
 import { rmUserFn } from '../../reducers/userReducer'
@@ -101,7 +101,7 @@ const ProfilePage = () => {
 				gender: formData.gender || null,
 				date_of_birth: formData.date_of_birth || null,
 			}
-			dispatch(updateProfile(profileToUpdate))
+			dispatch(updateProfileFn(profileToUpdate))
 
 			dispatch(setNotification('Profile updated successfully', 5))
 			setIsEditting(false)

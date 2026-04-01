@@ -78,7 +78,7 @@ export const updateAvatar = (pic) => {
 	}
 }
 
-export const updateProfile = (user) => {
+export const updateProfileFn = (user) => {
 	return async (dispatch) => {
 		if (isTokenExpired(getToken())) {
 			dispatch(rmUserFn())
@@ -105,7 +105,10 @@ export const updateProfile = (user) => {
 				)
 			}
 			dispatch(
-				editUser({ ...user, is_verified: user.email === parsedUser.email }),
+				editUser({
+					...user,
+					is_verified: !user.email || user.email === parsedUser.email,
+				}),
 			)
 		} catch (err) {
 			throw err

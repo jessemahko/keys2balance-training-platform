@@ -12,7 +12,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { setNotification, setError } from '../../reducers/notiReducer'
-import { updateProfile } from '../../reducers/userReducer'
+import { updateProfileFn } from '../../reducers/userReducer'
 import { useDispatch } from 'react-redux'
 
 import profile from '../../services/profile'
@@ -75,7 +75,7 @@ const ProfileField = ({ disabled }) => {
 		}
 
 		try {
-			await dispatch(updateProfile({ email }))
+			await dispatch(updateProfileFn({ email }))
 			setIsEditing(false)
 		} catch (err) {
 			dispatch(
@@ -269,4 +269,3 @@ ProfileField.propTypes = {
 }
 
 export default ProfileField
-
