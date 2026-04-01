@@ -1,14 +1,18 @@
 import axios from 'axios'
 import { getToken } from './authen/login'
+import { buildApiUrl } from './apiConfig'
 
-const baseUrl = 'http://localhost:3001/api/discussions'
+const baseUrl = buildApiUrl('/api/discussions')
 
 const getConfig = () => ({
 	headers: { Authorization: getToken() },
 })
 
 const getThreads = async (courseId) => {
-	const response = await axios.get(`${baseUrl}?courseId=${courseId}`, getConfig())
+	const response = await axios.get(
+		`${baseUrl}?courseId=${courseId}`,
+		getConfig(),
+	)
 	return response.data
 }
 
@@ -18,7 +22,11 @@ const createThread = async (courseId, title) => {
 }
 
 const createMessage = async (threadId, messageText) => {
-	const response = await axios.post(`${baseUrl}/${threadId}`, { messageText }, getConfig())
+	const response = await axios.post(
+		`${baseUrl}/${threadId}`,
+		{ messageText },
+		getConfig(),
+	)
 	return response.data
 }
 

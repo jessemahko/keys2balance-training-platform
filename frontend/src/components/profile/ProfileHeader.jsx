@@ -13,9 +13,7 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import PropTypes from 'prop-types'
-
-// const baseURL = ''
-const baseURL = 'http://localhost:3001'
+import { API_BASE_URL } from '../../services/apiConfig'
 
 const ProfileHeader = () => {
 	const dispatch = useDispatch()
@@ -30,6 +28,11 @@ const ProfileHeader = () => {
 	const [profileImage, setProfileImage] = useState(user.avatar_url || null)
 
 	const avatarUrl = user.avatar_url
+	const resolvedProfileImageUrl = profileImage
+		? profileImage.startsWith('http://') || profileImage.startsWith('https://')
+			? profileImage
+			: `${API_BASE_URL}${profileImage}`
+		: profilePicNull
 
 	useEffect(() => {
 		if (avatarUrl) {
@@ -127,9 +130,7 @@ const ProfileHeader = () => {
 						className={`h-20 w-20 rounded-full box`}
 						style={{
 							// backgroundImage: user.avatarUrl ? '' : `url(${profilePicNull})`,
-							backgroundImage: profileImage
-								? `url(${baseURL}${profileImage})`
-								: `url(${profilePicNull})`,
+							backgroundImage: `url(${resolvedProfileImageUrl})`,
 							backgroundSize: 'cover',
 							backgroundPosition: 'center',
 						}}

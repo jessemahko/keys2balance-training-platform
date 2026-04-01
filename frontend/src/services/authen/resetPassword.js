@@ -1,7 +1,7 @@
 import axios from 'axios'
+import { buildApiUrl } from '../apiConfig'
 
-// const baseUrl = '/'
-const baseUrl = 'http://localhost:3001'
+const baseUrl = buildApiUrl()
 
 const requestResetPassword = async (email) => {
 	const res = await axios.post(`${baseUrl}/reset-password`, { email })
@@ -20,4 +20,3 @@ export default {
 	requestResetPassword,
 	confirmResetPassword,
 }
-

@@ -1,7 +1,7 @@
 import axios from 'axios'
+import { buildApiUrl } from './apiConfig'
 
-// const baseUrl = '/api/courses'
-const baseUrl = 'http://localhost:3001/api/courses'
+const baseUrl = buildApiUrl('/api/courses')
 import { getToken } from './authen/login'
 
 const getConfig = () => ({
@@ -24,18 +24,36 @@ const createCourse = async (newCourse) => {
 }
 
 const updateCourse = async (courseId, updates) => {
-	const response = await axios.put(`${baseUrl}/${courseId}`, updates, getConfig())
+	const response = await axios.put(
+		`${baseUrl}/${courseId}`,
+		updates,
+		getConfig(),
+	)
 	return response.data
 }
 
 const enrollParticipant = async (courseId, userId) => {
-	const response = await axios.post(`${baseUrl}/${courseId}/enroll`, { userId }, getConfig())
+	const response = await axios.post(
+		`${baseUrl}/${courseId}/enroll`,
+		{ userId },
+		getConfig(),
+	)
 	return response.data
 }
 
 const removeParticipant = async (courseId, userId) => {
-	const response = await axios.delete(`${baseUrl}/${courseId}/enroll/${userId}`, getConfig())
+	const response = await axios.delete(
+		`${baseUrl}/${courseId}/enroll/${userId}`,
+		getConfig(),
+	)
 	return response.data
 }
 
-export { getAllCourses, getCourseById, createCourse, updateCourse, enrollParticipant, removeParticipant }
+export {
+	getAllCourses,
+	getCourseById,
+	createCourse,
+	updateCourse,
+	enrollParticipant,
+	removeParticipant,
+}

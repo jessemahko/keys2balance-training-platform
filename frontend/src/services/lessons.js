@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { getToken } from './authen/login'
+import { buildApiUrl } from './apiConfig'
 
-const baseUrl = 'http://localhost:3001/api/lessons'
+const baseUrl = buildApiUrl('/api/lessons')
 
 const getConfig = () => ({
 	headers: { Authorization: getToken() },
@@ -28,26 +29,37 @@ const deleteLesson = async (id) => {
 }
 
 const addBlock = async (id, blockData) => {
-	const response = await axios.patch(`${baseUrl}/${id}/add-block`, blockData, getConfig())
+	const response = await axios.patch(
+		`${baseUrl}/${id}/add-block`,
+		blockData,
+		getConfig(),
+	)
 	return response.data
 }
 
 const updateBlock = async (id, blockId, blockData) => {
-	const response = await axios.patch(`${baseUrl}/${id}/blocks/${blockId}`, blockData, getConfig())
+	const response = await axios.patch(
+		`${baseUrl}/${id}/blocks/${blockId}`,
+		blockData,
+		getConfig(),
+	)
 	return response.data
 }
 
 const deleteBlock = async (id, blockId) => {
-	const response = await axios.delete(`${baseUrl}/${id}/blocks/${blockId}`, getConfig())
+	const response = await axios.delete(
+		`${baseUrl}/${id}/blocks/${blockId}`,
+		getConfig(),
+	)
 	return response.data
 }
 
-export { 
-	getLessonById, 
-	createLesson, 
-	updateLesson, 
-	deleteLesson, 
-	addBlock, 
-	updateBlock, 
-	deleteBlock 
+export {
+	getLessonById,
+	createLesson,
+	updateLesson,
+	deleteLesson,
+	addBlock,
+	updateBlock,
+	deleteBlock,
 }

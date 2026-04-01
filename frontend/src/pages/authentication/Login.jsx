@@ -11,11 +11,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
 import { useField } from '../../hooks/hook'
+import { API_BASE_URL } from '../../services/apiConfig'
 
 // import './authen.css'
-
-// const base_url = ''
-const base_url = 'http://localhost:3001'
 
 const Login = () => {
 	const dispatch = useDispatch()
@@ -89,7 +87,10 @@ const Login = () => {
 					</i>
 				</div>
 				<div className='forgot-link '>
-					<Link to='/reset-password' className='hover:underline! text-blue-500!'>
+					<Link
+						to='/reset-password'
+						className='hover:underline! text-blue-500!'
+					>
 						{t('Forgot Password?')}
 					</Link>
 				</div>
@@ -101,7 +102,7 @@ const Login = () => {
 				</div>
 
 				<a
-					href={`${base_url}/auth/google`}
+					href={`${API_BASE_URL}/auth/google`}
 					className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-100 ease-out flex items-center justify-center gap-2 border rounded-lg py-2'
 				>
 					<span className=' py-4!'>

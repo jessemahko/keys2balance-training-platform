@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { getToken } from './authen/login'
+import { buildApiUrl } from './apiConfig'
 
-// const baseUrl = ''
-const baseUrl = 'http://localhost:3001'
+const baseUrl = buildApiUrl()
 
 const updateAvatar = async (pic) => {
 	const formData = new FormData()

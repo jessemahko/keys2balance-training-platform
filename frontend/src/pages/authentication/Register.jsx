@@ -7,6 +7,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
 import registerService from '../../services/authen/register'
+import { API_BASE_URL } from '../../services/apiConfig'
 
 import { setNotification, setError } from '../../reducers/notiReducer'
 import { useField } from '../../hooks/hook'
@@ -87,7 +88,6 @@ const Register = ({ setActive }) => {
 		}
 	}
 
-	const base_url = 'http://localhost:3001'
 	return (
 		<div className='register form-box'>
 			<form onSubmit={handleRegister}>
@@ -142,7 +142,7 @@ const Register = ({ setActive }) => {
 				</div>
 
 				<a
-					href={`${base_url}/auth/google`}
+					href={`${API_BASE_URL}/auth/google`}
 					className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-100 ease-out flex items-center justify-center gap-2 border rounded-lg py-2'
 				>
 					<span className='py-4!'>

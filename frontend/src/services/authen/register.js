@@ -1,7 +1,7 @@
 import axios from 'axios'
+import { buildApiUrl } from '../apiConfig'
 
-// const baseUrl = '/api/auth/register'
-const baseUrl = 'http://localhost:3001/register'
+const baseUrl = buildApiUrl('/register')
 
 const register = async (credentials) => {
 	const response = await axios.post(baseUrl, credentials)
@@ -9,4 +9,3 @@ const register = async (credentials) => {
 }
 
 export default { register }
-

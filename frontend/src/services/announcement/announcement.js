@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { getToken } from '../authen/login'
-const base_URL = 'http://localhost:3001/api/notifications'
+import { buildApiUrl } from '../apiConfig'
+
+const base_URL = buildApiUrl('/api/notifications')
 
 const getAllNotifications = async () => {
 	const config = { headers: { Authorization: getToken() } }
