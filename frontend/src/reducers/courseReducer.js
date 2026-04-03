@@ -14,7 +14,21 @@ const coursesSlice = createSlice({
 	initialState,
 	reducers: {
 		setCourses(state, action) {
-			state.items = action.payload
+			// Merge list data with existing detailed data to avoid losing lessons/participants on refresh
+			// This prevents a race condition where fetchCourseByIdFn resolves BEFORE setCoursesFn on fresh reloads.
+			state.items = action.payload.map(incoming => {
+				const existing = state.items.find(c => String(c.course_id) === String(incoming.course_id));
+				if (existing) {
+					return { 
+						...existing, 
+						...incoming,
+						// Explicitly preserve arrays if incoming doesn't have them
+						lessons: incoming.lessons || existing.lessons,
+						participants: incoming.participants || existing.participants
+					};
+				}
+				return incoming;
+			});
 		},
 		appendCourse(state, action) {
 			state.items.push(action.payload)
