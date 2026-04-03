@@ -6,13 +6,13 @@ BEGIN;
 
 INSERT INTO users (username, email, password_hash, role, first_name, last_name)
 VALUES
-('admin1','admin@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','admin','Admin','User'),
-('trainer1','trainer1@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','trainer','John','Doe'),
-('trainer2','trainer2@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','trainer','Sarah','Smith'),
-('student1','student1@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','participant','Alice','Brown'),
-('student2','student2@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','participant','Bob','Taylor'),
-('student3','student3@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','participant','Charlie','Wilson'),
-('student4','student4@test.com','$2b$10$evEvJAbwLIsDfhl2ZOlH1.1jCeN.qvPBlvmlL1chGcPlqgsbfO3H2','participant','Diana','Clark')
+('admin1','admin@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','admin','Admin','User'),
+('trainer1','trainer1@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','trainer','John','Doe'),
+('trainer2','trainer2@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','trainer','Sarah','Smith'),
+('student1','student1@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','participant','Alice','Brown'),
+('student2','student2@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','participant','Bob','Taylor'),
+('student3','student3@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','participant','Charlie','Wilson'),
+('student4','student4@test.com','$2b$10$bsnG3SCCXhADlR0W8UGltuv39n.dkB1AsUGkxi1gqIhmTUloRd2o6','participant','Diana','Clark')
 ON CONFLICT (username) DO NOTHING;
 
 -- ======================================================================================
