@@ -29,7 +29,7 @@ const Dashboard = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
-	const isLoading = useSelector((state) => state.course.isLoading)
+
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 	const [isLessonModalOpen, setIsLessonModalOpen] = useState(false)
 	const [lessonModalMode, setLessonModalMode] = useState('create')
@@ -111,7 +111,7 @@ const Dashboard = () => {
 
 			<main className='flex-1 overflow-y-auto relative h-screen w-full p-6 md:p-8 lg:p-10'>
 				<Routes>
-					<Route index element={<DashboardHome isLoading={isLoading} />} />
+					<Route index element={<DashboardHome />} />
 					<Route path='courses/new' element={<CourseForm />} />
 					<Route path='courses/:courseId/*' element={<CourseRoutes />} />
 					<Route path='announcements' element={<AnnoucementPage />} />

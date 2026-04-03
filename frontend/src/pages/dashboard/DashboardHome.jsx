@@ -1,16 +1,17 @@
 import { useDeferredValue, useMemo, useState } from 'react'
-import PropTypes from 'prop-types'
+
 import { Link } from 'react-router-dom'
 import { normalizeSearchValue } from './dashboardHelpers'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
-const DashboardHome = ({ isLoading }) => {
+const DashboardHome = () => {
 	const { t } = useTranslation()
 	const [searchTerm, setSearchTerm] = useState('')
 	const deferredSearchTerm = useDeferredValue(searchTerm)
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
+	const isLoading = useSelector((state) => state.course.isLoading)
 	const normalizedSearchTerm = normalizeSearchValue(deferredSearchTerm)
 	const filteredCourses = useMemo(() => {
 		return courses.filter((course) => {
@@ -142,15 +143,6 @@ const DashboardHome = ({ isLoading }) => {
 	)
 }
 
-DashboardHome.propTypes = {
-	courses: PropTypes.arrayOf(PropTypes.object).isRequired,
-	isLoading: PropTypes.bool.isRequired,
-	user: PropTypes.shape({
-		email: PropTypes.string,
-		first_name: PropTypes.string,
-		firstName: PropTypes.string,
-		name: PropTypes.string,
-	}),
-}
+
 
 export default DashboardHome
