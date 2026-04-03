@@ -27,19 +27,25 @@ import EnFlag from '../../assets/flags/en.png'
 import SvFlag from '../../assets/flags/sv.png'
 import FiFlag from '../../assets/flags/fi.png'
 
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate, useMatch } from 'react-router-dom'
 import { rmUserFn } from '../../reducers/userReducer'
 
 const Sidebar = ({
 	isOpen,
 	onToggle,
-	course = null,
-	activeLessonId = null,
 	onAddLesson,
 	onEditLesson,
 	onDeleteLesson,
 }) => {
+	const courses = useSelector((state) => state.course.items)
+	const courseMatch = useMatch('/dashboard/courses/:courseId/*')
+	const courseIdMatch = courseMatch?.params?.courseId
+	const course = courses.find((c) => String(c.course_id) === String(courseIdMatch)) || null
+
+	const lessonMatch = useMatch('/dashboard/courses/:courseId/lessons/:lessonId')
+	const activeLessonId = lessonMatch?.params?.lessonId
+
 	const [activeDropdownLessonId, setActiveDropdownLessonId] = useState(null)
 	const { t, i18n } = useTranslation()
 	const dropdownRef = useRef(null)

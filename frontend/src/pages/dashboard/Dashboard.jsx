@@ -104,8 +104,6 @@ const Dashboard = () => {
 			<Sidebar
 				isOpen={isSidebarOpen}
 				onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-				course={activeCourse}
-				activeLessonId={activeLessonId}
 				onAddLesson={canManageCourse ? handleAddLesson : null}
 				onEditLesson={canManageCourse ? handleEditLesson : null}
 				onDeleteLesson={canManageCourse ? handleDeleteLesson : null}
