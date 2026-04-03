@@ -1,8 +1,8 @@
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchCourseByIdFn } from '../../reducers/courseReducer'
+import { useSelector } from 'react-redux'
+
 import ParticipantModal from '../courses/ParticipantModal'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import {
@@ -29,7 +29,6 @@ const CourseLabel = () => {
 	const user = useSelector((state) => state.user)
 	const userRole = user?.role || ''
 	const currentUserId = user?.id || ''
-	const dispatch = useDispatch()
 	const [lessonSearchTerm, setLessonSearchTerm] = useState('')
 	const deferredLessonSearchTerm = useDeferredValue(lessonSearchTerm)
 	const lessons = useMemo(() => sortLessons(course?.lessons), [course])
@@ -56,13 +55,7 @@ const CourseLabel = () => {
 	const canManageCourse =
 		userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
 
-	const handleParticipantsChanged = async () => {
-		try {
-			dispatch(fetchCourseByIdFn(courseId))
-		} catch (err) {
-			console.error(err)
-		}
-	}
+
 
 	return (
 		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
@@ -136,7 +129,6 @@ const CourseLabel = () => {
 						isOpen={isParticipantModalOpen}
 						onClose={() => setIsParticipantModalOpen(false)}
 						course={course}
-						onParticipantsChanged={handleParticipantsChanged}
 					/>
 				)}
 
