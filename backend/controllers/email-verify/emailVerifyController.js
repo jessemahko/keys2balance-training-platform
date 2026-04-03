@@ -4,7 +4,7 @@ const verifyEmailRouter = require('express').Router()
 const User = require('../../models/user')
 const sendEmail = require('../../utils/sendEmail') // utility to send emails
 
-verifyEmailRouter.get('/', async (req, res) => {
+verifyEmailRouter.get('/me', async (req, res) => {
 	const { token } = req.query
 	if (!token) return res.status(400).json({ error: 'token missing' })
 

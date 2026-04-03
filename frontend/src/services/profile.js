@@ -62,7 +62,7 @@ const requestEmailVerification = async () => {
 }
 
 const VerifyEmail = async (token) => {
-	const res = await axios.get(`${baseUrl}/verify-email?token=${token}`)
+	const res = await axios.get(`${baseUrl}/verify-email/me?token=${token}`)
 	return res.data
 }
 
