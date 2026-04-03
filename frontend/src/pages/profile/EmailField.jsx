@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { setNotification, setError } from '../../reducers/notiReducer'
@@ -17,20 +17,18 @@ import { useDispatch } from 'react-redux'
 
 import profile from '../../services/profile'
 
-const ProfileField = ({ disabled }) => {
+const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
 	const user = useSelector((state) => state.user)
 	const [isConfirming, setIsConfirming] = useState(false)
-	const [isEditing, setIsEditing] = useState(false)
+
 	const [email, setEmail] = useState(user.email || '')
 	const [isHoveringVerification, setIsHoveringVerification] = useState(false)
 	const [isSending, setIsSending] = useState(false)
 
-	const containerRef = useRef(null)
-
 	const onCancelEdit = () => {
-		setIsEditing(false)
+		setIsEditingEmail(false)
 		setEmail(user.email || '')
 	}
 
@@ -40,7 +38,7 @@ const ProfileField = ({ disabled }) => {
 
 	const updateEmail = async () => {
 		if (email === user.email) {
-			setIsEditing(false)
+			setIsEditingEmail(false)
 			return
 		}
 
@@ -76,7 +74,7 @@ const ProfileField = ({ disabled }) => {
 
 		try {
 			await dispatch(updateProfileFn({ email }))
-			setIsEditing(false)
+			setIsEditingEmail(false)
 		} catch (err) {
 			dispatch(
 				setError(
@@ -110,13 +108,9 @@ const ProfileField = ({ disabled }) => {
 	}
 	return (
 		<div
-			className='flex flex-col gap-2 relative'
-			ref={containerRef}
+			className={`flex flex-col gap-2 relative ${disabled ? 'pointer-events-none' : ''}`}
 			onBlur={(e) => {
 				if (isConfirming) return
-				if (!containerRef.current.contains(e.relatedTarget)) {
-					onCancelEdit()
-				}
 			}}
 		>
 			<div className='flex justify-between'>
@@ -125,7 +119,7 @@ const ProfileField = ({ disabled }) => {
 						{t('Email')}
 					</label>
 
-					{isEditing ? (
+					{isEditingEmail ? (
 						<div className='flex gap-3'>
 							<CheckIcon
 								tabIndex={0}
@@ -165,7 +159,7 @@ const ProfileField = ({ disabled }) => {
 								disabled
 									? null
 									: () => {
-											setIsEditing(true)
+											setIsEditingEmail(true)
 											// focus the input field after clicking the edit icon
 											setTimeout(() => {
 												const input =
@@ -207,20 +201,14 @@ const ProfileField = ({ disabled }) => {
 					name='email'
 					value={email || ''}
 					onChange={(e) => setEmail(e.target.value)}
-					disabled={!isEditing}
-					placeholder={isEditing ? t('eg. example@example.com') : ''}
+					disabled={!isEditingEmail}
+					placeholder={isEditingEmail ? t('eg. example@example.com') : ''}
 					required
 					onKeyDown={(e) => {
 						if (e.key === 'Enter') {
 							updateEmail()
 						}
 						if (e.key === 'Escape') {
-							onCancelEdit()
-						}
-					}}
-					onBlur={(e) => {
-						const next = e.relatedTarget
-						if (!e.currentTarget.parentNode.contains(next)) {
 							onCancelEdit()
 						}
 					}}

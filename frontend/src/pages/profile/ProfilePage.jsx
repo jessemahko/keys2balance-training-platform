@@ -19,8 +19,8 @@ const ProfilePage = () => {
 	const { t } = useTranslation()
 	const user = useSelector((state) => state.user)
 	const [isEditting, setIsEditting] = useState(false)
-
 	const [isEdittingPassword, setIsEdittingPassword] = useState(false)
+	const [isEditingEmail, setIsEditingEmail] = useState(false)
 
 	const [formData, setFormData] = useState({
 		...user,
@@ -115,6 +115,8 @@ const ProfilePage = () => {
 		formData.last_name &&
 		formData.phone &&
 		isValidPhoneNumber(`+${formData.phone}`)
+
+	const isEdittingEmailOrPassword = isEdittingPassword || isEditingEmail
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
@@ -127,9 +129,8 @@ const ProfilePage = () => {
 							isEdittingPassword={isEdittingPassword}
 							setIsEdittingPassword={setIsEdittingPassword}
 						/>
-
 						{/* Basic Information */}
-						<div className={`${isEdittingPassword ? 'opacity-20' : ''}`}>
+						<div>
 							<h3 className='mb-4 text-lg font-semibold text-gray-800'>
 								{t('Basic Information')}
 							</h3>
@@ -142,7 +143,13 @@ const ProfilePage = () => {
 									onChange={handleFormChange}
 									disabled
 								/>
-								<EmailField disabled={isEdittingPassword} />
+								<div className={`${isEdittingPassword ? 'opacity-20' : ''}`}>
+									<EmailField
+										disabled={isEdittingPassword}
+										isEditingEmail={isEditingEmail}
+										setIsEditingEmail={setIsEditingEmail}
+									/>
+								</div>
 								<ProfileField
 									label={t('Role')}
 									name='role'
@@ -150,26 +157,30 @@ const ProfilePage = () => {
 									onChange={handleFormChange}
 									disabled
 								/>
-								{isEditting ? (
-									<ProfileField
-										label={t('Phone')}
-										name='phone'
-										type='text'
-										value={formData.phone ? `+${formData.phone}` : ''}
-										onChange={handleFormChange}
-										disabled={isEdittingPassword || !isEditting}
-										placeholder={isEditting ? 'eg. +358 123 4567' : ''}
-										required={true}
-										maxLength={15}
-									/>
-								) : (
-									<PhoneDisplay />
-								)}
+								<div
+									className={`${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}
+								>
+									{isEditting ? (
+										<ProfileField
+											label={t('Phone')}
+											name='phone'
+											type='text'
+											value={formData.phone ? `+${formData.phone}` : ''}
+											onChange={handleFormChange}
+											disabled={isEdittingEmailOrPassword || !isEditting}
+											placeholder={isEditting ? 'eg. +358 123 4567' : ''}
+											required={true}
+											maxLength={15}
+										/>
+									) : (
+										<PhoneDisplay />
+									)}
+								</div>
 							</div>
 						</div>
 
 						{/* Personal Details */}
-						<div className={`${isEdittingPassword ? 'opacity-20' : ''}`}>
+						<div className={`${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}>
 							<h3 className='mb-4 text-lg font-semibold text-gray-800'>
 								{t('Personal Details')}
 							</h3>
@@ -179,7 +190,7 @@ const ProfilePage = () => {
 									name='first_name'
 									value={formData.first_name || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword || !isEditting}
+									disabled={isEdittingEmailOrPassword || !isEditting}
 									required={true}
 									placeholder={t('Enter your first name')}
 									error={formData.first_name === ''}
@@ -190,7 +201,7 @@ const ProfilePage = () => {
 									name='last_name'
 									value={formData.last_name || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword || !isEditting}
+									disabled={isEdittingEmailOrPassword || !isEditting}
 									required={true}
 									placeholder={t('Enter your last name')}
 									error={formData.last_name === ''}
@@ -201,7 +212,7 @@ const ProfilePage = () => {
 									name='gender'
 									value={formData.gender || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword || !isEditting}
+									disabled={isEdittingEmailOrPassword || !isEditting}
 								/>
 								<ProfileField
 									label={t('Date of Birth')}
@@ -209,7 +220,7 @@ const ProfilePage = () => {
 									type='date'
 									value={formData.date_of_birth || ''}
 									onChange={handleFormChange}
-									disabled={isEdittingPassword || !isEditting}
+									disabled={isEdittingEmailOrPassword || !isEditting}
 								/>
 							</div>
 						</div>
@@ -218,12 +229,12 @@ const ProfilePage = () => {
 
 						{isEditting ? (
 							<div
-								className={`flex flex-wrap gap-4 pt-2 ${isEdittingPassword ? 'opacity-20' : ''}`}
+								className={`flex flex-wrap gap-4 pt-2 ${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}
 							>
 								<button
 									type='button'
 									className={`rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5 ${!isAllowSaveProfile ? 'opacity-50 cursor-not-allowed' : ''}`}
-									disabled={isEdittingPassword || !isAllowSaveProfile}
+									disabled={isEdittingEmailOrPassword || !isAllowSaveProfile}
 									onClick={isAllowSaveProfile ? handleSave : null}
 								>
 									{t('Save Changes')}
@@ -232,19 +243,19 @@ const ProfilePage = () => {
 									type='button'
 									onClick={handleCancelEdit}
 									className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 mt-5'
-									disabled={isEdittingPassword}
+									disabled={isEdittingEmailOrPassword}
 								>
 									{t('Cancel')}
 								</button>
 							</div>
 						) : (
 							<div
-								className={`flex w-full justify-center ${isEdittingPassword ? 'opacity-20' : ''}`}
+								className={`flex w-full justify-center ${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}
 							>
 								<button
 									type='button'
 									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'
-									disabled={isEdittingPassword}
+									disabled={isEdittingEmailOrPassword}
 									onClick={() => setIsEditting(true)}
 								>
 									{t('Edit Profile')}
