@@ -287,7 +287,7 @@ const Sidebar = ({
 							<ul className='list-none px-4 w-[280px] mb-6'>
 								<li className='mb-2 rounded-lg w-full'>
 									<NavLink
-										to={`/courses/${course.course_id}/discussion`}
+										to={`/dashboard/courses/${course.course_id}/discussion`}
 										className={({ isActive }) =>
 											`${navLinkClass} ${isActive ? activeNavLinkClass : ''}`
 										}

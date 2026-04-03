@@ -26,9 +26,10 @@ const CourseForm = () => {
 	const userRole = user?.role || ''
 
 	// Role guard: only admins and trainers can create/edit courses
-	const isCourseOwner = isEditMode && courseToEdit
-		? String(courseToEdit.teacher_id) === String(currentUserId)
-		: true
+	const isCourseOwner =
+		isEditMode && courseToEdit
+			? String(courseToEdit.teacher_id) === String(currentUserId)
+			: true
 	const canAccessForm =
 		userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
 
@@ -104,6 +105,7 @@ const CourseForm = () => {
 	}
 
 	if (!canAccessForm) {
+		setError('You do not have permission to access this page')
 		return <Navigate replace to='/dashboard' />
 	}
 
