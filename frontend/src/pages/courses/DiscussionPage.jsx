@@ -90,16 +90,10 @@ const DiscussionPage = () => {
 	}
 
 	return (
-		<div className='flex h-screen bg-[#f8fafc] overflow-hidden'>
+		<div className='flex h-full bg-[#f8fafc] overflow-hidden'>
 			<aside className='w-[300px] bg-white border-r border-[#e2e8f0] flex flex-col z-20'>
 				<header className='p-6 border-b border-[#f1f5f9]'>
-					<Link
-						to={`/dashboard/courses/${courseId}`}
-						className='text-[#64748b] no-underline text-sm hover:underline'
-					>
-						&larr; {t('Course')}
-					</Link>
-					<h3 className='mt-2 mb-0 text-xl font-bold text-[#0f172a]'>
+					<h3 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>
 						{t('Threads')}
 					</h3>
 				</header>
@@ -108,7 +102,7 @@ const DiscussionPage = () => {
 					{threads.map((thread) => (
 						<button
 							key={thread.thread_id}
-							className={`w-full text-left p-4 bg-transparent border-none rounded-[0.75rem] cursor-pointer transition-all duration-200 mb-1 hover:bg-[#f1f5f9] ${activeThread?.thread_id === thread.thread_id ? 'bg-[#eef2ff] border-l-4 border-l-[#14b8a6]' : ''}`}
+							className={`w-full text-left p-4 bg-transparent border-none rounded-[0.75rem] cursor-pointer transition-all duration-200 mb-1 hover:bg-[#f1f5f9] ${activeThread?.thread_id === thread.thread_id ? 'bg-[#eef2ff]! border-l-4! border-l-[#14b8a6]!' : ''}`}
 							onClick={() => dispatch(setActiveThread(thread.thread_id))}
 						>
 							<div className='flex flex-col gap-1'>
@@ -145,7 +139,7 @@ const DiscussionPage = () => {
 			</aside>
 
 			<div className='flex-1 flex flex-col bg-[#f8fafc]'>
-				<header className='p-[1.25rem_2rem] bg-white border-b border-[#e2e8f0]'>
+				<header className='p-6 bg-white border-b border-[#e2e8f0]'>
 					<h1 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>
 						{activeThread?.title || t('Select a thread')}
 					</h1>

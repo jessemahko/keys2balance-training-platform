@@ -21,7 +21,6 @@ import Notification from './components/Notification'
 import Dashboard from './pages/dashboard/Dashboard'
 import EmailVerify from './pages/profile/EmailVerify'
 
-import DiscussionPage from './pages/courses/DiscussionPage'
 import { useTranslation } from 'react-i18next'
 
 import { setUserFn, rmUserFn, setUser } from './reducers/userReducer'
@@ -109,10 +108,6 @@ const App = () => {
 				<Route element={<ProtectedRoute />}>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
 					<Route path='/dashboard/*' element={<Dashboard />} />
-					<Route
-						path='/courses/:courseId/discussion'
-						element={<DiscussionPage />}
-					/>
 				</Route>
 
 				<Route path='*' element={<Navigate replace to='/' />} />

@@ -60,7 +60,7 @@ const createLesson = async (req, res) => {
 	const newLesson = await Lesson.createLesson({
 		course_id,
 		title,
-		order_index: order_index || 0,
+		order_index,
 	})
 	res.status(201).json(newLesson)
 }

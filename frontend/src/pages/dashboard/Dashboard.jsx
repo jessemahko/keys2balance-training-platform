@@ -14,14 +14,13 @@ import { getErrorMessage } from './dashboardHelpers'
 import { useMatch } from 'react-router-dom'
 
 import CourseForm from '../courses/CourseForm'
-import LessonPage from '../courses/LessonPage'
 import DashboardHome from './DashboardHome'
 import ProfilePage from '../profile/ProfilePage'
-import CourseLabel from './CourseLabel'
+
+import CourseRoutes from '../courses/CourseRoutes'
 
 import AnnoucementPage from '../announcement/Announcement'
 
-import SectionPlaceholder from './SectionPlaceholder'
 import { useTranslation } from 'react-i18next'
 
 const Dashboard = () => {
@@ -114,26 +113,9 @@ const Dashboard = () => {
 
 			<main className='flex-1 overflow-y-auto relative h-screen w-full p-6 md:p-8 lg:p-10'>
 				<Routes>
-					<Route
-						index
-						element={
-							<DashboardHome
-								courses={courses}
-								isLoading={isLoading}
-								user={user}
-							/>
-						}
-					/>
+					<Route index element={<DashboardHome isLoading={isLoading} />} />
 					<Route path='courses/new' element={<CourseForm />} />
-					<Route path='courses/:courseId/edit' element={<CourseForm />} />
-					<Route
-						path='courses/:courseId'
-						element={<CourseLabel courses={courses} />}
-					/>
-					<Route
-						path='courses/:courseId/lessons/:lessonId'
-						element={<LessonPage />}
-					/>
+					<Route path='courses/:courseId/*' element={<CourseRoutes />} />
 					<Route path='announcements' element={<AnnoucementPage />} />
 					<Route path='profile' element={<ProfilePage />} />
 
