@@ -138,7 +138,7 @@ const Register = ({ setActive }) => {
 					{t('Sign Up')}
 				</button>
 				<div className='my-3! or-divider relative'>
-					<span>or</span>
+					<span>{t('or')}</span>
 				</div>
 
 				<a
