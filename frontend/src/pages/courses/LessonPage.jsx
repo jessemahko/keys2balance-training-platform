@@ -192,7 +192,7 @@ const LessonPage = () => {
 				)}
 			</header>
 
-			<div className='max-w-[1000px] w-full mx-auto px-5 py-10 pb-24'>
+			<div className='w-full py-10 pb-24'>
 				{blocks.length === 0 && assessments.length === 0 && (
 					<div className='text-center p-16 bg-white rounded-2xl border-2 border-dashed border-[#ecebea] text-gray-500'>
 						<p className='mb-6 font-medium text-lg'>
@@ -223,7 +223,7 @@ const LessonPage = () => {
 					</div>
 				)}
 
-				<div className='flex flex-col'>
+				<div className='flex flex-col w-full'>
 					{blocks.map((block) => (
 						<BlockContainer
 							key={block.block_id}

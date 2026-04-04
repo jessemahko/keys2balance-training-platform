@@ -99,6 +99,10 @@ const Dashboard = () => {
 	const lessonMatch = useMatch('/dashboard/courses/:courseId/lessons/:lessonId')
 	const activeLessonId = lessonMatch?.params?.lessonId
 
+	// Check if we are precisely on the discussion page to remove layout padding
+	const discussionMatch = useMatch('/dashboard/courses/:courseId/discussion')
+	const isDiscussionPage = !!discussionMatch
+
 	return (
 		<div className='dashboard-shell flex h-screen overflow-hidden'>
 			<Sidebar
@@ -109,7 +113,9 @@ const Dashboard = () => {
 				onDeleteLesson={canManageCourse ? handleDeleteLesson : null}
 			/>
 
-			<main className='flex-1 overflow-y-auto relative h-screen w-full p-6 md:p-8 lg:p-10'>
+			<main 
+				className={`flex-1 overflow-y-auto relative h-screen w-full ${isDiscussionPage ? '' : 'p-6 md:p-8 lg:p-10'}`}
+			>
 				<Routes>
 					<Route index element={<DashboardHome />} />
 					<Route path='courses/new' element={<CourseForm />} />

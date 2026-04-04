@@ -11,6 +11,7 @@ import {
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useTranslation } from 'react-i18next'
 
@@ -90,8 +91,8 @@ const DiscussionPage = () => {
 	}
 
 	return (
-		<div className='flex h-full bg-[#f8fafc] overflow-hidden'>
-			<aside className='w-[300px] bg-white border-r border-[#e2e8f0] flex flex-col z-20'>
+		<div className='flex h-full w-full bg-[#f8fafc] overflow-hidden'>
+			<aside className={`${activeThreadId ? 'hidden md:flex' : 'flex'} w-full md:w-[350px] shrink-0 bg-white border-r border-[#e2e8f0] flex-col z-20`}>
 				<header className='p-6 border-b border-[#f1f5f9]'>
 					<h3 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>
 						{t('Threads')}
@@ -138,9 +139,18 @@ const DiscussionPage = () => {
 				</form>
 			</aside>
 
-			<div className='flex-1 flex flex-col bg-[#f8fafc]'>
-				<header className='p-6 bg-white border-b border-[#e2e8f0]'>
-					<h1 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>
+			<div className={`${activeThreadId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#f8fafc] min-w-0`}>
+				<header className='p-6 bg-white border-b border-[#e2e8f0] flex items-center gap-4'>
+					{activeThreadId && (
+						<button 
+							className='md:hidden p-2 -ml-2 rounded-full cursor-pointer hover:bg-[#f1f5f9] flex items-center justify-center border-none bg-transparent'
+							onClick={() => dispatch(setActiveThread(null))}
+							title={t('Back to threads')}
+						>
+							<ArrowBackRoundedIcon sx={{ color: '#64748b' }} />
+						</button>
+					)}
+					<h1 className='text-[1.25rem] font-bold text-[#0f172a] m-0 truncate'>
 						{activeThread?.title || t('Select a thread')}
 					</h1>
 				</header>
