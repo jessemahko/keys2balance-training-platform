@@ -115,7 +115,6 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
               <select value={type} onChange={(e) => { setType(e.target.value); setFormData({}); }} className={inputClass}>
                 <option value="text">Rich Text</option>
                 <option value="zoom_card">Zoom Meeting</option>
-                <option value="assessment_form">Assessment Form</option>
                 <option value="file_attachment">File Attachment</option>
                 <option value="recording_link">Link / Recording</option>
               </select>
@@ -159,27 +158,6 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
               <div>
                 <label className={labelClass}>Zoom Join Link:</label>
                 <input type="url" name="join_link" value={formData.join_link || ''} onChange={handleChange} className={inputClass} placeholder="https://zoom.us/j/..." required />
-              </div>
-            </>
-          )}
-
-          {/* ---- ASSESSMENT FORM BLOCK ---- */}
-          {type === 'assessment_form' && (
-            <>
-              <div>
-                <label className={labelClass}>Assessment Title:</label>
-                <input type="text" name="title" value={formData.title || ''} onChange={handleChange} className={inputClass} required />
-              </div>
-              <div>
-                <label className={labelClass}>Description:</label>
-                <textarea name="description" value={formData.description || ''} onChange={handleChange} className={`${inputClass} min-h-[100px]`} rows={3} />
-              </div>
-              <div>
-                 <label className={labelClass}>Initial Status:</label>
-                 <select name="status" value={formData.status || 'pending'} onChange={handleChange} className={inputClass}>
-                    <option value="pending">Pending</option>
-                    <option value="completed">Completed</option>
-                 </select>
               </div>
             </>
           )}
