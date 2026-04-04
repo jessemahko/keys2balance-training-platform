@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setUsersFn } from '../../reducers/usersReducer'
 import { toggleEnrollmentFn } from '../../reducers/courseReducer'
 import { useTranslation } from 'react-i18next'
+import { useParams } from 'react-router-dom'
 
-const ParticipantModal = ({
-	isOpen,
-	onClose,
-	course,
-}) => {
+const ParticipantModal = ({ isOpen, onClose }) => {
 	const { t } = useTranslation()
+	const { courseId } = useParams()
 	const dispatch = useDispatch()
+	
+	const course = useSelector((state) =>
+		state.course.items.find((c) => String(c.course_id) === String(courseId))
+	) || {}
 	const allUsers = useSelector((state) => state.users) || []
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
@@ -128,7 +130,6 @@ const ParticipantModal = ({
 ParticipantModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	onClose: PropTypes.func.isRequired,
-	course: PropTypes.object.isRequired,
 }
 
 export default ParticipantModal

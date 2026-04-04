@@ -128,7 +128,6 @@ const CourseLabel = () => {
 					<ParticipantModal
 						isOpen={isParticipantModalOpen}
 						onClose={() => setIsParticipantModalOpen(false)}
-						course={course}
 					/>
 				)}
 
