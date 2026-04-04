@@ -52,11 +52,15 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 			return
 		}
 		setIsConfirming(true)
-		const ok = window.confirm(
-			t(
-				'Are you sure you want to update your email? This action will mark your email as unverified.',
-			),
-		)
+		let ok = true
+
+		if (user.is_verified) {
+			ok = window.confirm(
+				t(
+					'Are you sure you want to update your email? This action will mark your email as unverified.',
+				),
+			)
+		}
 
 		setTimeout(() => {
 			setIsConfirming(false)
@@ -73,7 +77,7 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 		}
 
 		try {
-			await dispatch(updateProfileFn({ email }))
+			await dispatch(updateProfileFn({ email, is_verified: false }))
 			setIsEditingEmail(false)
 		} catch (err) {
 			dispatch(
@@ -184,7 +188,7 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 					<span className='ml-2'>
 						{user.is_verified ? (
 							<div className='flex items-center gap-1 ml-2 text-green-500'>
-								<VerifiedUserIcon fontSize='small' />
+								{!isEditingEmail && <VerifiedUserIcon fontSize='small' />}
 							</div>
 						) : (
 							<div className='flex items-center gap-1 ml-2 text-red-500'>
@@ -214,7 +218,7 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 					}}
 				/>
 
-				{!user.is_verified && (
+				{!user.is_verified && !isEditingEmail && (
 					<div
 						className={`absolute right-3 top-1/2 -translate-y-1/2 ${
 							user.is_verified || isSending ? 'text-gray-400' : 'text-red-500'

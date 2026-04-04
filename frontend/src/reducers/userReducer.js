@@ -93,7 +93,6 @@ export const updateProfileFn = (user) => {
 				JSON.stringify({
 					...(parsedUser || {}),
 					...user,
-					is_verified: user.email === parsedUser.email,
 				}),
 			)
 			if (user.email) {
@@ -107,7 +106,6 @@ export const updateProfileFn = (user) => {
 			dispatch(
 				editUser({
 					...user,
-					is_verified: !user.email || user.email === parsedUser.email,
 				}),
 			)
 		} catch (err) {
