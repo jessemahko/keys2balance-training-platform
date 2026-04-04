@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/k2b-logo-purple.svg'
 import profileService from '../../services/profile'
+import { editUser } from '../../reducers/userReducer'
+import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import '../authentication/authen.css'
 
 const EmailVerify = () => {
+	const dispatch = useDispatch()
 	const [status, setStatus] = useState('verifying') // 'verifying' | 'success' | 'error'
 	const [message, setMessage] = useState('')
 	const navigate = useNavigate()
@@ -30,6 +33,8 @@ const EmailVerify = () => {
 				const res = await profileService.VerifyEmail(token)
 				setStatus('success')
 				setMessage(res.message || t('Your account has been verified!'))
+				// Update the user's profile to reflect the verified status
+				await dispatch(editUser({ is_verified: true }))
 			} catch (err) {
 				setStatus('error')
 				setMessage(
@@ -127,4 +132,3 @@ const EmailVerify = () => {
 }
 
 export default EmailVerify
-
