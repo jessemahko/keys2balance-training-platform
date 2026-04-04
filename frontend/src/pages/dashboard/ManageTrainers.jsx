@@ -76,13 +76,13 @@ const ManageTrainers = () => {
                 </label>
             </div>
 
-            <div className='flex-1 overflow-y-auto bg-[#f8f8fb] rounded-xl p-4 border border-[#ecebea]'>
+            <div className='flex-1 overflow-auto bg-[#f8f8fb] rounded-xl p-4 border border-[#ecebea]'>
                 {loading ? (
                     <div className='flex justify-center items-center h-40'>
                         <p className='text-gray-500 font-medium'>{t('Loading users...')}</p>
                     </div>
                 ) : (
-                    <ul className='list-none p-0 m-0 flex flex-col gap-3'>
+                    <ul className='list-none p-0 m-0 flex flex-col gap-3 min-w-max w-full'>
                         {filteredUsers.length === 0 ? (
                             <p className='py-6 text-center text-gray-500 font-medium'>{t('No users found.')}</p>
                         ) : null}
