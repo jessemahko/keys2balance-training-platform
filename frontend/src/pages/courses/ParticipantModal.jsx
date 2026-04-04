@@ -18,6 +18,14 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 	const [processingId, setProcessingId] = useState(null)
+	const [searchTerm, setSearchTerm] = useState('')
+
+	const filteredUsers = allUsers.filter((user) => {
+		const searchLower = searchTerm.toLowerCase()
+		const fullName = `${user.first_name || user.username} ${user.last_name || ''}`.toLowerCase()
+		const email = (user.email || '').toLowerCase()
+		return fullName.includes(searchLower) || email.includes(searchLower)
+	})
 
 	useEffect(() => {
 		if (isOpen) {
@@ -75,14 +83,30 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 				</div>
 
 				{error && <p className='text-red-500'>{error}</p>}
+
+				<div className='mb-4'>
+					<label className='grid gap-[0.45rem]'>
+						<span className='text-[0.78rem] font-bold uppercase tracking-[0.08em] text-[#7a7a7a]'>
+							{t('Search participants')}
+						</span>
+						<input
+							type='search'
+							className='w-full p-[0.85rem_1rem] border border-[#4d458d]/[0.16] rounded-[14px] bg-[#f8f8fb] text-[#222] focus:outline-none focus:ring-2 focus:ring-[#5f4b96]/20 focus:border-[#5f4b96]'
+							value={searchTerm}
+							onChange={(event) => setSearchTerm(event.target.value)}
+							placeholder={t('Search by name or email')}
+						/>
+					</label>
+				</div>
+
 				{loading ? (
 					<p>{t('Loading participants...')}</p>
 				) : (
 					<ul className='list-none p-0 m-0'>
-						{allUsers.length === 0 ? (
-							<p>{t('No participants found.')}</p>
+						{filteredUsers.length === 0 ? (
+							<p className='py-2 text-gray-500'>{t('No participants found.')}</p>
 						) : null}
-						{allUsers.map((user) => {
+						{filteredUsers.map((user) => {
 							const isEnrolled = enrolledUserIds.has(user.user_id)
 							const isProcessing = processingId === user.user_id
 							return (
