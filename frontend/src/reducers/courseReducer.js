@@ -37,6 +37,8 @@ const coursesSlice = createSlice({
 			const index = state.items.findIndex((c) => String(c.course_id) === String(action.payload.course_id))
 			if (index !== -1) {
 				state.items[index] = action.payload
+			} else {
+				state.items.push(action.payload)
 			}
 		},
 		addParticipantAction(state, action) {
