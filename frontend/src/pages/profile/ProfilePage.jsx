@@ -100,6 +100,7 @@ const ProfilePage = () => {
 				last_name: formData.last_name,
 				gender: formData.gender || null,
 				date_of_birth: formData.date_of_birth || null,
+				is_verified: user.is_verified, // Keep the existing verified status unless email is changed
 			}
 			dispatch(updateProfileFn(profileToUpdate))
 
