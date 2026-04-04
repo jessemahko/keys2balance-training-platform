@@ -94,7 +94,7 @@ const DiscussionPage = () => {
 		<div className='flex h-full w-full bg-[#f8fafc] overflow-hidden'>
 			<aside className={`${activeThreadId ? 'hidden md:flex' : 'flex'} w-full md:w-[350px] shrink-0 bg-white border-r border-[#e2e8f0] flex-col z-20`}>
 				<header className='p-6 border-b border-[#f1f5f9]'>
-					<h3 className='text-[1.25rem] font-bold text-[#0f172a] m-0'>
+					<h3 className='text-[1.25rem] font-bold text-[#0f172a] m-0 text-center'>
 						{t('Threads')}
 					</h3>
 				</header>
@@ -140,7 +140,7 @@ const DiscussionPage = () => {
 			</aside>
 
 			<div className={`${activeThreadId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#f8fafc] min-w-0`}>
-				<header className='p-6 bg-white border-b border-[#e2e8f0] flex items-center gap-4'>
+				<header className='p-6 pl-[4.5rem] md:pl-6 bg-white border-b border-[#e2e8f0] flex items-center gap-4'>
 					{activeThreadId && (
 						<button 
 							className='md:hidden p-2 -ml-2 rounded-full cursor-pointer hover:bg-[#f1f5f9] flex items-center justify-center border-none bg-transparent'
