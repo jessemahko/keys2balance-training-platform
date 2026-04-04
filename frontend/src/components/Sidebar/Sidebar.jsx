@@ -21,6 +21,7 @@ import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import LogoutIcon from '@mui/icons-material/Logout'
+import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded'
 import { Menu as MenuIcon } from 'lucide-react'
 
 import EnFlag from '../../assets/flags/en.png'
@@ -38,6 +39,7 @@ const Sidebar = ({
 	onEditLesson,
 	onDeleteLesson,
 }) => {
+	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
 	const courseMatch = useMatch('/dashboard/courses/:courseId/*')
 	const courseIdMatch = courseMatch?.params?.courseId
@@ -316,7 +318,7 @@ const Sidebar = ({
 								{t('Main Menu')}
 							</div>
 							<ul className='list-none px-4 w-[280px] mb-6 flex flex-col gap-1'>
-								{navigationItems.map((item) => {
+								{getNavigationItems(user?.role).map((item) => {
 									const Icon = item.icon
 									return (
 										<li className='rounded-lg w-full' key={item.to}>
@@ -403,25 +405,38 @@ const Sidebar = ({
 	)
 }
 
-const navigationItems = [
-	{ label: 'Courses', to: '/dashboard', icon: DashboardIcon, end: true },
-	{
-		label: 'Announcements',
-		to: '/dashboard/announcements',
-		icon: CampaignRoundedIcon,
-	},
-	{
-		label: 'Profile',
-		to: '/dashboard/profile',
-		icon: PersonOutlineRoundedIcon,
-	},
-	{
+const getNavigationItems = (userRole) => {
+	const items = [
+		{ label: 'Courses', to: '/dashboard', icon: DashboardIcon, end: true },
+		{
+			label: 'Announcements',
+			to: '/dashboard/announcements',
+			icon: CampaignRoundedIcon,
+		},
+		{
+			label: 'Profile',
+			to: '/dashboard/profile',
+			icon: PersonOutlineRoundedIcon,
+		},
+	]
+
+	if (userRole === 'admin') {
+		items.push({
+			label: 'Manage Trainers',
+			to: '/dashboard/manage-trainers',
+			icon: ManageAccountsRoundedIcon,
+		})
+	}
+
+	items.push({
 		label: 'Log out',
 		to: '/authentication',
 		icon: LogoutIcon,
 		action: 'logout',
-	},
-]
+	})
+
+	return items
+}
 
 const languageCards = [
 	{ code: 'en', label: 'EN', icon: EnFlag },

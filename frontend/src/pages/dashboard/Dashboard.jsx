@@ -20,6 +20,7 @@ import ProfilePage from '../profile/ProfilePage'
 import CourseRoutes from '../courses/CourseRoutes'
 
 import AnnoucementPage from '../announcement/Announcement'
+import ManageTrainers from './ManageTrainers'
 
 import { useTranslation } from 'react-i18next'
 
@@ -122,6 +123,10 @@ const Dashboard = () => {
 					<Route path='courses/:courseId/*' element={<CourseRoutes />} />
 					<Route path='announcements' element={<AnnoucementPage />} />
 					<Route path='profile' element={<ProfilePage />} />
+					<Route 
+						path='manage-trainers' 
+						element={userRole === 'admin' ? <ManageTrainers /> : <Navigate replace to="/dashboard" />} 
+					/>
 
 					<Route path='*' element={<Navigate replace to='/dashboard' />} />
 				</Routes>

@@ -13,4 +13,9 @@ const getAllUsers = async () => {
 	return response.data
 }
 
-export { getAllUsers }
+const updateUserRole = async (userId, role) => {
+	const response = await axios.put(`${baseUrl}/${userId}/role`, { role }, getConfig())
+	return response.data
+}
+
+export { getAllUsers, updateUserRole }

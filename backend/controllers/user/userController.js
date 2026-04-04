@@ -127,9 +127,39 @@ const deleteUser = async (req, res) => {
 	res.json({ message: 'User deleted successfully' })
 }
 
+const updateUserRole = async (req, res) => {
+	if (req.user.role !== 'admin') {
+		return res.status(403).json({ error: 'forbidden' })
+	}
+
+	const { id } = req.params
+	const { role } = req.body
+
+	if (!id) {
+		return res.status(400).json({ error: 'User id is not valid' })
+	}
+
+	if (role !== 'participant' && role !== 'trainer') {
+		return res.status(400).json({ error: 'Invalid role provided' })
+	}
+
+	const user = await User.findById(id)
+	if (!user) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+
+	if (user.role === 'admin') {
+		return res.status(403).json({ error: 'Cannot modify admin role' })
+	}
+
+	const updatedUser = await User.findByIdAndUpdate(id, { role })
+	res.json(updatedUser)
+}
+
 module.exports = {
 	getUsers,
 	createUser,
 	deleteUser,
 	updateUserPassword,
+	updateUserRole,
 }
