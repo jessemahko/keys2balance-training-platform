@@ -49,12 +49,24 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
   };
 
   // File picker helpers
-  const handleFilesSelected = (fileList) => {
-    const newFiles = Array.from(fileList).map(f => ({
-      name: f.name,
-      size: f.size,
-      type: f.type || 'application/octet-stream',
-    }));
+  const handleFilesSelected = async (fileList) => {
+    const filesArray = Array.from(fileList);
+    const newFiles = await Promise.all(
+      filesArray.map((f) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            resolve({
+              name: f.name,
+              size: f.size,
+              type: f.type || 'application/octet-stream',
+              url: e.target.result,
+            });
+          };
+          reader.readAsDataURL(f);
+        });
+      })
+    );
     setFormData(prev => ({
       ...prev,
       files: [...(prev.files || []), ...newFiles],
@@ -114,7 +126,7 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
           {type === 'text' && (
             <div>
               <label className={labelClass}>Content:</label>
-              <div className="bg-white rounded-lg overflow-hidden border border-border-color transition-all focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/15 [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border-color [&_.ql-toolbar]:bg-[#fdfdfd] [&_.ql-toolbar]:px-3 [&_.ql-toolbar]:py-2 [&_.ql-container.ql-snow]:border-none [&_.ql-container.ql-snow]:min-h-[200px] [&_.ql-container.ql-snow]:font-sans [&_.ql-container.ql-snow]:text-base [&_.ql-editor]:leading-relaxed [&_.ql-editor]:text-gray-800 [&_.ql-editor.ql-blank::before]:text-[#bbb] [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-snow_.ql-stroke]:stroke-gray-500 [&_.ql-snow_.ql-fill]:fill-gray-500 [&_.ql-snow_.ql-picker]:text-gray-500">
+              <div className="bg-white rounded-lg overflow-hidden border border-border-color transition-all focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/15 [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border-color [&_.ql-toolbar]:bg-[#fdfdfd] [&_.ql-toolbar]:px-3 [&_.ql-toolbar]:py-2 [&_.ql-container.ql-snow]:border-none [&_.ql-container.ql-snow]:min-h-[200px] [&_.ql-container.ql-snow]:font-sans [&_.ql-container.ql-snow]:text-base [&_.ql-editor]:break-words [&_.ql-editor]:leading-relaxed [&_.ql-editor]:text-gray-800 [&_.ql-editor.ql-blank::before]:text-[#bbb] [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-snow_.ql-stroke]:stroke-gray-500 [&_.ql-snow_.ql-fill]:fill-gray-500 [&_.ql-snow_.ql-picker]:text-gray-500">
                 <ReactQuill 
                   theme="snow"
                   value={formData.content || ''}
