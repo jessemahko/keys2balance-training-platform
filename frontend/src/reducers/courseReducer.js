@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
 import { rmUserFn } from './userReducer'
-import { getAllCourses, getCourseById, createCourse, updateCourse } from '../services/courses'
+import { getAllCourses, getCourseById, createCourse, updateCourse, enrollParticipant, removeParticipant } from '../services/courses'
 
 const initialState = {
 	items: [],
@@ -15,6 +15,7 @@ const coursesSlice = createSlice({
 	reducers: {
 		setCourses(state, action) {
 			// Merge list data with existing detailed data to avoid losing lessons/participants on refresh
+			// This prevents a race condition where fetchCourseByIdFn resolves BEFORE setCoursesFn on fresh reloads.
 			state.items = action.payload.map(incoming => {
 				const existing = state.items.find(c => String(c.course_id) === String(incoming.course_id));
 				if (existing) {
@@ -40,6 +41,23 @@ const coursesSlice = createSlice({
 				state.items.push(action.payload)
 			}
 		},
+		addParticipantAction(state, action) {
+			const { courseId, user } = action.payload
+			const course = state.items.find((c) => String(c.course_id) === String(courseId))
+			if (course) {
+				if (!Array.isArray(course.participants)) {
+					course.participants = []
+				}
+				course.participants.push(user)
+			}
+		},
+		removeParticipantAction(state, action) {
+			const { courseId, userId } = action.payload
+			const course = state.items.find((c) => String(c.course_id) === String(courseId))
+			if (course && Array.isArray(course.participants)) {
+				course.participants = course.participants.filter((p) => String(p.user_id) !== String(userId))
+			}
+		},
 		setLoading(state, action) {
 			state.isLoading = action.payload
 		},
@@ -52,7 +70,7 @@ const coursesSlice = createSlice({
 	},
 })
 
-export const { setCourses, appendCourse, updateCourseAction, setLoading, setLoadError, clearError } = coursesSlice.actions
+export const { setCourses, appendCourse, updateCourseAction, addParticipantAction, removeParticipantAction, setLoading, setLoadError, clearError } = coursesSlice.actions
 
 export const setCoursesFn = () => {
 	return async (dispatch) => {
@@ -104,6 +122,18 @@ export const updateCourseFn = (id, updates) => {
 	return async (dispatch) => {
 		const updated = await updateCourse(id, updates)
 		dispatch(updateCourseAction(updated))
+	}
+}
+
+export const toggleEnrollmentFn = (courseId, user, isCurrentlyEnrolled) => {
+	return async (dispatch) => {
+		if (isCurrentlyEnrolled) {
+			await removeParticipant(courseId, user.user_id)
+			dispatch(removeParticipantAction({ courseId, userId: user.user_id }))
+		} else {
+			await enrollParticipant(courseId, user.user_id)
+			dispatch(addParticipantAction({ courseId, user }))
+		}
 	}
 }
 

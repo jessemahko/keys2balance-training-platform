@@ -16,7 +16,6 @@ import BlockContainer from '../../components/BlockEditor/BlockContainer'
 import BlockEditorModal from '../../components/BlockEditor/BlockEditorModal'
 import TextBlock from '../../components/ContentBlocks/TextBlock'
 import ZoomBlock from '../../components/ContentBlocks/ZoomBlock'
-import AssessmentBlock from '../../components/ContentBlocks/AssessmentBlock'
 import FileBlock from '../../components/ContentBlocks/FileBlock'
 import LinkEmbedBlock from '../../components/ContentBlocks/LinkEmbedBlock'
 
@@ -128,30 +127,12 @@ const LessonPage = () => {
 		}
 	}
 
-	// Match assessment block by title to DB assessment
-	const findAssessmentForBlock = (block) => {
-		if (block.type !== 'assessment_form') return null
-		return assessments.find(
-			(a) =>
-				a.title === block.data?.title ||
-				a.title === block.data?.assessment_title,
-		)
-	}
-
 	const renderBlockContent = (block) => {
 		switch (block.type) {
 			case 'text':
 				return <TextBlock block={block} />
 			case 'zoom_card':
 				return <ZoomBlock block={block} />
-			case 'assessment_form':
-				return (
-					<AssessmentBlock
-						block={block}
-						assessmentData={findAssessmentForBlock(block)}
-						userRole={userRole}
-					/>
-				)
 			case 'file_attachment':
 				return <FileBlock block={block} />
 			case 'recording_link':

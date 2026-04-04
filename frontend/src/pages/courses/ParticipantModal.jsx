@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUsersFn } from '../../reducers/usersReducer'
-import { enrollParticipant, removeParticipant } from '../../services/courses'
+import { toggleEnrollmentFn } from '../../reducers/courseReducer'
 import { useTranslation } from 'react-i18next'
+import { useParams } from 'react-router-dom'
 
-const ParticipantModal = ({
-	isOpen,
-	onClose,
-	course,
-	onParticipantsChanged,
-}) => {
+const ParticipantModal = ({ isOpen, onClose }) => {
 	const { t } = useTranslation()
+	const { courseId } = useParams()
 	const dispatch = useDispatch()
+	
+	const course = useSelector((state) =>
+		state.course.items.find((c) => String(c.course_id) === String(courseId))
+	) || {}
 	const allUsers = useSelector((state) => state.users) || []
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
@@ -50,14 +51,8 @@ const ParticipantModal = ({
 	const handleToggleEnrollment = async (user) => {
 		setProcessingId(user.user_id)
 		try {
-			if (enrolledUserIds.has(user.user_id)) {
-				await removeParticipant(course.course_id, user.user_id)
-			} else {
-				await enrollParticipant(course.course_id, user.user_id)
-			}
-			if (onParticipantsChanged) {
-				await onParticipantsChanged()
-			}
+			const isEnrolled = enrolledUserIds.has(user.user_id)
+			await dispatch(toggleEnrollmentFn(course.course_id, user, isEnrolled))
 		} catch (err) {
 			setError(t('Failed to update enrollment.'))
 			console.error('Failed to toggle enrollment', err)
@@ -135,8 +130,6 @@ const ParticipantModal = ({
 ParticipantModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	onClose: PropTypes.func.isRequired,
-	course: PropTypes.object.isRequired,
-	onParticipantsChanged: PropTypes.func,
 }
 
 export default ParticipantModal
