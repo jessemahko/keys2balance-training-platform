@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { ArrowLeft, CheckCircle, XCircle, Send } from 'lucide-react'
 import * as assessmentService from '../../services/assessments'
+import { useTranslation } from 'react-i18next'
 
 const QuizTake = () => {
+	const { t } = useTranslation()
 	const { courseId, lessonId, assessmentId } = useParams()
 	const navigate = useNavigate()
 	const user = useSelector((state) => state.user)
@@ -62,11 +64,16 @@ const QuizTake = () => {
 			const a = answers[q.id]
 			const qType = q.type || 'single_choice'
 			if (qType === 'open_text') return !a || !a.trim()
-			if (qType === 'multiple_choice') return !Array.isArray(a) || a.length === 0
+			if (qType === 'multiple_choice')
+				return !Array.isArray(a) || a.length === 0
 			return !a
 		})
 		if (unanswered.length > 0) {
-			setError(`Please answer all questions (${unanswered.length} remaining)`)
+			setError(
+				t('Please answer all questions ({{count}} remaining)', {
+					count: unanswered.length,
+				}),
+			)
 			return
 		}
 
@@ -88,57 +95,65 @@ const QuizTake = () => {
 
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center h-full text-gray-500">
-				Loading quiz...
+			<div className='flex items-center justify-center h-full text-gray-500'>
+				{t('Loading quiz...')}
 			</div>
 		)
 	}
 
 	if (!assessment) {
 		return (
-			<div className="flex items-center justify-center h-full text-gray-500">
-				Quiz not found
+			<div className='flex items-center justify-center h-full text-gray-500'>
+				{t('Quiz not found')}
 			</div>
 		)
 	}
 
 	const questions = assessment.assessment_json?.questions || []
 	const gradingStatus = result?.answers_json?.grading_status
-	const maxScore = result?.answers_json?.max_score ?? result?.answers_json?.total_questions ?? questions.length
-	const totalScore = gradingStatus === 'complete'
-		? (result?.answers_json?.total_score ?? result?.answers_json?.score ?? 0)
-		: (result?.answers_json?.score ?? 0)
+	const maxScore =
+		result?.answers_json?.max_score ??
+		result?.answers_json?.total_questions ??
+		questions.length
+	const totalScore =
+		gradingStatus === 'complete'
+			? (result?.answers_json?.total_score ?? result?.answers_json?.score ?? 0)
+			: (result?.answers_json?.score ?? 0)
 	const score = totalScore
 	const total = maxScore
 
 	return (
-		<div className="flex flex-col items-center w-full min-h-full">
-			<header className="w-full bg-white px-8 md:px-16 py-10 border-b border-border-color flex items-center justify-between">
-				<div className="flex items-center gap-4">
+		<div className='flex flex-col items-center w-full min-h-full'>
+			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-border-color flex items-center justify-between'>
+				<div className='flex items-center gap-4'>
 					<button
 						onClick={goBack}
-						className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+						className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
 					>
-						<ArrowLeft size={24} className="text-primary" />
+						<ArrowLeft size={24} className='text-primary' />
 					</button>
 					<div>
-						<div className="text-sm text-gray-500 uppercase tracking-wide font-semibold mb-1">
-							{activeCourse?.title || 'Course'} / Quiz
+						<div className='text-sm text-gray-500 uppercase tracking-wide font-semibold mb-1'>
+							{activeCourse?.title || t('Course')} / {t('Quiz')}
 						</div>
-						<h1 className="text-3xl text-primary font-bold">
+						<h1 className='text-3xl text-primary font-bold'>
 							{assessment.title}
 						</h1>
 					</div>
 				</div>
 				{result && (
-					<div className="text-right">
-						<div className="text-sm text-gray-500 font-medium">Your Score</div>
+					<div className='text-right'>
+						<div className='text-sm text-gray-500 font-medium'>
+							{t('Your Score')}
+						</div>
 						{gradingStatus === 'pending' ? (
-							<div className="text-lg font-bold text-secondary">
-								Grading in progress
+							<div className='text-lg font-bold text-secondary'>
+								{t('Grading in progress')}
 							</div>
 						) : (
-							<div className={`text-3xl font-bold ${score === total ? 'text-success' : score >= total / 2 ? 'text-secondary' : 'text-red-500'}`}>
+							<div
+								className={`text-3xl font-bold ${score === total ? 'text-success' : score >= total / 2 ? 'text-secondary' : 'text-red-500'}`}
+							>
 								{score}/{total}
 							</div>
 						)}
@@ -146,46 +161,55 @@ const QuizTake = () => {
 				)}
 			</header>
 
-			<div className="max-w-[800px] w-full mx-auto px-5 py-10 pb-24">
+			<div className='max-w-[800px] w-full mx-auto px-5 py-10 pb-24'>
 				{error && (
-					<div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium">
-						{error}
+					<div className='mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium'>
+						{t(error)}
 					</div>
 				)}
 
 				{result && (
-					<div className={`mb-8 p-6 rounded-xl border-2 ${
-						gradingStatus === 'pending'
-							? 'bg-amber-50 border-secondary'
-							: score === total
-								? 'bg-emerald-50 border-success'
-								: 'bg-amber-50 border-secondary'
-					}`}>
+					<div
+						className={`mb-8 p-6 rounded-xl border-2 ${
+							gradingStatus === 'pending'
+								? 'bg-amber-50 border-secondary'
+								: score === total
+									? 'bg-emerald-50 border-success'
+									: 'bg-amber-50 border-secondary'
+						}`}
+					>
 						{gradingStatus === 'pending' ? (
 							<>
-								<h2 className="text-xl font-bold mb-1">Submitted!</h2>
-								<p className="text-gray-600">
-									Some questions require manual grading by the trainer. Auto-scored: {result?.answers_json?.score ?? 0} points.
+								<h2 className='text-xl font-bold mb-1'>{t('Submitted!')}</h2>
+								<p className='text-gray-600'>
+									{t(
+										'Some questions require manual grading by the trainer. Auto-scored: {{score}} points.',
+										{ score: result?.answers_json?.score ?? 0 },
+									)}
 								</p>
 							</>
 						) : (
 							<>
-								<h2 className="text-xl font-bold mb-1">
+								<h2 className='text-xl font-bold mb-1'>
 									{score === total
-										? 'Perfect Score!'
+										? t('Perfect Score!')
 										: score >= total / 2
-											? 'Good job!'
-											: 'Keep studying!'}
+											? t('Good job!')
+											: t('Keep studying!')}
 								</h2>
-								<p className="text-gray-600">
-									You scored {score} out of {total} ({Math.round((score / total) * 100)}%)
+								<p className='text-gray-600'>
+									{t('You scored {{score}} out of {{total}} ({{pct}}%)', {
+										score,
+										total,
+										pct: Math.round((score / total) * 100),
+									})}
 								</p>
 							</>
 						)}
 					</div>
 				)}
 
-				<div className="flex flex-col gap-6">
+				<div className='flex flex-col gap-6'>
 					{questions.map((q, index) => {
 						const userAnswer = answers[q.id]
 						const qType = q.type || 'single_choice'
@@ -198,7 +222,11 @@ const QuizTake = () => {
 						} else if (isMultiple) {
 							const sorted = (arr) => [...(arr || [])].sort().join(',')
 							isCorrect = result && sorted(userAnswer) === sorted(q.correct)
-							isWrong = result && !isCorrect && Array.isArray(userAnswer) && userAnswer.length > 0
+							isWrong =
+								result &&
+								!isCorrect &&
+								Array.isArray(userAnswer) &&
+								userAnswer.length > 0
 						} else {
 							isCorrect = result && userAnswer === q.correct
 							isWrong = result && userAnswer && userAnswer !== q.correct
@@ -219,47 +247,54 @@ const QuizTake = () => {
 										: 'border-border-color'
 								}`}
 							>
-								<div className="flex items-start gap-3 mb-4">
-									<span className="shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+								<div className='flex items-start gap-3 mb-4'>
+									<span className='shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm'>
 										{index + 1}
 									</span>
-									<h3 className="text-lg font-semibold text-gray-800 pt-0.5">
+									<h3 className='text-lg font-semibold text-gray-800 pt-0.5'>
 										{q.question}
 									</h3>
 								</div>
 
 								{isOpenText ? (
-									<div className="ml-11">
+									<div className='ml-11'>
 										<textarea
 											value={answers[q.id] || ''}
 											onChange={(e) => {
 												if (result) return
-												setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
+												setAnswers((prev) => ({
+													...prev,
+													[q.id]: e.target.value,
+												}))
 											}}
-											placeholder="Type your answer here..."
+											placeholder={t('Type your answer here...')}
 											rows={5}
 											disabled={!!result}
-											className="w-full px-4 py-3 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-y disabled:bg-gray-50 disabled:text-gray-600"
+											className='w-full px-4 py-3 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-y disabled:bg-gray-50 disabled:text-gray-600'
 										/>
 										{result && (
-											<div className="mt-2 text-sm text-gray-500">
-												{result.answers_json?.manual_scores?.[q.id] !== undefined
-													? `Score: ${result.answers_json.manual_scores[q.id]}/${q.max_points || 1}`
-													: 'Awaiting trainer grading'}
+											<div className='mt-2 text-sm text-gray-500'>
+												{result.answers_json?.manual_scores?.[q.id] !==
+												undefined
+													? t('Score: {{score}}/{{max}}', {
+															score: result.answers_json.manual_scores[q.id],
+															max: q.max_points || 1,
+														})
+													: t('Awaiting trainer grading')}
 											</div>
 										)}
 									</div>
 								) : (
-									<div className="flex flex-col gap-2 ml-11">
+									<div className='flex flex-col gap-2 ml-11'>
 										{q.options.map((opt) => {
 											const isSelected = isMultiple
 												? Array.isArray(userAnswer) && userAnswer.includes(opt)
 												: userAnswer === opt
-											const isCorrectOpt = result && (
-												isMultiple
+											const isCorrectOpt =
+												result &&
+												(isMultiple
 													? Array.isArray(q.correct) && q.correct.includes(opt)
-													: opt === q.correct
-											)
+													: opt === q.correct)
 											const isWrongSelection =
 												result && isSelected && !isCorrectOpt
 
@@ -297,8 +332,18 @@ const QuizTake = () => {
 															}`}
 														>
 															{isSelected && (
-																<svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-																	<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+																<svg
+																	className='w-3 h-3 text-white'
+																	fill='none'
+																	viewBox='0 0 24 24'
+																	stroke='currentColor'
+																	strokeWidth={3}
+																>
+																	<path
+																		strokeLinecap='round'
+																		strokeLinejoin='round'
+																		d='M5 13l4 4L19 7'
+																	/>
 																</svg>
 															)}
 														</div>
@@ -311,21 +356,21 @@ const QuizTake = () => {
 															}`}
 														>
 															{isSelected && (
-																<div className="w-2 h-2 rounded-full bg-white" />
+																<div className='w-2 h-2 rounded-full bg-white' />
 															)}
 														</div>
 													)}
-													<span className="font-medium">{opt}</span>
+													<span className='font-medium'>{opt}</span>
 													{isCorrectOpt && result && (
 														<CheckCircle
 															size={18}
-															className="ml-auto text-success"
+															className='ml-auto text-success'
 														/>
 													)}
 													{isWrongSelection && (
 														<XCircle
 															size={18}
-															className="ml-auto text-red-500"
+															className='ml-auto text-red-500'
 														/>
 													)}
 												</div>
@@ -339,26 +384,26 @@ const QuizTake = () => {
 				</div>
 
 				{!result && (
-					<div className="mt-8 flex justify-end">
+					<div className='mt-8 flex justify-end'>
 						<button
 							onClick={handleSubmit}
 							disabled={submitting}
-							className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-semibold shadow-md hover:bg-[#3f356d] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+							className='inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-semibold shadow-md hover:bg-[#3f356d] hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed'
 						>
 							<Send size={20} />
-							{submitting ? 'Submitting...' : 'Submit Answers'}
+							{submitting ? t('Submitting...') : t('Submit Answers')}
 						</button>
 					</div>
 				)}
 
 				{result && (
-					<div className="mt-8 flex justify-center">
+					<div className='mt-8 flex justify-center'>
 						<button
 							onClick={goBack}
-							className="inline-flex items-center gap-2 bg-white text-primary border border-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors"
+							className='inline-flex items-center gap-2 bg-white text-primary border border-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors'
 						>
 							<ArrowLeft size={20} />
-							Back to Lesson
+							{t('Back to Lesson')}
 						</button>
 					</div>
 				)}

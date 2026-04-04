@@ -105,7 +105,7 @@ const CourseForm = () => {
 	}
 
 	if (!canAccessForm) {
-		setError('You do not have permission to access this page')
+		setError(t('You do not have permission to access this page'))
 		return <Navigate replace to='/dashboard' />
 	}
 

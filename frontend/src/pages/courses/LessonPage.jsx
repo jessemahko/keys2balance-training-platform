@@ -187,7 +187,7 @@ const LessonPage = () => {
 						className='inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:bg-[#3f356d] hover:shadow-lg transition-all text-sm'
 					>
 						<PlusCircle size={18} />
-						Create Quiz
+						{t('Create Quiz')}
 					</button>
 				)}
 			</header>
@@ -241,7 +241,9 @@ const LessonPage = () => {
 				{/* Show standalone assessments that aren't linked to content blocks */}
 				{assessments.length > 0 && (
 					<div className='mt-8'>
-						<h2 className='text-xl font-semibold text-primary mb-4'>Quizzes</h2>
+						<h2 className='text-xl font-semibold text-primary mb-4'>
+							{t('Quizzes')}
+						</h2>
 						<div className='flex flex-col gap-4'>
 							{assessments.map((a) => {
 								const isCompleted = !!a.my_response
@@ -274,18 +276,23 @@ const LessonPage = () => {
 													{a.title}
 												</h3>
 												<p className='text-sm text-gray-500'>
-													{a.assessment_json?.questions?.length || 0} questions
+													{a.assessment_json?.questions?.length || 0}{' '}
+													{t('questions')}
 													{isCompleted &&
-														` · Score: ${a.my_response.answers_json?.score}/${a.my_response.answers_json?.total_questions}`}
+														t(' · Score: {{score}}/{{total}}', {
+															score: a.my_response.answers_json?.score,
+															total:
+																a.my_response.answers_json?.total_questions,
+														})}
 												</p>
 											</div>
 										</div>
 										<span className='text-sm font-medium text-primary'>
 											{isTeacher
-												? 'View Results →'
+												? t('View Results →')
 												: isCompleted
-													? 'View Submission →'
-													: 'Start Quiz →'}
+													? t('View Submission →')
+													: t('Start Quiz →')}
 										</span>
 									</div>
 								)

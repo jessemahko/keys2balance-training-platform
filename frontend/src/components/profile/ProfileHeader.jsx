@@ -109,7 +109,7 @@ const ProfileHeader = () => {
 		// File size check: 1MB limit (in bytes)
 		const maxSize = 1024 * 1024 // 1MB
 		if (file.size > maxSize) {
-			alert('File is too big! Max size is 1MB.')
+			alert(t('File is too big! Max size is 1MB.'))
 			elem.target.value = '' // Reset the input
 			return
 		}
@@ -118,7 +118,7 @@ const ProfileHeader = () => {
 	const fullName =
 		`${user.first_name || ''} ${user.last_name || ''}`.trim() ||
 		user.username ||
-		'User'
+		t('User')
 
 	return (
 		<div className='flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md md:flex-row md:items-center md:justify-between'>
@@ -204,7 +204,7 @@ const ProfileHeader = () => {
 				<div>
 					<h1 className='text-2xl font-bold text-gray-800'>{fullName}</h1>
 					<div className='flex'>
-						<p className='text-gray-500'>{user.email || 'No email'}</p>
+						<p className='text-gray-500'>{user.email || t('No email')}</p>
 						{user.is_verified ? (
 							<div className='flex items-center gap-1 ml-2 text-green-500'>
 								<VerifiedUserIcon fontSize='small' />
@@ -218,7 +218,7 @@ const ProfileHeader = () => {
 
 					<div className='mt-3 flex flex-wrap gap-2'>
 						<span className='rounded-full bg-[#514587] px-3 py-1 text-sm text-white capitalize'>
-							{user.role || 'user'}
+							{user.role || t('user')}
 						</span>
 					</div>
 				</div>
