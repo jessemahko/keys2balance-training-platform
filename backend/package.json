@@ -8,7 +8,15 @@
 		"test:all": "NODE_ENV=test jest --verbose --forceExit",
 		"dev": "nodemon index.js",
 		"start": "node index.js",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"build:ui": "@powershell Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue; cd ../frontend; npm run build; Copy-Item dist -Recurse ../backend",
+		"build:ui:powershell": "@powershell Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue; cd ../frontend; npm run build; Copy-Item dist -Recurse ../backend",
+		"build:ui:wsl": "bash -c \"rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend\"",
+		"build:ui:mac": "rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend",
+		"build:ui:windows-cmd": "cmd /c \"(if exist dist rmdir /s /q dist) && cd ..\\frontend && npm run build && xcopy dist ..\\backend\\dist /E /I /Y\"",
+		"deploy": "fly deploy",
+		"deploy:full": "npm run build:ui && npm run deploy",
+		"logs:prod": "fly logs"
 	},
 	"author": "",
 	"license": "ISC",
@@ -31,6 +39,7 @@
 		"validator": "^13.15.26"
 	},
 	"devDependencies": {
+		"@flydotio/dockerfile": "^0.7.10",
 		"jest": "^30.3.0",
 		"nodemon": "^3.1.11",
 		"supertest": "^7.2.2"
