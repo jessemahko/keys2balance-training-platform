@@ -49,12 +49,24 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
   };
 
   // File picker helpers
-  const handleFilesSelected = (fileList) => {
-    const newFiles = Array.from(fileList).map(f => ({
-      name: f.name,
-      size: f.size,
-      type: f.type || 'application/octet-stream',
-    }));
+  const handleFilesSelected = async (fileList) => {
+    const filesArray = Array.from(fileList);
+    const newFiles = await Promise.all(
+      filesArray.map((f) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            resolve({
+              name: f.name,
+              size: f.size,
+              type: f.type || 'application/octet-stream',
+              url: e.target.result,
+            });
+          };
+          reader.readAsDataURL(f);
+        });
+      })
+    );
     setFormData(prev => ({
       ...prev,
       files: [...(prev.files || []), ...newFiles],
