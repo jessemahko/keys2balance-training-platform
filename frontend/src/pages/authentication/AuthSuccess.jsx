@@ -6,6 +6,19 @@ import { setToken } from '../../services/authen/login'
 import { setError, setNotification } from '../../reducers/notiReducer'
 import { useTranslation } from 'react-i18next'
 
+const decodeJWT = (token) => {
+	const base64 = token.split('.')[1]
+	const base64Url = base64.replace(/-/g, '+').replace(/_/g, '/')
+	const jsonPayload = decodeURIComponent(
+		atob(base64Url)
+			.split('')
+			.map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+			.join(''),
+	)
+
+	return JSON.parse(jsonPayload)
+}
+
 const AuthSuccess = () => {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
@@ -16,7 +29,9 @@ const AuthSuccess = () => {
 		const token = params.get('token')
 
 		if (token) {
-			const payload = JSON.parse(atob(token.split('.')[1]))
+			const payload = decodeJWT(token)
+			console.log(payload)
+
 			const userWithInfo = { token, ...payload }
 
 			// save complete user object in localStorage
