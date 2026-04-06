@@ -113,9 +113,6 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 	return (
 		<div
 			className={`flex flex-col gap-2 relative ${disabled ? 'pointer-events-none' : ''}`}
-			onBlur={(e) => {
-				if (isConfirming) return
-			}}
 		>
 			<div className='flex justify-between'>
 				<div className='flex gap-5'>
@@ -158,7 +155,7 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 						<EditIcon
 							tabIndex={0}
 							fontSize='small'
-							className='cursor-pointer text-gray-700 hover:text-gray-500 transition'
+							className={`cursor-pointer text-gray-700 hover:text-gray-500 transition ${!user.is_verified ? 'text-red-500' : ''}`}
 							onClick={
 								disabled
 									? null
@@ -218,7 +215,7 @@ const ProfileField = ({ disabled, isEditingEmail, setIsEditingEmail }) => {
 					}}
 				/>
 
-				{!user.is_verified && !isEditingEmail && (
+				{!user.is_verified && !isEditingEmail && email && (
 					<div
 						className={`absolute right-3 top-1/2 -translate-y-1/2 ${
 							user.is_verified || isSending ? 'text-gray-400' : 'text-red-500'
