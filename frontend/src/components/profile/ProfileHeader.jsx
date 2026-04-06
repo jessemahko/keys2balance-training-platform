@@ -127,7 +127,12 @@ const ProfileHeader = () => {
 		t('User')
 
 	return (
-		<div className='flex flex-col md:flex-row md:items-center md:justify-between flex-wrap gap-4 rounded-2xl bg-white p-6 shadow-md relative'>
+		<div className='flex flex-col md:flex-row md:items-center md:justify-between flex-wrap gap-4 rounded-2xl bg-white p-6 shadow-md'>
+			{/* Soft Layer When add photo */}
+			{imageCrop && (
+				<div className='w-screen h-screen bg-black fixed top-0 left-0 z-2 opacity-30'></div>
+			)}
+
 			{/* Profile Section */}
 			<div className='flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap w-full md:w-auto'>
 				{/* Avatar */}
@@ -152,6 +157,58 @@ const ProfileHeader = () => {
 							</div>
 						)}
 					</div>
+
+					{/* Dialog and File input */}
+					<Dialog
+						visible={imageCrop}
+						header={() => (
+							<p className='text-2xl font-semibold text-slat-800 pt-4 px-10 left-0 absolute top-0 '>
+								{t('Update Profile Photo')}
+							</p>
+						)}
+						onHide={() => setImageCrop(false)}
+						style={{ zIndex: 9998 }}
+						className='pt-5 px-10 pb-8 bg-white !rounded-2xl border border-gray-300 shadow-lg'
+					>
+						<div
+							className='flex flex-col items-center select-nones '
+							ref={dialogRef}
+						>
+							<div className='mt-10 cursor-pointer avatar-crop react-avatar-edit'>
+								<Avatar
+									width={500}
+									height={300}
+									onCrop={onCrop}
+									onClose={onClose}
+									src={src}
+									shadingColor={'#474649'}
+									backgroundColor={'#474649'}
+									label={t('Choose a photo')}
+									labelStyle={{
+										fontSize: '24px', // Adjust font size as needed
+										display: 'flex', // Use flex to center label
+										justifyContent: 'center',
+										alignItems: 'center',
+										position: 'absolute', // Position it absolutely within the Avatar
+										width: '500px', // Make it take the entire width of the Avatar
+										height: '300px', // Make it take the entire height of the Avatar
+										textAlign: 'center', // Center the text inside the circle
+										cursor: 'pointer', // Make it clickable
+									}}
+									onBeforeFileLoad={onBeforeFileLoad}
+								/>
+							</div>
+
+							<div className='flex flex-col items-center mt-5 w-12 rounded-2xl'>
+								<Button
+									onClick={saveCropImage}
+									label={t('Save')}
+									icon='pi pi-external-link"'
+									className='flex justify-around w-12 mt-4 bg-[#514587] rounded-2xl text-white w-30 h-10 text-xl'
+								></Button>
+							</div>
+						</div>
+					</Dialog>
 				</div>
 
 				{/* Name, Email, Role */}
