@@ -14,7 +14,7 @@ passport.use(
 		{
 			clientID: process.env.GOOGLE_CLIENT_ID,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-			callbackURL: '/auth/google/callback',
+			callbackURL: `${process.env.FRONTEND_URL}/auth/google/callback`,
 		},
 		async (accessToken, refreshToken, profile, done) => {
 			try {
@@ -24,21 +24,37 @@ passport.use(
 				}
 
 				let avatarPath = null
-				// const avatarUrl = profile.photos?.[0]?.value
+				const avatarUrl = profile.photos?.[0]?.value
 
-				// if (avatarUrl) {
-				// 	try {
-				// 		const response = await axios.get(avatarUrl, {
-				// 			responseType: 'arraybuffer',
-				// 		})
-				// 		const ext = avatarUrl.split('.').pop().split('?')[0]
-				// 		const fileName = `${Date.now()}-${profile.id}.${ext}`
-				// 		avatarPath = path.join(__dirname, '../../uploads/avatars', fileName)
-				// 		fs.writeFileSync(avatarPath, response.data)
-				// 	} catch (err) {
-				// 		console.error('Failed to download avatar:', err)
-				// 	}
-				// }
+				if (avatarUrl) {
+					try {
+						const response = await axios.get(avatarUrl, {
+							responseType: 'arraybuffer',
+						})
+
+						const contentType = response.headers['content-type']
+						let ext = '.jpg'
+						if (contentType === 'image/png') ext = '.png'
+						if (contentType === 'image/webp') ext = '.webp'
+						const hash = crypto
+							.createHash('md5')
+							.update(avatarUrl)
+							.digest('hex')
+						const fileName = `${Date.now()}-${hash}${ext}`
+
+						const fullPath = path.join(
+							__dirname,
+							'../uploads/avatars',
+							fileName,
+						)
+
+						fs.writeFileSync(fullPath, response.data)
+
+						avatarPath = `/uploads/avatars/${fileName}`
+					} catch (err) {
+						console.error('Failed to download avatar:', err)
+					}
+				}
 
 				let baseUsername = profile.displayName.replace(/\s+/g, '').toLowerCase()
 				let username = baseUsername

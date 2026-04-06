@@ -103,7 +103,7 @@ const Login = () => {
 
 				<a
 					href={`${API_BASE_URL}/auth/google`}
-					className='hover:bg-[#eece1a]! hover:text-white! transition-all duration-100 ease-out flex items-center justify-center gap-2 border rounded-lg py-2'
+					className='hover:bg-[#e3b465]! hover:text-white! transition-all duration-100 ease-out flex items-center justify-center gap-2 border rounded-lg py-2'
 				>
 					<span className=' py-4!'>
 						<svg width='16' height='16' viewBox='0 0 16 16'>

@@ -107,10 +107,10 @@ app.use(
 
 app.use('/uploads', express.static('uploads'))
 
-// app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
-// app.get('*', (req, res) => {
-// 	res.sendFile(path.join(__dirname, 'dist', 'index.html')) // Serve index.html for all other routes so the SPA handles routing
-// })
+app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, 'dist', 'index.html')) // Serve index.html for all other routes so the SPA handles routing
+})
 
 // Enable testing routes in test environment
 // if (process.env.NODE_ENV === "test") {

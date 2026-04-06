@@ -255,7 +255,7 @@ const ProfilePage = () => {
 							>
 								<button
 									type='button'
-									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'
+									className={`rounded-xl ${!user.first_name || !user.last_name || !user.phone ? 'bg-[#e3b465]' : 'bg-[#514587]'} px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5`}
 									disabled={isEdittingEmailOrPassword}
 									onClick={() => setIsEditting(true)}
 								>

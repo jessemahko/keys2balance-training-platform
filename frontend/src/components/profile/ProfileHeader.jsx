@@ -7,6 +7,8 @@ import Avatar from 'react-avatar-edit'
 import profilePicNull from '../../assets/profile-picture-null.png'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
 
+import WarningIcon from '@mui/icons-material/Warning'
+
 import NewReleasesIcon from '@mui/icons-material/NewReleases'
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 
@@ -33,6 +35,10 @@ const ProfileHeader = () => {
 			? profileImage
 			: `${API_BASE_URL}${profileImage}`
 		: profilePicNull
+
+	const isMissingProfileFields =
+		!user.first_name || !user.last_name || !user.phone
+	const isMissingEmail = !user.email
 
 	useEffect(() => {
 		if (avatarUrl) {
@@ -121,29 +127,33 @@ const ProfileHeader = () => {
 		t('User')
 
 	return (
-		<div className='flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md md:flex-row md:items-center md:justify-between'>
-			<div className='flex items-center gap-4'>
-				{/* Photo */}
-				<div className=' relative'>
-					{/* picure */}
+		<div className='flex flex-col md:flex-row md:items-center md:justify-between flex-wrap gap-4 rounded-2xl bg-white p-6 shadow-md'>
+			{/* Soft Layer When add photo */}
+			{imageCrop && (
+				<div className='w-screen h-screen bg-black fixed top-0 left-0 z-2 opacity-30'></div>
+			)}
+
+			{/* Profile Section */}
+			<div className='flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap w-full md:w-auto'>
+				{/* Avatar */}
+				<div className='relative flex-shrink-0'>
 					<div
-						className={`h-20 w-20 rounded-full box`}
+						className='h-20 w-20 rounded-full box'
 						style={{
-							// backgroundImage: user.avatarUrl ? '' : `url(${profilePicNull})`,
 							backgroundImage: `url(${resolvedProfileImageUrl})`,
 							backgroundSize: 'cover',
 							backgroundPosition: 'center',
 						}}
 						onMouseEnter={() => setIsHovered(true)}
 						onMouseLeave={() => setIsHovered(false)}
-						onClick={() => setImageCrop(true)} // Trigger cropping modal when clicked
+						onClick={() => setImageCrop(true)}
 					>
 						{isHovered && (
-							<div className='w-full h-full flex rounded-full items-center justify-center'>
-								<div className='absolute w-full top-0 right-0 h-full  rounded-full  bg-black opacity-50'></div>
-								<div className='flex text-white relative z-1000 scale-170 !opacity-100'>
-									<AddAPhotoIcon fontSize='small' />
-								</div>
+							<div className='absolute inset-0 flex items-center justify-center rounded-full bg-black/50'>
+								<AddAPhotoIcon
+									className='text-white scale-125'
+									fontSize='small'
+								/>
 							</div>
 						)}
 					</div>
@@ -201,27 +211,54 @@ const ProfileHeader = () => {
 					</Dialog>
 				</div>
 
-				<div>
-					<h1 className='text-2xl font-bold text-gray-800'>{fullName}</h1>
-					<div className='flex'>
-						<p className='text-gray-500'>{user.email || t('No email')}</p>
+				{/* Name, Email, Role */}
+				<div className='flex flex-col min-w-0'>
+					<h1 className='text-2xl font-bold text-gray-800 truncate'>
+						{fullName}
+					</h1>
+					<div className='flex flex-wrap items-center gap-1'>
+						<p className='text-gray-500 truncate'>
+							{user.email || t('No email')}
+						</p>
 						{user.is_verified ? (
-							<div className='flex items-center gap-1 ml-2 text-green-500'>
-								<VerifiedUserIcon fontSize='small' />
-							</div>
+							<VerifiedUserIcon className='text-green-500' fontSize='small' />
 						) : (
-							<div className='flex items-center gap-1 ml-2 text-red-500'>
-								<NewReleasesIcon fontSize='small' />
-							</div>
+							<NewReleasesIcon className='text-red-500' fontSize='small' />
 						)}
 					</div>
-
 					<div className='mt-3 flex flex-wrap gap-2'>
 						<span className='rounded-full bg-[#514587] px-3 py-1 text-sm text-white capitalize'>
 							{user.role || t('user')}
 						</span>
 					</div>
 				</div>
+			</div>
+
+			{/* Warning for missing Profile fields */}
+
+			<div className='flex flex-col md:self-end'>
+				{!user.is_verified && (
+					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto '>
+						<WarningIcon fontSize='small' />
+						<p className='whitespace-normal break-words'>
+							{isMissingEmail
+								? t('Fill your email using the red edit button below.')
+								: t(
+										'Your email is not verified. Please verify your email to access all features.',
+									)}
+						</p>
+					</div>
+				)}
+				{isMissingProfileFields && (
+					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto mt-2'>
+						<WarningIcon fontSize='small' />
+						<p className=''>
+							{t(
+								'Fill required fields using the button at the bottom of the page.',
+							)}
+						</p>
+					</div>
+				)}
 			</div>
 		</div>
 	)
