@@ -7,6 +7,8 @@ import Avatar from 'react-avatar-edit'
 import profilePicNull from '../../assets/profile-picture-null.png'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
 
+import WarningIcon from '@mui/icons-material/Warning'
+
 import NewReleasesIcon from '@mui/icons-material/NewReleases'
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser'
 
@@ -15,7 +17,7 @@ import { Dialog } from 'primereact/dialog'
 import PropTypes from 'prop-types'
 import { API_BASE_URL } from '../../services/apiConfig'
 
-const ProfileHeader = () => {
+const ProfileHeader = ({ isMissingRequiredFields }) => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
 	const user = useSelector((state) => state.user)
@@ -121,101 +123,48 @@ const ProfileHeader = () => {
 		t('User')
 
 	return (
-		<div className='flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md md:flex-row md:items-center md:justify-between'>
-			<div className='flex items-center gap-4'>
-				{/* Photo */}
-				<div className=' relative'>
-					{/* picure */}
+		<div className='flex flex-col md:flex-row md:items-center md:justify-between flex-wrap gap-4 rounded-2xl bg-white p-6 shadow-md relative'>
+			{/* Profile Section */}
+			<div className='flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap w-full md:w-auto'>
+				{/* Avatar */}
+				<div className='relative flex-shrink-0'>
 					<div
-						className={`h-20 w-20 rounded-full box`}
+						className='h-20 w-20 rounded-full box'
 						style={{
-							// backgroundImage: user.avatarUrl ? '' : `url(${profilePicNull})`,
 							backgroundImage: `url(${resolvedProfileImageUrl})`,
 							backgroundSize: 'cover',
 							backgroundPosition: 'center',
 						}}
 						onMouseEnter={() => setIsHovered(true)}
 						onMouseLeave={() => setIsHovered(false)}
-						onClick={() => setImageCrop(true)} // Trigger cropping modal when clicked
+						onClick={() => setImageCrop(true)}
 					>
 						{isHovered && (
-							<div className='w-full h-full flex rounded-full items-center justify-center'>
-								<div className='absolute w-full top-0 right-0 h-full  rounded-full  bg-black opacity-50'></div>
-								<div className='flex text-white relative z-1000 scale-170 !opacity-100'>
-									<AddAPhotoIcon fontSize='small' />
-								</div>
-							</div>
-						)}
-					</div>
-
-					{/* Dialog and File input */}
-					<Dialog
-						visible={imageCrop}
-						header={() => (
-							<p className='text-2xl font-semibold text-slat-800 pt-4 px-10 left-0 absolute top-0 '>
-								{t('Update Profile Photo')}
-							</p>
-						)}
-						onHide={() => setImageCrop(false)}
-						style={{ zIndex: 9998 }}
-						className='pt-5 px-10 pb-8 bg-white !rounded-2xl border border-gray-300 shadow-lg'
-					>
-						<div
-							className='flex flex-col items-center select-nones '
-							ref={dialogRef}
-						>
-							<div className='mt-10 cursor-pointer avatar-crop react-avatar-edit'>
-								<Avatar
-									width={500}
-									height={300}
-									onCrop={onCrop}
-									onClose={onClose}
-									src={src}
-									shadingColor={'#474649'}
-									backgroundColor={'#474649'}
-									label={t('Choose a photo')}
-									labelStyle={{
-										fontSize: '24px', // Adjust font size as needed
-										display: 'flex', // Use flex to center label
-										justifyContent: 'center',
-										alignItems: 'center',
-										position: 'absolute', // Position it absolutely within the Avatar
-										width: '500px', // Make it take the entire width of the Avatar
-										height: '300px', // Make it take the entire height of the Avatar
-										textAlign: 'center', // Center the text inside the circle
-										cursor: 'pointer', // Make it clickable
-									}}
-									onBeforeFileLoad={onBeforeFileLoad}
+							<div className='absolute inset-0 flex items-center justify-center rounded-full bg-black/50'>
+								<AddAPhotoIcon
+									className='text-white scale-125'
+									fontSize='small'
 								/>
 							</div>
-
-							<div className='flex flex-col items-center mt-5 w-12 rounded-2xl'>
-								<Button
-									onClick={saveCropImage}
-									label={t('Save')}
-									icon='pi pi-external-link"'
-									className='flex justify-around w-12 mt-4 bg-[#514587] rounded-2xl text-white w-30 h-10 text-xl'
-								></Button>
-							</div>
-						</div>
-					</Dialog>
-				</div>
-
-				<div>
-					<h1 className='text-2xl font-bold text-gray-800'>{fullName}</h1>
-					<div className='flex'>
-						<p className='text-gray-500'>{user.email || t('No email')}</p>
-						{user.is_verified ? (
-							<div className='flex items-center gap-1 ml-2 text-green-500'>
-								<VerifiedUserIcon fontSize='small' />
-							</div>
-						) : (
-							<div className='flex items-center gap-1 ml-2 text-red-500'>
-								<NewReleasesIcon fontSize='small' />
-							</div>
 						)}
 					</div>
+				</div>
 
+				{/* Name, Email, Role */}
+				<div className='flex flex-col min-w-0'>
+					<h1 className='text-2xl font-bold text-gray-800 truncate'>
+						{fullName}
+					</h1>
+					<div className='flex flex-wrap items-center gap-1'>
+						<p className='text-gray-500 truncate'>
+							{user.email || t('No email')}
+						</p>
+						{user.is_verified ? (
+							<VerifiedUserIcon className='text-green-500' fontSize='small' />
+						) : (
+							<NewReleasesIcon className='text-red-500' fontSize='small' />
+						)}
+					</div>
 					<div className='mt-3 flex flex-wrap gap-2'>
 						<span className='rounded-full bg-[#514587] px-3 py-1 text-sm text-white capitalize'>
 							{user.role || t('user')}
@@ -223,6 +172,16 @@ const ProfileHeader = () => {
 					</div>
 				</div>
 			</div>
+
+			{/* Warning for missing required fields */}
+			{isMissingRequiredFields && (
+				<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto self-end'>
+					<WarningIcon fontSize='small' />
+					<p className=''>
+						{t('Fill required fields using the edit button below.')}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }

@@ -118,10 +118,15 @@ const ProfilePage = () => {
 		isValidPhoneNumber(`+${formData.phone}`)
 
 	const isEdittingEmailOrPassword = isEdittingPassword || isEditingEmail
+	const isMissingRequiredFields =
+		!user.first_name || !user.last_name || !user.phone || !user.email
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
-				<ProfileHeader profile={user} />
+				<ProfileHeader
+					profile={user}
+					isMissingRequiredFields={isMissingRequiredFields}
+				/>
 
 				<div className='rounded-2xl bg-white p-6 shadow-md'>
 					<div className='space-y-8'>
