@@ -17,7 +17,7 @@ import { Dialog } from 'primereact/dialog'
 import PropTypes from 'prop-types'
 import { API_BASE_URL } from '../../services/apiConfig'
 
-const ProfileHeader = ({ isMissingRequiredFields }) => {
+const ProfileHeader = () => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
 	const user = useSelector((state) => state.user)
@@ -35,6 +35,10 @@ const ProfileHeader = ({ isMissingRequiredFields }) => {
 			? profileImage
 			: `${API_BASE_URL}${profileImage}`
 		: profilePicNull
+
+	const isMissingProfileFields =
+		!user.first_name || !user.last_name || !user.phone
+	const isMissingEmail = !user.email
 
 	useEffect(() => {
 		if (avatarUrl) {
@@ -173,15 +177,32 @@ const ProfileHeader = ({ isMissingRequiredFields }) => {
 				</div>
 			</div>
 
-			{/* Warning for missing required fields */}
-			{isMissingRequiredFields && (
-				<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto self-end'>
-					<WarningIcon fontSize='small' />
-					<p className=''>
-						{t('Fill required fields using the edit button below.')}
-					</p>
-				</div>
-			)}
+			{/* Warning for missing Profile fields */}
+
+			<div className='flex flex-col md:self-end'>
+				{!user.is_verified && (
+					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto '>
+						<WarningIcon fontSize='small' />
+						<p className='whitespace-normal break-words'>
+							{isMissingEmail
+								? t('Fill your email using the red edit button below.')
+								: t(
+										'Your email is not verified. Please verify your email to access all features.',
+									)}
+						</p>
+					</div>
+				)}
+				{isMissingProfileFields && (
+					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto mt-2'>
+						<WarningIcon fontSize='small' />
+						<p className=''>
+							{t(
+								'Fill required fields using the button at the bottom of the page.',
+							)}
+						</p>
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }

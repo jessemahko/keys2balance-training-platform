@@ -118,15 +118,10 @@ const ProfilePage = () => {
 		isValidPhoneNumber(`+${formData.phone}`)
 
 	const isEdittingEmailOrPassword = isEdittingPassword || isEditingEmail
-	const isMissingRequiredFields =
-		!user.first_name || !user.last_name || !user.phone || !user.email
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
-				<ProfileHeader
-					profile={user}
-					isMissingRequiredFields={isMissingRequiredFields}
-				/>
+				<ProfileHeader profile={user} />
 
 				<div className='rounded-2xl bg-white p-6 shadow-md'>
 					<div className='space-y-8'>
@@ -260,7 +255,7 @@ const ProfilePage = () => {
 							>
 								<button
 									type='button'
-									className='rounded-xl bg-[#514587] px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5'
+									className={`rounded-xl ${!user.first_name || !user.last_name || !user.phone ? 'bg-[#e3b465]' : 'bg-[#514587]'} px-6 py-3 font-semibold text-white transition hover:opacity-90 mt-5`}
 									disabled={isEdittingEmailOrPassword}
 									onClick={() => setIsEditting(true)}
 								>
