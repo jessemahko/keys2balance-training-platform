@@ -180,9 +180,7 @@ const LessonPage = () => {
 				{canEdit && (
 					<button
 						onClick={() =>
-							navigate(
-								`/dashboard/courses/${courseId}/lessons/${lessonId}/quiz/new`,
-							)
+							navigate(`/courses/${courseId}/lessons/${lessonId}/quiz/new`)
 						}
 						className='inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:bg-[#3f356d] hover:shadow-lg transition-all text-sm'
 					>
@@ -252,11 +250,11 @@ const LessonPage = () => {
 								const handleQuizClick = () => {
 									if (isTeacher) {
 										navigate(
-											`/dashboard/courses/${courseId}/lessons/${lessonId}/quiz/${a.assessment_id}/results`,
+											`/courses/${courseId}/lessons/${lessonId}/quiz/${a.assessment_id}/results`,
 										)
 									} else {
 										navigate(
-											`/dashboard/courses/${courseId}/lessons/${lessonId}/quiz/${a.assessment_id}`,
+											`/courses/${courseId}/lessons/${lessonId}/quiz/${a.assessment_id}`,
 										)
 									}
 								}

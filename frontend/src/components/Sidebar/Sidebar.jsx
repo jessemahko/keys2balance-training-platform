@@ -41,11 +41,12 @@ const Sidebar = ({
 }) => {
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
-	const courseMatch = useMatch('/dashboard/courses/:courseId/*')
+	const courseMatch = useMatch('/courses/:courseId/*')
 	const courseIdMatch = courseMatch?.params?.courseId
-	const course = courses.find((c) => String(c.course_id) === String(courseIdMatch)) || null
+	const course =
+		courses.find((c) => String(c.course_id) === String(courseIdMatch)) || null
 
-	const lessonMatch = useMatch('/dashboard/courses/:courseId/lessons/:lessonId')
+	const lessonMatch = useMatch('/courses/:courseId/lessons/:lessonId')
 	const activeLessonId = lessonMatch?.params?.lessonId
 
 	const [activeDropdownLessonId, setActiveDropdownLessonId] = useState(null)
@@ -162,7 +163,7 @@ const Sidebar = ({
 							<ul className='list-none px-4 w-[280px] mb-6'>
 								<li className='mb-2 rounded-lg w-full'>
 									<NavLink
-										to={`/dashboard/courses/${course.course_id}`}
+										to={`/courses/${course.course_id}`}
 										end
 										className={({ isActive }) =>
 											`${navLinkClass} ${isActive ? activeNavLinkClass : ''}`
@@ -220,7 +221,7 @@ const Sidebar = ({
 											>
 												<div className='flex items-center relative w-full overflow-visible group'>
 													<NavLink
-														to={`/dashboard/courses/${course.course_id}/lessons/${lesson.lesson_id}`}
+														to={`/courses/${course.course_id}/lessons/${lesson.lesson_id}`}
 														className={({ isActive }) =>
 															`flex-1 min-w-0 pr-10 ${navLinkClass} ${isActive ? activeNavLinkClass : ''}`
 														}
@@ -295,7 +296,7 @@ const Sidebar = ({
 							<ul className='list-none px-4 w-[280px] mb-6'>
 								<li className='mb-2 rounded-lg w-full'>
 									<NavLink
-										to={`/dashboard/courses/${course.course_id}/discussion`}
+										to={`/courses/${course.course_id}/discussion`}
 										className={({ isActive }) =>
 											`${navLinkClass} ${isActive ? activeNavLinkClass : ''}`
 										}
@@ -410,12 +411,12 @@ const getNavigationItems = (userRole) => {
 		{ label: 'Courses', to: '/dashboard', icon: DashboardIcon, end: true },
 		{
 			label: 'Announcements',
-			to: '/dashboard/announcements',
+			to: '/announcements',
 			icon: CampaignRoundedIcon,
 		},
 		{
 			label: 'Profile',
-			to: '/dashboard/profile',
+			to: '/profile',
 			icon: PersonOutlineRoundedIcon,
 		},
 	]
@@ -423,7 +424,7 @@ const getNavigationItems = (userRole) => {
 	if (userRole === 'admin') {
 		items.push({
 			label: 'Manage Trainers',
-			to: '/dashboard/manage-trainers',
+			to: '/manage-trainers',
 			icon: ManageAccountsRoundedIcon,
 		})
 	}

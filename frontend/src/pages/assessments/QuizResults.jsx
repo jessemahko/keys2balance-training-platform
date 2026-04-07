@@ -44,7 +44,7 @@ const QuizResults = () => {
 	}, [assessmentId])
 
 	const goBack = () => {
-		navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`)
+		navigate(`/courses/${courseId}/lessons/${lessonId}`)
 	}
 
 	if (isLoading) {
@@ -139,7 +139,7 @@ const QuizResults = () => {
 				<button
 					onClick={() =>
 						navigate(
-							`/dashboard/courses/${courseId}/lessons/${lessonId}/quiz/${assessmentId}/edit`,
+							`/courses/${courseId}/lessons/${lessonId}/quiz/${assessmentId}/edit`,
 						)
 					}
 					className='inline-flex items-center gap-2 text-primary border border-primary px-4 py-2 rounded-lg font-medium hover:bg-primary/5 transition-colors'

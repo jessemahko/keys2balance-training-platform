@@ -107,7 +107,8 @@ const App = () => {
 				{/* Protected Routes */}
 				<Route element={<ProtectedRoute />}>
 					<Route path='/' element={<Navigate replace to='/dashboard' />} />
-					<Route path='/dashboard/*' element={<Dashboard />} />
+
+					<Route path='/*' element={<Dashboard />} />
 				</Route>
 
 				<Route path='*' element={<Navigate replace to='/' />} />

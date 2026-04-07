@@ -55,8 +55,6 @@ const CourseLabel = () => {
 	const canManageCourse =
 		userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
 
-
-
 	return (
 		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
 			<div className='grid gap-[0.4rem]'>
@@ -100,7 +98,7 @@ const CourseLabel = () => {
 					</div>
 					<div className='flex flex-col gap-4 mt-4'>
 						<Link
-							to={`/dashboard/courses/${course.course_id}/discussion`}
+							to={`/courses/${course.course_id}/discussion`}
 							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#14b8a6] text-white transition-opacity hover:opacity-90 no-underline'
 						>
 							{t('Go to discussions')}
@@ -108,7 +106,7 @@ const CourseLabel = () => {
 						{canManageCourse && (
 							<>
 								<Link
-									to={`/dashboard/courses/${course.course_id}/edit`}
+									to={`/courses/${course.course_id}/edit`}
 									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-white text-[#0f172a] border border-[#cbd5e1] transition-colors hover:bg-gray-50 no-underline'
 								>
 									{t('Edit Course')}
@@ -226,7 +224,7 @@ const CourseLabel = () => {
 								return (
 									<Link
 										key={lesson.lesson_id}
-										to={`/dashboard/courses/${course.course_id}/lessons/${lesson.lesson_id}`}
+										to={`/courses/${course.course_id}/lessons/${lesson.lesson_id}`}
 										className='flex items-center gap-[0.9rem] p-[0.95rem_1rem] rounded-[16px] bg-[#f7f7f7] no-underline text-inherit group transition-colors hover:bg-gray-100'
 									>
 										<span className='inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#5f4b96] text-white font-bold shrink-0'>
