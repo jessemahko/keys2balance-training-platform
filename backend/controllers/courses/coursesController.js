@@ -57,19 +57,26 @@ const createCourse = async (req, res) => {
 
 	const { title, description, thumbnailUrl, teacherId } = req.body
 	const trimmedTitle = typeof title === 'string' ? title.trim() : ''
-	if (!trimmedTitle || !teacherId) {
-		return res.status(400).json({ error: 'title and teacherId are required' })
-	}
-
 	if (!trimmedTitle) {
 		return res.status(400).json({ error: 'title is required' })
+	}
+
+	// trainers can only create courses for themselves.
+	// Only admins can assign a teacherId to another user.
+	let finalTeacherId = teacherId
+	if (req.user.role !== 'admin') {
+		finalTeacherId = req.user.id
+	} else if (!teacherId) {
+		// Admin must provide a teacherId if they want to assign it, 
+		// otherwise default to themselves if they are also a trainer.
+		finalTeacherId = req.user.id
 	}
 
 	const course = await Courses.createCourse({
 		title: trimmedTitle,
 		description,
 		thumbnailUrl,
-		teacherId,
+		teacherId: finalTeacherId,
 	})
 
 	res.status(201).json(course)
