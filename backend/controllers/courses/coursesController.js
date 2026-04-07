@@ -61,7 +61,7 @@ const createCourse = async (req, res) => {
 		return res.status(400).json({ error: 'title is required' })
 	}
 
-	// Tightening Security: Ensure trainers can only create courses for themselves.
+	// trainers can only create courses for themselves.
 	// Only admins can assign a teacherId to another user.
 	let finalTeacherId = teacherId
 	if (req.user.role !== 'admin') {
