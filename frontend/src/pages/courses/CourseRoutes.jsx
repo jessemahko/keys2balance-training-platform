@@ -89,11 +89,10 @@ const CourseRoutes = () => {
 			<Route path='discussion' element={<DiscussionPage />} />
 			<Route
 				path='*'
-				element={<Navigate replace to={`/dashboard/courses/${courseId}`} />}
+				element={<Navigate replace to={`/courses/${courseId}`} />}
 			/>
 		</Routes>
 	)
 }
 
 export default CourseRoutes
-

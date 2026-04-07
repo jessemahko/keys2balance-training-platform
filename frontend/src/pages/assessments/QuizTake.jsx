@@ -90,7 +90,7 @@ const QuizTake = () => {
 	}
 
 	const goBack = () => {
-		navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`)
+		navigate(`/courses/${courseId}/lessons/${lessonId}`)
 	}
 
 	if (isLoading) {

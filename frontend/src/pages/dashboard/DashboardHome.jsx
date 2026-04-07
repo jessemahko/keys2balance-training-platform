@@ -46,7 +46,7 @@ const DashboardHome = () => {
 					</div>
 					{canCreateCourse && (
 						<Link
-							to='/dashboard/courses/new'
+							to='/courses/new'
 							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#33b5aa] text-white transition-opacity hover:opacity-90 whitespace-nowrap'
 						>
 							{t('Create New Course')}
@@ -97,7 +97,7 @@ const DashboardHome = () => {
 					{filteredCourses.map((course) => (
 						<Link
 							key={course.course_id}
-							to={`/dashboard/courses/${course.course_id}`}
+							to={`/courses/${course.course_id}`}
 							className='grid gap-4 p-5 bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] rounded-[18px] text-inherit transition-all duration-180 ease-in-out hover:-translate-y-[2px] hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] no-underline'
 						>
 							<div className='flex items-start justify-between gap-3'>
@@ -142,7 +142,5 @@ const DashboardHome = () => {
 		</div>
 	)
 }
-
-
 
 export default DashboardHome

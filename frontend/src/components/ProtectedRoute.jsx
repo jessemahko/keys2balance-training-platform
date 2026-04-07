@@ -14,14 +14,14 @@ const ProtectedRoute = () => {
 		if (!user) return
 
 		if (
-			location.pathname !== '/dashboard/profile' &&
+			location.pathname !== '/profile' &&
 			(!user.first_name || !user.last_name || !user.phone || !user.is_verified)
 		) {
 			const message = user.is_verified
 				? 'Please complete your profile information before accessing other pages. Choosing "Cancel" will log you out.'
 				: 'Your account is not verified. Please verify your account or contact support. Choosing "Cancel" will log you out.'
 			if (window.confirm(message)) {
-				navigate('/dashboard/profile')
+				navigate('/profile')
 			} else {
 				dispatch(rmUserFn())
 				navigate('/authentication')
@@ -35,4 +35,3 @@ const ProtectedRoute = () => {
 }
 
 export default ProtectedRoute
-

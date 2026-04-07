@@ -61,7 +61,7 @@ const Dashboard = () => {
 
 				// Navigate away if we're on the deleted lesson page
 				if (activeLessonId === String(lessonId)) {
-					navigate(`/dashboard/courses/${courseIdMatch}`)
+					navigate(`/courses/${courseIdMatch}`)
 				}
 			} catch (error) {
 				dispatch(setError(getErrorMessage(error, 'Failed to delete lesson'), 5))
@@ -85,7 +85,7 @@ const Dashboard = () => {
 		}
 	}
 
-	const courseMatch = useMatch('/dashboard/courses/:courseId/*')
+	const courseMatch = useMatch('/courses/:courseId/*')
 	const courseIdMatch = courseMatch?.params?.courseId
 	const activeCourse = courses.find(
 		(c) => String(c.course_id) === String(courseIdMatch),
@@ -97,11 +97,11 @@ const Dashboard = () => {
 		userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
 
 	// Lesson match logic for active link inside CourseSidebar
-	const lessonMatch = useMatch('/dashboard/courses/:courseId/lessons/:lessonId')
+	const lessonMatch = useMatch('/courses/:courseId/lessons/:lessonId')
 	const activeLessonId = lessonMatch?.params?.lessonId
 
 	// Check if we are precisely on the discussion page to remove layout padding
-	const discussionMatch = useMatch('/dashboard/courses/:courseId/discussion')
+	const discussionMatch = useMatch('/courses/:courseId/discussion')
 	const isDiscussionPage = !!discussionMatch
 
 	return (
@@ -114,18 +114,24 @@ const Dashboard = () => {
 				onDeleteLesson={canManageCourse ? handleDeleteLesson : null}
 			/>
 
-			<main 
+			<main
 				className={`flex-1 overflow-y-auto relative h-screen w-full ${isDiscussionPage ? '' : 'p-6 md:p-8 lg:p-10'}`}
 			>
 				<Routes>
-					<Route index element={<DashboardHome />} />
+					<Route path='/dashboard' element={<DashboardHome />} />
 					<Route path='courses/new' element={<CourseForm />} />
 					<Route path='courses/:courseId/*' element={<CourseRoutes />} />
 					<Route path='announcements' element={<AnnoucementPage />} />
 					<Route path='profile' element={<ProfilePage />} />
-					<Route 
-						path='manage-trainers' 
-						element={userRole === 'admin' ? <ManageTrainers /> : <Navigate replace to="/dashboard" />} 
+					<Route
+						path='manage-trainers'
+						element={
+							userRole === 'admin' ? (
+								<ManageTrainers />
+							) : (
+								<Navigate replace to='/dashboard' />
+							)
+						}
 					/>
 
 					<Route path='*' element={<Navigate replace to='/dashboard' />} />

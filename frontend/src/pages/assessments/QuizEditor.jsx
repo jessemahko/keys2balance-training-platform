@@ -170,7 +170,7 @@ const QuizEditor = () => {
 				})
 			}
 
-			navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`)
+			navigate(`/courses/${courseId}/lessons/${lessonId}`)
 		} catch (err) {
 			setError(err?.response?.data?.error || t('Failed to save quiz'))
 		} finally {
@@ -191,9 +191,7 @@ const QuizEditor = () => {
 			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-border-color flex items-center justify-between'>
 				<div className='flex items-center gap-4'>
 					<button
-						onClick={() =>
-							navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`)
-						}
+						onClick={() => navigate(`/courses/${courseId}/lessons/${lessonId}`)}
 						className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
 					>
 						<ArrowLeft size={24} className='text-primary' />
