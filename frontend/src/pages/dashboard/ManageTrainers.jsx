@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setUsersFn, toggleUserRoleFn } from '../../reducers/usersReducer'
 import { useTranslation } from 'react-i18next'
 import { setError, setNoti } from '../../reducers/notiReducer'
+import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
 
 const ManageTrainers = () => {
     const { t } = useTranslation()
@@ -12,9 +13,10 @@ const ManageTrainers = () => {
     const [loading, setLoading] = useState(false)
     const [processingId, setProcessingId] = useState(null)
     const [searchTerm, setSearchTerm] = useState('')
+    const debouncedSearchTerm = useDebouncedSearch(searchTerm)
 
     const filteredUsers = allUsers.filter((user) => {
-        const searchLower = searchTerm.toLowerCase()
+        const searchLower = debouncedSearchTerm.toLowerCase()
         const fullName = `${user.first_name || user.username} ${user.last_name || ''}`.toLowerCase()
         const email = (user.email || '').toLowerCase()
         // Never show admins in this list

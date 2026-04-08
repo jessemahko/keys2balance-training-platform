@@ -5,6 +5,7 @@ import { setUsersFn } from '../../reducers/usersReducer'
 import { toggleEnrollmentFn } from '../../reducers/courseReducer'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
+import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
 
 const ParticipantModal = ({ isOpen, onClose }) => {
 	const { t } = useTranslation()
@@ -19,9 +20,10 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 	const [error, setError] = useState(null)
 	const [processingId, setProcessingId] = useState(null)
 	const [searchTerm, setSearchTerm] = useState('')
+	const debouncedSearchTerm = useDebouncedSearch(searchTerm)
 
 	const filteredUsers = allUsers.filter((user) => {
-		const searchLower = searchTerm.toLowerCase()
+		const searchLower = debouncedSearchTerm.toLowerCase()
 		const fullName = `${user.first_name || user.username} ${user.last_name || ''}`.toLowerCase()
 		const email = (user.email || '').toLowerCase()
 		return fullName.includes(searchLower) || email.includes(searchLower)

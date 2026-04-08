@@ -1,18 +1,19 @@
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Link } from 'react-router-dom'
 import { normalizeSearchValue } from './dashboardHelpers'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
 
 const DashboardHome = () => {
 	const { t } = useTranslation()
 	const [searchTerm, setSearchTerm] = useState('')
-	const deferredSearchTerm = useDeferredValue(searchTerm)
+	const debouncedSearchTerm = useDebouncedSearch(searchTerm)
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
 	const isLoading = useSelector((state) => state.course.isLoading)
-	const normalizedSearchTerm = normalizeSearchValue(deferredSearchTerm)
+	const normalizedSearchTerm = normalizeSearchValue(debouncedSearchTerm)
 	const filteredCourses = useMemo(() => {
 		return courses.filter((course) => {
 			return (
