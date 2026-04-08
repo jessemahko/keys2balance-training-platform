@@ -165,8 +165,8 @@ const LessonPage = () => {
 	const blocks = lesson.content_data || []
 
 	return (
-		<div className='flex flex-col items-center w-full min-h-full'>
-			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-[#ecebea] flex items-center justify-between'>
+		<div className='flex flex-col items-center w-full min-h-full min-w-[320px]'>
+			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-[#ecebea] flex items-center justify-between min-w-[320px]'>
 				<div className='flex items-center gap-6'>
 					<div>
 						<div className='text-[0.85rem] text-gray-500 uppercase tracking-wide font-semibold mb-1'>
