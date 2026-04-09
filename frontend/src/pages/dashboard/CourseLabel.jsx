@@ -1,6 +1,6 @@
 import { useDeferredValue, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Link, useParams, useLocation } from 'react-router-dom'
+import { Link, useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import ParticipantModal from '../courses/ParticipantModal'
@@ -11,12 +11,15 @@ import {
 	getLessonStatus,
 	LESSON_FILTERS,
 } from './dashboardHelpers'
+import { API_BASE_URL } from '../../services/apiConfig'
+import profilePicNull from '../../assets/profile-picture-null.png'
 import { useTranslation } from 'react-i18next'
 
 const CourseLabel = () => {
 	const { t } = useTranslation()
 	const { courseId } = useParams()
 	const location = useLocation()
+	const navigate = useNavigate()
 	const courses = useSelector((state) => state.course.items)
 	const cachedCourse = useMemo(
 		() =>
@@ -57,6 +60,13 @@ const CourseLabel = () => {
 	const isCourseOwner = String(course.teacher_id) === String(currentUserId)
 	const canManageCourse =
 		userRole === 'admin' || (userRole === 'trainer' && isCourseOwner)
+
+	const resolvedProfileImageUrl = course.teacher?.avatar_url
+		? course.teacher?.avatar_url.startsWith('http://') ||
+			course.teacher?.avatar_url.startsWith('https://')
+			? course.teacher?.avatar_url
+			: `${API_BASE_URL}${course.teacher?.avatar_url}`
+		: profilePicNull
 
 	return (
 		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
@@ -136,20 +146,19 @@ const CourseLabel = () => {
 					<h3 className='m-0 text-[#222]'>{t('Instructor')}</h3>
 					{course.teacher?.user_id ? (
 						<div className='instructor-profile flex items-center gap-4 mt-4'>
-							<div className='instructor-avatar w-12 h-12 rounded-full overflow-hidden bg-gray-100 border border-gray-200'>
-								{course.teacher.avatar_url ? (
-									<img
-										src={course.teacher.avatar_url}
-										alt={course.teacher.first_name}
-										className='w-full h-full object-cover'
-									/>
-								) : (
-									<div className='w-full h-full flex items-center justify-center text-[#514587] font-bold bg-[#514587]/10'>
-										{course.teacher.first_name?.charAt(0) ||
-											course.teacher.username?.charAt(0) ||
-											'T'}
-									</div>
-								)}
+							<div
+								className='instructor-avatar w-12 h-12 rounded-full overflow-hidden bg-gray-100 border border-gray-200 hover:opacity-60'
+								onClick={() =>
+									navigate(`/profile/${course.teacher.user_id}`, {
+										state: { from: location.pathname },
+									})
+								}
+							>
+								<img
+									src={resolvedProfileImageUrl}
+									alt={`${course.teacher.first_name} ${course.teacher.last_name}`}
+									className='w-full h-full object-cover'
+								/>
 							</div>
 							<div className='instructor-info'>
 								<div className='font-bold text-gray-800'>

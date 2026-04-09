@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import { setUserFn, updateAvatar } from '../../reducers/userReducer'
 import { setNotification, setError } from '../../reducers/notiReducer'
 import Avatar from 'react-avatar-edit'
@@ -25,12 +26,11 @@ const ProfileHeader = ({ user }) => {
 	const [src, setSrc] = useState(null) // source for the avatar image
 	const [pview, setPview] = useState(null) // cropped image preview
 	const dialogRef = useRef(null)
+	const location = useLocation()
 
 	const [profileImage, setProfileImage] = useState(user?.avatar_url || null)
 
-	const userLoggedIn = useSelector((state) => state.user)
-	const isViewingOwnProfile = userLoggedIn && userLoggedIn.id === user?.id
-
+	const isViewingOwnProfile = location.pathname === '/profile'
 	const avatarUrl = user?.avatar_url
 	const resolvedProfileImageUrl = profileImage
 		? profileImage.startsWith('http://') || profileImage.startsWith('https://')
