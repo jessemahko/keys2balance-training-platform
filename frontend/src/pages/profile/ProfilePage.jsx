@@ -121,7 +121,7 @@ const ProfilePage = () => {
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
-				<ProfileHeader profile={user} />
+				<ProfileHeader user={user} />
 
 				<div className='rounded-2xl bg-white p-6 shadow-md'>
 					<div className='space-y-8'>
@@ -151,13 +151,6 @@ const ProfilePage = () => {
 										setIsEditingEmail={setIsEditingEmail}
 									/>
 								</div>
-								<ProfileField
-									label={t('Role')}
-									name='role'
-									value={formData.role || ''}
-									onChange={handleFormChange}
-									disabled
-								/>
 								<div
 									className={`${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}
 								>
@@ -174,7 +167,7 @@ const ProfilePage = () => {
 											maxLength={15}
 										/>
 									) : (
-										<PhoneDisplay />
+										<PhoneDisplay user={user} />
 									)}
 								</div>
 							</div>
