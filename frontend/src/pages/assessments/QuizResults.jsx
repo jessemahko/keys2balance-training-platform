@@ -28,6 +28,10 @@ const QuizResults = () => {
 	const [expandedResponse, setExpandedResponse] = useState(null)
 	const [gradingScores, setGradingScores] = useState({})
 	const [gradingSaving, setGradingSaving] = useState({})
+	const [surveySort, setSurveySort] = useState({
+		userId: null,
+		asc: false, 
+		})
 
 	useEffect(() => {
 		const load = async () => {
@@ -68,6 +72,30 @@ const QuizResults = () => {
 
 	const { assessment, responses } = data
 	const questions = assessment.assessment_json?.questions || []
+	const surveyQuestions = questions.filter((q) => q.type === 'survey')
+	const categoryTable = {}
+	responses.forEach((r) => {
+		const answers = r.answers_json?.answers || {}
+		surveyQuestions.forEach((q) => {
+			const category = q.category || 'General'
+			const selected = answers[q.id] || []
+
+			if (!categoryTable[category]) {
+				categoryTable[category] = {}
+			}
+			categoryTable[category][r.user_id] = Array.isArray(selected)
+				? selected.length
+				: 0
+		})
+	})
+	let sortedCategories = Object.entries(categoryTable)
+	if (surveySort.userId) {
+	sortedCategories = sortedCategories.sort(([catA, usersA], [catB, usersB]) => {
+		const valA = usersA[surveySort.userId] ?? 0
+		const valB = usersB[surveySort.userId] ?? 0
+		return surveySort.asc ? valA - valB : valB - valA
+	})
+	}
 	const openTextQuestions = questions.filter(
 		(q) => (q.type || 'single_choice') === 'open_text',
 	)
@@ -186,6 +214,56 @@ const QuizResults = () => {
 						</div>
 					</div>
 				</div>
+
+				{surveyQuestions.length > 0 && (
+					<div className='mb-10'>
+						<h2 className='text-xl font-bold mb-4'>
+							{t('Survey Results')}
+						</h2>
+
+						<div className='overflow-x-auto bg-white border border-border-color rounded-xl'>
+							<table className='w-full'>
+								<thead>
+									<tr className='bg-gray-50 border-b'>
+										<th className='px-4 py-3 text-left'>
+											{t('Category')}
+										</th>
+										{responses
+										.filter((r) => r.user_id === user.id || user.role !== 'student')
+										.map((r) => (
+											<th
+											key={r.user_id}
+											className='px-4 py-3 text-center cursor-pointer select-none'
+											onClick={() =>
+												setSurveySort((prev) => ({
+												userId: r.user_id,
+												asc: prev.userId === r.user_id ? !prev.asc : false, // first click = desc
+												}))
+											}
+											>
+											{r.first_name} {r.last_name}
+											{surveySort.userId === r.user_id &&
+												(surveySort.asc ? ' ▲' : ' ▼')}
+											</th>
+										))}
+									</tr>
+								</thead>
+								<tbody>
+									{sortedCategories.map(([category, users]) => (
+									<tr key={category} className='border-b'>
+										<td className='px-4 py-3 font-semibold'>{category}</td>
+										{responses.map((r) => (
+										<td key={r.user_id} className='px-4 py-3 text-center'>
+											{users[r.user_id] ?? 0}
+										</td>
+										))}
+									</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				)}
 
 				{/* Responses table */}
 				{responses.length === 0 ? (

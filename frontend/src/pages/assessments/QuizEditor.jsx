@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux'
 import { PlusCircle, Trash2, Save, ArrowLeft, GripVertical } from 'lucide-react'
 import * as assessmentService from '../../services/assessments'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { setNotification, setError } from '../../reducers/notiReducer'
 
 const emptyQuestion = () => ({
 	id: Date.now(),
@@ -11,9 +13,11 @@ const emptyQuestion = () => ({
 	question: '',
 	options: ['', ''],
 	correct: '',
+	category: '',
 })
 
 const QuizEditor = () => {
+	const dispatch = useDispatch()
 	const { courseId, lessonId, assessmentId } = useParams()
 	const navigate = useNavigate()
 	const user = useSelector((state) => state.user)
@@ -26,7 +30,7 @@ const QuizEditor = () => {
 	const [title, setTitle] = useState('')
 	const [questions, setQuestions] = useState([emptyQuestion()])
 	const [saving, setSaving] = useState(false)
-	const [error, setError] = useState(null)
+	const [error, setLocalError] = useState(null)
 	const [isLoading, setIsLoading] = useState(!!assessmentId)
 
 	useEffect(() => {
@@ -38,7 +42,7 @@ const QuizEditor = () => {
 					const q = data.assessment_json?.questions || []
 					setQuestions(q.length > 0 ? q : [emptyQuestion()])
 				} catch (err) {
-					setError('Failed to load assessment')
+					dispatch(setError('Failed to load assessment', 5))
 				} finally {
 					setIsLoading(false)
 				}
@@ -97,41 +101,65 @@ const QuizEditor = () => {
 		setError(null)
 
 		if (!title.trim()) {
-			setError(t('Please enter a quiz title'))
+			dispatch(setError('Please enter a quiz title', 5))
 			return
 		}
 
 		for (let i = 0; i < questions.length; i++) {
 			const q = questions[i]
 			if (!q.question.trim()) {
-				setError(t('Question {{number}} is empty', { number: i + 1 }))
+				dispatch(setError(t('Question {{number}} is empty', { number: i + 1 }),5))
 				return
 			}
 			const qType = q.type || 'single_choice'
 			if (qType === 'open_text') continue
+
+			if (qType === 'survey') {
+				if (!q.category?.trim()) {
+					dispatch(
+						setError(
+							t('Question {{number}} requires a category', { number: i + 1 }),
+							5
+						)
+					)
+					return
+				}
+				const filledOptions = q.options.filter((o) => o.trim())
+				if (filledOptions.length === 0) {
+					dispatch(
+						setError(
+							t('Question {{number}} requires at least 1 option', { number: i + 1 }),
+							5
+						)
+					)
+					return
+				}
+				continue
+			}
+
 			const filledOptions = q.options.filter((o) => o.trim())
 			if (filledOptions.length < 2) {
-				setError(
-					t('Question {{number}} needs at least 2 options', { number: i + 1 }),
-				)
+				dispatch(setError(
+					t('Question {{number}} needs at least 2 options', { number: i + 1 }),5
+				))
 				return
 			}
 			if (qType === 'multiple_choice') {
 				if (!Array.isArray(q.correct) || q.correct.length === 0) {
-					setError(
+					dispatch(setError(
 						t('Question {{number}} has no correct answers selected', {
 							number: i + 1,
-						}),
-					)
+						}),5
+					))
 					return
 				}
 			} else {
 				if (!q.correct) {
-					setError(
+					dispatch(setError(
 						t('Question {{number}} has no correct answer selected', {
 							number: i + 1,
-						}),
-					)
+						}),5
+					))
 					return
 				}
 			}
@@ -148,6 +176,13 @@ const QuizEditor = () => {
 					}
 					if ((q.type || 'single_choice') === 'open_text') {
 						return { ...base, max_points: q.max_points || 1 }
+					}
+					if (q.type === 'survey') {
+						return {
+							...base,
+							options: q.options.filter((o) => o.trim()),
+							category: q.category || 'General',
+						}
 					}
 					return {
 						...base,
@@ -172,7 +207,7 @@ const QuizEditor = () => {
 
 			navigate(`/courses/${courseId}/lessons/${lessonId}`)
 		} catch (err) {
-			setError(err?.response?.data?.error || t('Failed to save quiz'))
+			dispatch(setError(err?.response?.data?.error || t('Failed to save quiz'),5))
 		} finally {
 			setSaving(false)
 		}
@@ -260,6 +295,18 @@ const QuizEditor = () => {
 								className='w-full px-4 py-3 mb-4 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
 							/>
 
+							{q.type === 'survey' && (
+								<input
+									type='text'
+									value={q.category || ''}
+									onChange={(e) =>
+										updateQuestion(qIndex, 'category', e.target.value)
+									}
+									placeholder={t('Category (e.g. Leadership, Manager)')}
+									className='w-full px-4 py-3 mb-4 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
+								/>
+							)}
+
 							<div className='flex items-center gap-3 mb-4'>
 								<label className='text-sm font-semibold text-gray-600'>
 									{t('Type:')}
@@ -286,6 +333,7 @@ const QuizEditor = () => {
 										{t('Multiple Choice')}
 									</option>
 									<option value='open_text'>{t('Open Text')}</option>
+									<option value='survey'>{t('Survey')}</option>
 								</select>
 							</div>
 
@@ -321,7 +369,7 @@ const QuizEditor = () => {
 										</label>
 										{q.options.map((opt, oIndex) => (
 											<div key={oIndex} className='flex items-center gap-3'>
-												{(q.type || 'single_choice') === 'multiple_choice' ? (
+												{(q.type || 'single_choice') === 'multiple_choice' || q.type === 'survey' ? (
 													<input
 														type='checkbox'
 														checked={
