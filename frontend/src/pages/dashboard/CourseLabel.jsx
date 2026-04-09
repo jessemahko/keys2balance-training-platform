@@ -1,6 +1,6 @@
 import { useDeferredValue, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import ParticipantModal from '../courses/ParticipantModal'
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 const CourseLabel = () => {
 	const { t } = useTranslation()
 	const { courseId } = useParams()
+	const location = useLocation()
 	const courses = useSelector((state) => state.course.items)
 	const cachedCourse = useMemo(
 		() =>
@@ -25,7 +26,9 @@ const CourseLabel = () => {
 	)
 	const course = cachedCourse
 
-	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false)
+	const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(
+		location.state?.openEnrollment || false,
+	)
 	const user = useSelector((state) => state.user)
 	const userRole = user?.role || ''
 	const currentUserId = user?.id || ''

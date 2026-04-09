@@ -26,7 +26,7 @@ const OtherProfile = () => {
 				const data = await getProfile(userId)
 				setUser(data)
 			} catch (error) {
-				navigate('/')
+				navigate(state?.from || '/dashboard')
 				dispatch(
 					setError(
 						t(
@@ -56,13 +56,17 @@ const OtherProfile = () => {
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
-				<Link
-					className='flex items-center gap-2 text-[#4d458d] font-bold border-b-2 border-transparent hover:border-[#4d458d] w-max'
-					to={state?.from || '/dashboard'}
+				<div
+					className='flex items-center gap-2 text-[#4d458d] cursor-pointer font-bold border-b-2 border-transparent hover:border-[#4d458d] w-max'
+					onClick={() =>
+						navigate(state?.from || '/dashboard', {
+							state: { openEnrollment: state?.openEnrollment || false },
+						})
+					}
 				>
 					<KeyboardBackspaceIcon />
 					{t('Back')}
-				</Link>
+				</div>
 				<ProfileHeader user={user} />
 
 				<div className='rounded-2xl bg-white p-6 shadow-md'>
@@ -125,4 +129,3 @@ const Field = ({ label, value }) => {
 }
 
 export default OtherProfile
-

@@ -314,7 +314,7 @@ const ManageTrainers = () => {
 										{user.first_name || user.username} {user.last_name || ''}
 									</strong>
 									<span className='text-[0.85rem] text-gray-500 truncate'>
-										{user.email}
+										{user.email || t('No email')}
 									</span>
 								</div>
 							</div>
