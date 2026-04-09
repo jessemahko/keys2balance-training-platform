@@ -417,6 +417,7 @@ const getNavigationItems = (userRole) => {
 		{
 			label: 'Profile',
 			to: '/profile',
+			end: true,
 			icon: PersonOutlineRoundedIcon,
 		},
 	]
