@@ -118,17 +118,15 @@ const normalizeTeacherId = (id) => {
 const createCourse = async ({
 	title,
 	description,
-	thumbnailUrl,
 	teacherId,
 }) => {
 	const res = await pool.query(
-		`INSERT INTO courses (title, description, thumbnail_url, teacher_id)
-		 VALUES ($1, $2, $3, $4)
+		`INSERT INTO courses (title, description, teacher_id)
+		 VALUES ($1, $2, $3)
 		 RETURNING *`,
 		[
 			title,
 			description === undefined ? null : description,
-			thumbnailUrl === undefined ? null : thumbnailUrl,
 			normalizeTeacherId(teacherId),
 		],
 	)
@@ -140,7 +138,6 @@ const updateCourse = async (courseId, updates) => {
 	const fields = {
 		title: 'title',
 		description: 'description',
-		thumbnailUrl: 'thumbnail_url',
 		teacherId: 'teacher_id',
 	}
 

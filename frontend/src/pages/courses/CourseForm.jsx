@@ -36,7 +36,6 @@ const CourseForm = () => {
 	const [formData, setFormData] = useState({
 		title: '',
 		description: '',
-		thumbnailUrl: '',
 		teacherId: currentUserId,
 	})
 	const [loading, setLoading] = useState(isEditMode)
@@ -78,7 +77,6 @@ const CourseForm = () => {
 			setFormData({
 				title: courseToEdit.title,
 				description: courseToEdit.description || '',
-				thumbnailUrl: courseToEdit.thumbnail_url || '',
 				teacherId: courseToEdit.teacher_id,
 			})
 			setLoading(false)
@@ -174,19 +172,7 @@ const CourseForm = () => {
 						</div>
 					)}
 
-					<div>
-						<label className='block text-sm font-bold text-[#514587] mb-2 uppercase tracking-tight'>
-							{t('Thumbnail URL')}
-						</label>
-						<input
-							type='url'
-							name='thumbnailUrl'
-							value={formData.thumbnailUrl}
-							onChange={handleChange}
-							className='w-full border border-[#cdd0d8] rounded-lg px-4 py-3 focus:outline-none focus:border-[#514587] transition'
-							placeholder='https://example.com/image.jpg'
-						/>
-					</div>
+
 
 					<div className='flex gap-4 pt-4'>
 						<button

@@ -63,7 +63,6 @@ CREATE TABLE IF NOT EXISTS courses (
 	course_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	title TEXT NOT NULL,
 	description TEXT,
-	thumbnail_url TEXT,
 	teacher_id UUID REFERENCES users(user_id) ON DELETE SET NULL,
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

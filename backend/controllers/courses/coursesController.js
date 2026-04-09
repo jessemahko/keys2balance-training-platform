@@ -55,7 +55,7 @@ const createCourse = async (req, res) => {
 		return res.status(403).json({ error: 'Only admins and trainers can create courses' })
 	}
 
-	const { title, description, thumbnailUrl, teacherId } = req.body
+	const { title, description, teacherId } = req.body
 	const trimmedTitle = typeof title === 'string' ? title.trim() : ''
 	if (!trimmedTitle) {
 		return res.status(400).json({ error: 'title is required' })
@@ -75,7 +75,6 @@ const createCourse = async (req, res) => {
 	const course = await Courses.createCourse({
 		title: trimmedTitle,
 		description,
-		thumbnailUrl,
 		teacherId: finalTeacherId,
 	})
 
@@ -103,13 +102,13 @@ const updateCourse = async (req, res) => {
 			.json({ error: 'Only the course creator can modify this course' })
 	}
 
-	const { title, description, thumbnailUrl, teacherId } = req.body
+	const { title, description, teacherId } = req.body
 
 	const trimmedTitle = typeof title === 'string' ? title.trim() : ''
 	if (!trimmedTitle) {
 		return res.status(400).json({ error: 'title cannot be empty' })
 	}
-	const updates = { title: trimmedTitle, description, thumbnailUrl }
+	const updates = { title: trimmedTitle, description }
 	if (teacherId && req.user.role === 'admin') updates.teacherId = teacherId
 
 	const course = await Courses.updateCourse(courseId, updates)
