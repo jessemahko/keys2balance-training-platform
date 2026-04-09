@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { PlusCircle } from 'lucide-react'
+import { PlusCircle, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -124,6 +124,23 @@ const LessonPage = () => {
 			setIsEditorOpen(false)
 		} catch (error) {
 			console.error('Failed to save block:', error)
+		}
+	}
+
+	const handleDeleteQuiz = async (assessmentId) => {
+		if (!window.confirm(t('Are you sure you want to delete this quiz?'))) {
+			return
+		}
+		try {
+			await assessmentService.remove(assessmentId)
+			setAssessments((prev) =>
+				prev.filter((a) => a.assessment_id !== assessmentId)
+			)
+			dispatch(setNotification(t('Quiz deleted'), 5))
+		} catch (err) {
+			dispatch(
+				setError(err?.response?.data?.error || t('Failed to delete quiz'), 5)
+			)
 		}
 	}
 
@@ -262,8 +279,9 @@ const LessonPage = () => {
 								return (
 									<div
 										key={a.assessment_id}
-										className={`flex justify-between items-center p-5 bg-white border rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-shadow ${isCompleted ? 'border-l-4 border-l-success' : 'border-l-4 border-l-secondary'}`}
-										onClick={handleQuizClick}
+										className={`flex justify-between items-center p-5 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow ${
+											isCompleted ? 'border-l-4 border-l-success' : 'border-l-4 border-l-secondary'
+										}`}
 									>
 										<div className='flex items-center gap-4'>
 											<div className='shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center'>
@@ -285,13 +303,31 @@ const LessonPage = () => {
 												</p>
 											</div>
 										</div>
-										<span className='text-sm font-medium text-primary'>
+										<div className="flex items-center gap-3">
+										<button
+										onClick={handleQuizClick}
+										className="text-sm font-medium text-primary hover:underline px-2 py-1 rounded-md"
+										>
 											{isTeacher
-												? t('View Results →')
-												: isCompleted
-													? t('View Submission →')
-													: t('Start Quiz →')}
-										</span>
+											? t('View Results →')
+											: isCompleted
+												? t('View Submission →')
+												: t('Start Quiz →')}
+										</button>
+
+										{canEdit && (
+											<button
+											onClick={(e) => {
+												e.stopPropagation()
+												handleDeleteQuiz(a.assessment_id)
+											}}
+											className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+											title={t('Delete quiz')}
+											>
+											<Trash2 size={18} />
+											</button>
+										)}
+										</div>
 									</div>
 								)
 							})}

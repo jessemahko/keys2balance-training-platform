@@ -369,7 +369,9 @@ const QuizEditor = () => {
 										</label>
 										{q.options.map((opt, oIndex) => (
 											<div key={oIndex} className='flex items-center gap-3'>
-												{(q.type || 'single_choice') === 'multiple_choice' || q.type === 'survey' ? (
+												{q.type === 'survey' ? (
+													<div className='w-4'></div>
+												) : q.type === 'multiple_choice' ? (
 													<input
 														type='checkbox'
 														checked={
@@ -379,9 +381,7 @@ const QuizEditor = () => {
 														}
 														onChange={() => {
 															if (!opt.trim()) return
-															const current = Array.isArray(q.correct)
-																? q.correct
-																: []
+															const current = Array.isArray(q.correct) ? q.correct : []
 															const updated = current.includes(opt)
 																? current.filter((c) => c !== opt)
 																: [...current, opt]
@@ -395,9 +395,7 @@ const QuizEditor = () => {
 														type='radio'
 														name={`correct-${q.id}`}
 														checked={q.correct === opt && opt !== ''}
-														onChange={() =>
-															updateQuestion(qIndex, 'correct', opt)
-														}
+														onChange={() => updateQuestion(qIndex, 'correct', opt)}
 														disabled={!opt.trim()}
 														className='w-4 h-4 accent-primary'
 													/>
