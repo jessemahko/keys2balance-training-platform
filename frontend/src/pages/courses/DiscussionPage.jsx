@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setError } from '../../reducers/notiReducer'
 import {
@@ -13,11 +13,15 @@ import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded'
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import CircularProgress from '@mui/material/CircularProgress'
+import profilePicNull from '../../assets/profile-picture-null.png'
+import { API_BASE_URL } from '../../services/apiConfig'
 import { useTranslation } from 'react-i18next'
 
 const DiscussionPage = () => {
 	const { t } = useTranslation()
 	const dispatch = useDispatch()
+	const location = useLocation()
+	const navigate = useNavigate()
 	const { courseId } = useParams()
 	const user = useSelector((state) => state.user)
 
@@ -92,7 +96,9 @@ const DiscussionPage = () => {
 
 	return (
 		<div className='flex h-full w-full bg-[#f8fafc] overflow-hidden'>
-			<aside className={`${activeThreadId ? 'hidden md:flex' : 'flex'} w-full md:w-[350px] shrink-0 bg-white border-r border-[#e2e8f0] flex-col z-20`}>
+			<aside
+				className={`${activeThreadId ? 'hidden md:flex' : 'flex'} w-full md:w-[350px] shrink-0 bg-white border-r border-[#e2e8f0] flex-col z-20`}
+			>
 				<header className='p-6 border-b border-[#f1f5f9]'>
 					<h3 className='text-[1.25rem] font-bold text-[#0f172a] m-0 text-center'>
 						{t('Threads')}
@@ -139,10 +145,12 @@ const DiscussionPage = () => {
 				</form>
 			</aside>
 
-			<div className={`${activeThreadId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#f8fafc] min-w-0`}>
+			<div
+				className={`${activeThreadId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#f8fafc] min-w-0`}
+			>
 				<header className='p-6 pl-[4.5rem] md:pl-6 bg-white border-b border-[#e2e8f0] flex items-center gap-4'>
 					{activeThreadId && (
-						<button 
+						<button
 							className='md:hidden p-2 -ml-2 rounded-full cursor-pointer hover:bg-[#f1f5f9] flex items-center justify-center border-none bg-transparent'
 							onClick={() => dispatch(setActiveThread(null))}
 							title={t('Back to threads')}
@@ -170,24 +178,32 @@ const DiscussionPage = () => {
 											? `${msg.user.first_name} ${msg.user.last_name}`.trim()
 											: t('User')
 
+										const resolvedProfileImageUrl = msg.user?.avatar_url
+											? msg.user.avatar_url.startsWith('http://') ||
+												msg.user.avatar_url.startsWith('https://')
+												? msg.user.avatar_url
+												: `${API_BASE_URL}${msg.user.avatar_url}`
+											: profilePicNull
+
 										return (
 											<div
 												key={msg.message_id}
 												className={`flex gap-3 max-w-[80%] ${isOwn ? 'self-end flex-row-reverse' : ''}`}
 											>
 												{!isOwn && (
-													<div className='w-9 h-9 rounded-full overflow-hidden shrink-0'>
-														{msg.user?.avatar_url ? (
-															<img
-																src={msg.user.avatar_url}
-																alt={displayName}
-																className='w-full h-full object-cover'
-															/>
-														) : (
-															<div className='w-full h-full bg-[#e2e8f0] text-[#475569] flex items-center justify-center font-semibold text-sm'>
-																{displayName.charAt(0)}
-															</div>
-														)}
+													<div
+														className='w-9 h-9 rounded-full overflow-hidden shrink-0 cursor-pointer hover:opacity-60'
+														onClick={() => {
+															navigate(`/profile/${msg.user_id}`, {
+																state: { from: location.pathname },
+															})
+														}}
+													>
+														<img
+															src={resolvedProfileImageUrl}
+															alt={displayName}
+															className='w-full h-full object-cover'
+														/>
 													</div>
 												)}
 												<div className='flex flex-col'>
@@ -205,7 +221,10 @@ const DiscussionPage = () => {
 														<span
 															className={`text-[0.625rem] mt-1 block text-right ${isOwn ? 'text-white/80' : 'text-[#94a3b8]'}`}
 														>
-															{new Date(msg.created_at).toLocaleTimeString([], {
+															{new Date(msg.created_at).toLocaleString([], {
+																year: 'numeric',
+																month: '2-digit',
+																day: '2-digit',
 																hour: '2-digit',
 																minute: '2-digit',
 															})}

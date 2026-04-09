@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUsersFn } from '../../reducers/usersReducer'
 import { toggleEnrollmentFn } from '../../reducers/courseReducer'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
+import profilePicNull from '../../assets/profile-picture-null.png'
+import { API_BASE_URL } from '../../services/apiConfig'
 
 const ParticipantModal = ({ isOpen, onClose }) => {
 	const { t } = useTranslation()
 	const { courseId } = useParams()
+	const location = useLocation()
+	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	
-	const course = useSelector((state) =>
-		state.course.items.find((c) => String(c.course_id) === String(courseId))
-	) || {}
+
+	const modalRef = useRef()
+	const course =
+		useSelector((state) =>
+			state.course.items.find((c) => String(c.course_id) === String(courseId)),
+		) || {}
 	const allUsers = useSelector((state) => state.users) || []
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
@@ -22,12 +28,49 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebouncedSearch(searchTerm)
 
-	const filteredUsers = allUsers.filter((user) => {
-		const searchLower = debouncedSearchTerm.toLowerCase()
-		const fullName = `${user.first_name || user.username} ${user.last_name || ''}`.toLowerCase()
-		const email = (user.email || '').toLowerCase()
-		return fullName.includes(searchLower) || email.includes(searchLower)
-	})
+	const filteredUsers = allUsers
+		.filter((user) => {
+			if (user.role === 'admin' || user.role === 'trainer') return false
+			const searchLower = debouncedSearchTerm.toLowerCase()
+			const fullName =
+				`${user.first_name || user.username} ${user.last_name || ''}`.toLowerCase()
+			const email = (user.email || '').toLowerCase()
+
+			const notTeacher = user.user_id !== course.teacher_id
+			return (
+				(fullName.includes(searchLower) || email.includes(searchLower)) &&
+				notTeacher
+			)
+		})
+		.sort((a, b) => {
+			const searchLower = debouncedSearchTerm.toLowerCase()
+			const fullNameA =
+				`${a.first_name || a.username} ${a.last_name || ''}`.toLowerCase()
+			const fullNameB =
+				`${b.first_name || b.username} ${b.last_name || ''}`.toLowerCase()
+			const emailA = (a.email || '').toLowerCase()
+			const emailB = (b.email || '').toLowerCase()
+
+			const indexA = Math.min(
+				fullNameA.indexOf(searchLower) === -1
+					? Infinity
+					: fullNameA.indexOf(searchLower),
+				emailA.indexOf(searchLower) === -1
+					? Infinity
+					: emailA.indexOf(searchLower),
+			)
+			const indexB = Math.min(
+				fullNameB.indexOf(searchLower) === -1
+					? Infinity
+					: fullNameB.indexOf(searchLower),
+				emailB.indexOf(searchLower) === -1
+					? Infinity
+					: emailB.indexOf(searchLower),
+			)
+
+			if (indexA !== indexB) return indexA - indexB
+			return fullNameA.localeCompare(fullNameB)
+		})
 
 	useEffect(() => {
 		if (isOpen) {
@@ -52,6 +95,16 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 		}
 	}, [isOpen, dispatch, allUsers.length, t])
 
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (modalRef.current && !modalRef.current.contains(event.target)) {
+				onClose()
+			}
+		}
+		document.addEventListener('mousedown', handleClickOutside)
+		return () => document.removeEventListener('mousedown', handleClickOutside)
+	}, [onClose])
+
 	if (!isOpen) return null
 
 	const enrolledUserIds = new Set(
@@ -73,7 +126,10 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 
 	return (
 		<div className='fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]'>
-			<div className='bg-white p-8 rounded-lg w-[90%] max-w-[500px] max-h-[80vh] overflow-y-auto'>
+			<div
+				className='bg-white p-8 rounded-lg w-[90%] max-w-[500px] max-h-[80vh] overflow-y-auto'
+				ref={modalRef}
+			>
 				<div className='flex justify-between items-center mb-4'>
 					<h2 className='m-0'>{t('Manage Participants')}</h2>
 					<button
@@ -106,23 +162,53 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 				) : (
 					<ul className='list-none p-0 m-0'>
 						{filteredUsers.length === 0 ? (
-							<p className='py-2 text-gray-500'>{t('No participants found.')}</p>
+							<p className='py-2 text-gray-500'>
+								{t('No participants found.')}
+							</p>
 						) : null}
 						{filteredUsers.map((user) => {
 							const isEnrolled = enrolledUserIds.has(user.user_id)
 							const isProcessing = processingId === user.user_id
+							const resolvedProfileImageUrl = user.avatar_url
+								? user.avatar_url.startsWith('http://') ||
+									user.avatar_url.startsWith('https://')
+									? user.avatar_url
+									: `${API_BASE_URL}${user.avatar_url}`
+								: profilePicNull
 							return (
 								<li
 									key={user.user_id}
 									className='flex justify-between items-center py-3 border-b border-gray-100 last:border-0'
 								>
-									<div>
-										<strong className='block text-black'>
-											{user.first_name || user.username} {user.last_name || ''}
-										</strong>
-										<span className='text-[0.85rem] text-gray-500'>
-											{user.email}
-										</span>
+									<div className='flex flex-1 items-center gap-3 min-w-0 mr-5'>
+										<div
+											className='w-9 h-9 rounded-full overflow-hidden shrink-0 cursor-pointer hover:opacity-60'
+											onClick={() =>
+												navigate(`/profile/${user.user_id}`, {
+													state: {
+														from: location.pathname,
+														openEnrollment: true,
+													},
+												})
+											}
+										>
+											<img
+												src={resolvedProfileImageUrl}
+												alt={user.first_name || user.username}
+												className='w-full h-full object-cover'
+											/>
+										</div>
+
+										<div className='min-w-0 flex flex-col'>
+											<strong className='block text-black truncate'>
+												{user.first_name || user.username}{' '}
+												{user.last_name || ''}
+											</strong>
+
+											<span className='text-[0.85rem] text-gray-500 truncate'>
+												{user.email || t('No email')}
+											</span>
+										</div>
 									</div>
 									<button
 										onClick={() => handleToggleEnrollment(user)}

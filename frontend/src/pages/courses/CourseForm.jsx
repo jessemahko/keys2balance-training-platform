@@ -38,7 +38,7 @@ const CourseForm = () => {
 		description: '',
 		teacherId: currentUserId,
 	})
-	const [loading, setLoading] = useState(isEditMode)
+	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
@@ -56,21 +56,6 @@ const CourseForm = () => {
 			...fetchedTrainers,
 		]
 	}, [users, currentUserId, t])
-
-	useEffect(() => {
-		if (isEditMode) {
-			const fetchCourse = async () => {
-				try {
-					await dispatch(fetchCourseByIdFn(courseId))
-				} catch (err) {
-					console.error(err)
-					setError(t('Failed to fetch course details'))
-					setLoading(false)
-				}
-			}
-			fetchCourse()
-		}
-	}, [courseId, isEditMode, dispatch, t])
 
 	useEffect(() => {
 		if (isEditMode && courseToEdit) {
@@ -171,8 +156,6 @@ const CourseForm = () => {
 							</select>
 						</div>
 					)}
-
-
 
 					<div className='flex gap-4 pt-4'>
 						<button

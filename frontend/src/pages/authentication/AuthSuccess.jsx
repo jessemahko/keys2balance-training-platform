@@ -30,7 +30,6 @@ const AuthSuccess = () => {
 
 		if (token) {
 			const payload = decodeJWT(token)
-			console.log(payload)
 
 			const userWithInfo = { token, ...payload }
 
