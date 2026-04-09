@@ -80,6 +80,30 @@ profileRouter.get('/', async (req, res) => {
 	res.json({ id: safeUser.user_id, ...safeUser })
 })
 
+profileRouter.get('/:userId/', async (req, res) => {
+	const requestingUser = req.user
+	if (!requestingUser) {
+		return res.status(401).json({ error: 'token invalid' })
+	}
+
+	const { userId } = req.params
+	const user = await User.findMeById(userId)
+	if (!user) {
+		return res.status(404).json({ error: 'User not found' })
+	}
+	res.json({
+		id: user.user_id,
+		email: user.email,
+		first_name: user.first_name,
+		last_name: user.last_name,
+		role: user.role,
+		avatar_url: user.avatar_url,
+		gender: user.gender,
+		date_of_birth: user.date_of_birth,
+		phone: user.phone,
+	})
+})
+
 profileRouter.put('/', async (req, res) => {
 	const userRequest = req.user
 	if (!userRequest) {

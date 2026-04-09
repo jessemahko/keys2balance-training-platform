@@ -5,16 +5,15 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import ProfileField from '../../components/profile/ProfileField'
 import { useTranslation } from 'react-i18next'
 
-const PhoneDisplay = () => {
-	const user = useSelector((state) => state.user)
-	const [phone, setPhone] = useState(`+${user.phone}`) // handle null phone number
+const PhoneDisplay = ({ user }) => {
+	const [phone, setPhone] = useState(`+${user?.phone}`) // handle null phone number
 	const [country, setCountry] = useState('')
 	const [formattedPhone, setFormattedPhone] = useState('')
 	const { t } = useTranslation()
 
 	useEffect(() => {
-		if (user.phone) {
-			setPhone(`+${user.phone}`)
+		if (user?.phone) {
+			setPhone(`+${user?.phone}`)
 		} else {
 			setPhone('')
 		}
@@ -61,7 +60,7 @@ const PhoneDisplay = () => {
 					label={t('Phone')}
 					name='phone'
 					type='text'
-					value={`+${user.phone || ''}`} // handle null phone number
+					value={`+${user?.phone || ''}`} // handle null phone number
 					onChange={() => {}}
 					disabled={true}
 					placeholder={'eg. +358 123 4567'}
@@ -73,4 +72,3 @@ const PhoneDisplay = () => {
 }
 
 export default PhoneDisplay
-

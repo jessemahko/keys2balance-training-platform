@@ -4,7 +4,7 @@ import { buildApiUrl } from './apiConfig'
 
 const baseUrl = buildApiUrl()
 
-const updateAvatar = async (pic) => {
+export const updateAvatar = async (pic) => {
 	const formData = new FormData()
 	formData.append('avatar', pic)
 	const config = {
@@ -22,7 +22,7 @@ const updateAvatar = async (pic) => {
 	return res.data
 }
 
-const updateProfile = async (data) => {
+export const updateProfile = async (data) => {
 	const config = {
 		headers: {
 			Authorization: getToken(),
@@ -51,7 +51,7 @@ export const getMe = async (userId) => {
 	return res.data
 }
 
-const requestEmailVerification = async () => {
+export const requestEmailVerification = async () => {
 	const config = {
 		headers: {
 			Authorization: getToken(),
@@ -61,8 +61,18 @@ const requestEmailVerification = async () => {
 	return res.data
 }
 
-const VerifyEmail = async (token) => {
+export const VerifyEmail = async (token) => {
 	const res = await axios.get(`${baseUrl}/verify-email/me?token=${token}`)
+	return res.data
+}
+
+export const getProfile = async (userId) => {
+	const config = {
+		headers: {
+			Authorization: getToken(),
+		},
+	}
+	const res = await axios.get(`${baseUrl}/api/profile/${userId}/`, config)
 	return res.data
 }
 
@@ -72,4 +82,6 @@ export default {
 	getMe,
 	requestEmailVerification,
 	VerifyEmail,
+	getProfile,
+	changePassword,
 }

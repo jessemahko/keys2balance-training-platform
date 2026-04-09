@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { setUsersFn, toggleUserRoleFn } from '../../reducers/usersReducer'
 import { useTranslation } from 'react-i18next'
 import { setError, setNoti } from '../../reducers/notiReducer'
@@ -126,6 +126,7 @@ const ManageTrainers = () => {
 	const navigate = useNavigate()
 
 	const allUsers = useSelector((state) => state.users) || []
+	const location = useLocation()
 	const [loading, setLoading] = useState(false)
 	const [processingId, setProcessingId] = useState(null)
 	const [searchTerm, setSearchTerm] = useState('')
@@ -298,7 +299,9 @@ const ManageTrainers = () => {
 								<div
 									className='cursor-pointer w-10 h-10 rounded-full hover:opacity-60 overflow-hidden shrink-0 flex items-center justify-center font-semibold text-sm'
 									onClick={() => {
-										navigate(`/profile/${user.id}`)
+										navigate(`/profile/${user.user_id}`, {
+											state: { from: location.pathname },
+										})
 									}}
 									style={{
 										backgroundImage: `url(${resolvedProfileImageUrl(user)})`,

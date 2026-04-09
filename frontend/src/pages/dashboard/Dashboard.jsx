@@ -16,6 +16,7 @@ import { useMatch } from 'react-router-dom'
 import CourseForm from '../courses/CourseForm'
 import DashboardHome from './DashboardHome'
 import ProfilePage from '../profile/ProfilePage'
+import OtherProfile from '../profile/OtherProfile'
 
 import CourseRoutes from '../courses/CourseRoutes'
 
@@ -133,6 +134,8 @@ const Dashboard = () => {
 							)
 						}
 					/>
+
+					<Route path='/profile/:userId' element={<OtherProfile />} />
 
 					<Route path='*' element={<Navigate replace to='/dashboard' />} />
 				</Routes>

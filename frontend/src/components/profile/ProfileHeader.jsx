@@ -17,19 +17,21 @@ import { Dialog } from 'primereact/dialog'
 import PropTypes from 'prop-types'
 import { API_BASE_URL } from '../../services/apiConfig'
 
-const ProfileHeader = () => {
+const ProfileHeader = ({ user }) => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
-	const user = useSelector((state) => state.user)
 	const [isHovered, setIsHovered] = useState(false)
 	const [imageCrop, setImageCrop] = useState(false) // to control the cropping dialog
 	const [src, setSrc] = useState(null) // source for the avatar image
 	const [pview, setPview] = useState(null) // cropped image preview
 	const dialogRef = useRef(null)
 
-	const [profileImage, setProfileImage] = useState(user.avatar_url || null)
+	const [profileImage, setProfileImage] = useState(user?.avatar_url || null)
 
-	const avatarUrl = user.avatar_url
+	const userLoggedIn = useSelector((state) => state.user)
+	const isViewingOwnProfile = userLoggedIn && userLoggedIn.id === user?.id
+
+	const avatarUrl = user?.avatar_url
 	const resolvedProfileImageUrl = profileImage
 		? profileImage.startsWith('http://') || profileImage.startsWith('https://')
 			? profileImage
@@ -37,8 +39,8 @@ const ProfileHeader = () => {
 		: profilePicNull
 
 	const isMissingProfileFields =
-		!user.first_name || !user.last_name || !user.phone
-	const isMissingEmail = !user.email
+		!user?.first_name || !user?.last_name || !user?.phone
+	const isMissingEmail = !user?.email
 
 	useEffect(() => {
 		if (avatarUrl) {
@@ -75,7 +77,7 @@ const ProfileHeader = () => {
 		}
 		document.addEventListener('mousedown', handleClickOutside)
 
-		if (user.avatar_url !== null) setProfileImage(`${avatarUrl}`)
+		if (user?.avatar_url !== null) setProfileImage(`${avatarUrl}`)
 
 		// Cleanup the event listener on component unmount
 		return () => {
@@ -122,8 +124,8 @@ const ProfileHeader = () => {
 	}
 
 	const fullName =
-		`${user.first_name || ''} ${user.last_name || ''}`.trim() ||
-		user.username ||
+		`${user?.first_name || ''} ${user?.last_name || ''}`.trim() ||
+		user?.username ||
 		t('User')
 
 	return (
@@ -146,9 +148,9 @@ const ProfileHeader = () => {
 						}}
 						onMouseEnter={() => setIsHovered(true)}
 						onMouseLeave={() => setIsHovered(false)}
-						onClick={() => setImageCrop(true)}
+						onClick={isViewingOwnProfile ? () => setImageCrop(true) : null}
 					>
-						{isHovered && (
+						{isHovered && isViewingOwnProfile && (
 							<div className='absolute inset-0 flex items-center justify-center rounded-full bg-black/50'>
 								<AddAPhotoIcon
 									className='text-white scale-125'
@@ -218,17 +220,19 @@ const ProfileHeader = () => {
 					</h1>
 					<div className='flex flex-wrap items-center gap-1'>
 						<p className='text-gray-500 truncate'>
-							{user.email || t('No email')}
+							{user?.email || t('No email')}
 						</p>
-						{user.is_verified ? (
+						{user?.is_verified ? (
 							<VerifiedUserIcon className='text-green-500' fontSize='small' />
 						) : (
 							<NewReleasesIcon className='text-red-500' fontSize='small' />
 						)}
 					</div>
 					<div className='mt-3 flex flex-wrap gap-2'>
-						<span className='rounded-full bg-[#514587] px-3 py-1 text-sm text-white capitalize'>
-							{user.role || t('user')}
+						<span
+							className={`rounded-full ${user?.role === 'trainer' ? 'bg-[#2ea49c]' : 'bg-[#514587]'} px-3 py-1 text-sm text-white capitalize`}
+						>
+							{user?.role || t('user')}
 						</span>
 					</div>
 				</div>
@@ -237,7 +241,7 @@ const ProfileHeader = () => {
 			{/* Warning for missing Profile fields */}
 
 			<div className='flex flex-col md:self-end'>
-				{!user.is_verified && (
+				{!user?.is_verified && isViewingOwnProfile && (
 					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto '>
 						<WarningIcon fontSize='small' />
 						<p className='whitespace-normal break-words'>
@@ -249,7 +253,7 @@ const ProfileHeader = () => {
 						</p>
 					</div>
 				)}
-				{isMissingProfileFields && (
+				{isMissingProfileFields && isViewingOwnProfile && (
 					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto mt-2'>
 						<WarningIcon fontSize='small' />
 						<p className=''>
