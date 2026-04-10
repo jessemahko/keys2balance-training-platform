@@ -9,7 +9,9 @@ const bcrypt = require('bcrypt') // For hashing and comparing passwords
 const profileRouter = require('express').Router()
 
 // Ensure the "uploads/avatars" directory exists, if not, create it
-const uploadDir = path.join(__dirname, '../../uploads/avatars')
+const uploadDir = path.join(__dirname, '../../uploads')
+
+// const uploadDir = '/uploads'
 if (!fs.existsSync(uploadDir)) {
 	fs.mkdirSync(uploadDir, { recursive: true })
 }
@@ -51,6 +53,7 @@ profileRouter.post(
 		// If the user already has an avatar, delete the old file
 		if (user.avatar_url) {
 			const oldAvatarPath = path.join(__dirname, '../../', user.avatar_url) // Get the full path to the old avatar file
+			// const oldAvatarPath = user.avatar_url
 
 			if (fs.existsSync(oldAvatarPath)) {
 				fs.unlinkSync(oldAvatarPath) // Delete the old avatar
@@ -58,7 +61,7 @@ profileRouter.post(
 		}
 
 		// Save the new avatar file path in the user document
-		const filePath = `/uploads/avatars/${req.file.filename}`
+		const filePath = `/uploads/${req.file.filename}`
 
 		await User.saveImageURL(user.user_id, filePath) // Save the updated user document with the new avatar URL
 
