@@ -18,7 +18,7 @@ primary_region = 'ams'
 
 [mounts]
   source="uploads"
-  destination="/app/.uploads"
+  destination="/app/uploads"
 
 [[vm]]
   memory = '1gb'

@@ -42,15 +42,11 @@ passport.use(
 							.digest('hex')
 						const fileName = `${Date.now()}-${hash}${ext}`
 
-						const fullPath = path.join(
-							__dirname,
-							'../uploads/avatars',
-							fileName,
-						)
+						const fullPath = path.join(__dirname, '../uploads', fileName)
 
 						fs.writeFileSync(fullPath, response.data)
 
-						avatarPath = `/uploads/avatars/${fileName}`
+						avatarPath = `/uploads/${fileName}`
 					} catch (err) {
 						console.error('Failed to download avatar:', err)
 					}

@@ -105,7 +105,7 @@ app.use(
 	assessmentRouter,
 )
 
-app.use('/uploads', express.static('uploads'))
+app.use('/uploads', express.static('./uploads'))
 
 app.use(express.static('dist')) // Serve static files (JS, CSS, images) from the frontend build
 app.get('*', (req, res) => {
