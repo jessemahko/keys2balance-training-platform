@@ -21,6 +21,7 @@ const QuizTake = () => {
 	const [submitting, setSubmitting] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState(null)
+	const [sortDirection, setSortDirection] = useState('desc')
 
 	useEffect(() => {
 		const load = async () => {
@@ -135,7 +136,43 @@ const QuizTake = () => {
 			: (result?.answers_json?.score ?? 0)
 	const score = totalScore
 	const total = maxScore
+	const computeCategoryScores = () => {
+		if (!result || !assessment) return {}
 
+		const questions = assessment.assessment_json?.questions || []
+		const answers = result.answers_json?.answers || {}
+
+		const categoryScores = {}
+
+		questions.forEach((q) => {
+			if (q.type !== 'survey') return
+
+			const category = q.category || 'General'
+			const userAnswer = answers[q.id]
+
+			// Ensure category exists
+			if (!categoryScores[category]) {
+				categoryScores[category] = 0
+			}
+
+			if (Array.isArray(userAnswer)) {
+				// If multiple selected → count length
+				categoryScores[category] += userAnswer.length
+			} else if (typeof userAnswer === 'number') {
+				categoryScores[category] += userAnswer
+			} else if (userAnswer) {
+				// single value fallback
+				categoryScores[category] += 1
+			}
+		})
+
+		return categoryScores
+	}
+	const categoryScores = computeCategoryScores()
+	const sortedCategories = Object.entries(categoryScores).sort((a, b) => {
+		const diff = a[1] - b[1]
+		return sortDirection === 'asc' ? diff : -diff
+	})
 	return (
 		<div className='flex flex-col items-center w-full min-h-full'>
 			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-border-color flex items-center justify-between'>
@@ -412,21 +449,60 @@ const QuizTake = () => {
 						</button>
 					</div>
 				)}
+				{result && Object.keys(categoryScores).length > 0 && (
+					<div className="mt-10">
+						<h2 className="text-xl font-semibold text-primary mb-4">
+							{t('Your Survey Results')}
+						</h2>
 
-				{result && (
-					<div className='mt-8 flex justify-center'>
-						<button
-							onClick={goBack}
-							className='inline-flex items-center gap-2 bg-white text-primary border border-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors'
-						>
-							<ArrowLeft size={20} />
-							{t('Back to Lesson')}
-						</button>
+						<div className="overflow-x-auto">
+							<table className="w-full table-fixed border-2 border-black rounded-xl overflow-hidden border-separate border-spacing-0">
+								<thead>
+									<tr>
+										<th className="px-4 py-3 border-b border-black text-left">
+											{t('Category')}
+										</th>
+										<th
+										className="px-4 py-3 border-b border-black cursor-pointer select-none text-center"
+										onClick={() =>
+											setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+										}
+										>
+										<div className="flex flex-col items-center justify-center">
+											<span className="text-xs leading-none">
+											{sortDirection === 'asc' ? '▲' : '▼'}
+											</span>
+										</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{sortedCategories.map(([category, score]) => (
+										<tr key={category}>
+											<td className="px-4 py-3 border-b border-black font-medium">
+												{category}
+											</td>
+											<td className="px-4 py-3 border-b border-black text-center">
+												{score}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				)}
+				<div className='mt-8 flex justify-center'>
+				<button
+					onClick={goBack}
+					className='inline-flex items-center gap-2 bg-white text-primary border border-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors'
+				>
+					<ArrowLeft size={20} />
+					{t('Back to Lesson')}
+				</button>
+			</div>
 			</div>
 		</div>
 	)
 }
-
 export default QuizTake
