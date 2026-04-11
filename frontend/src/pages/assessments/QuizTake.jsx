@@ -21,6 +21,7 @@ const QuizTake = () => {
 	const [submitting, setSubmitting] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState(null)
+	const [sortDirection, setSortDirection] = useState('desc')
 
 	useEffect(() => {
 		const load = async () => {
@@ -45,7 +46,7 @@ const QuizTake = () => {
 
 	const handleSelect = (questionId, option, questionType) => {
 		if (result) return
-		if (questionType === 'multiple_choice') {
+		if (questionType === 'multiple_choice' || questionType === 'survey') {
 			setAnswers((prev) => {
 				const current = Array.isArray(prev[questionId]) ? prev[questionId] : []
 				const updated = current.includes(option)
@@ -63,9 +64,14 @@ const QuizTake = () => {
 		const unanswered = questions.filter((q) => {
 			const a = answers[q.id]
 			const qType = q.type || 'single_choice'
+
+			if (qType === 'survey') {
+				// surveys can be empty, do not mark as unanswered
+				return false
+			}
+
 			if (qType === 'open_text') return !a || !a.trim()
-			if (qType === 'multiple_choice')
-				return !Array.isArray(a) || a.length === 0
+			if (qType === 'multiple_choice') return !Array.isArray(a) || a.length === 0
 			return !a
 		})
 		if (unanswered.length > 0) {
@@ -80,7 +86,16 @@ const QuizTake = () => {
 		setSubmitting(true)
 		setError(null)
 		try {
-			const res = await assessmentService.submit(assessmentId, answers)
+			const submissionAnswers = { ...answers }
+				questions.forEach((q) => {
+					if (q.type === 'survey' && !submissionAnswers[q.id]) {
+						// store 0 for unanswered survey questions
+						submissionAnswers[q.id] = 0
+					}
+				})
+
+				const res = await assessmentService.submit(assessmentId, submissionAnswers)
+				setResult(res)
 			setResult(res)
 		} catch (err) {
 			setError(err?.response?.data?.error || 'Failed to submit quiz')
@@ -121,7 +136,43 @@ const QuizTake = () => {
 			: (result?.answers_json?.score ?? 0)
 	const score = totalScore
 	const total = maxScore
+	const computeCategoryScores = () => {
+		if (!result || !assessment) return {}
 
+		const questions = assessment.assessment_json?.questions || []
+		const answers = result.answers_json?.answers || {}
+
+		const categoryScores = {}
+
+		questions.forEach((q) => {
+			if (q.type !== 'survey') return
+
+			const category = q.category || 'General'
+			const userAnswer = answers[q.id]
+
+			// Ensure category exists
+			if (!categoryScores[category]) {
+				categoryScores[category] = 0
+			}
+
+			if (Array.isArray(userAnswer)) {
+				// If multiple selected → count length
+				categoryScores[category] += userAnswer.length
+			} else if (typeof userAnswer === 'number') {
+				categoryScores[category] += userAnswer
+			} else if (userAnswer) {
+				// single value fallback
+				categoryScores[category] += 1
+			}
+		})
+
+		return categoryScores
+	}
+	const categoryScores = computeCategoryScores()
+	const sortedCategories = Object.entries(categoryScores).sort((a, b) => {
+		const diff = a[1] - b[1]
+		return sortDirection === 'asc' ? diff : -diff
+	})
 	return (
 		<div className='flex flex-col items-center w-full min-h-full'>
 			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-border-color flex items-center justify-between'>
@@ -193,9 +244,7 @@ const QuizTake = () => {
 								<h2 className='text-xl font-bold mb-1'>
 									{score === total
 										? t('Perfect Score!')
-										: score >= total / 2
-											? t('Good job!')
-											: t('Keep studying!')}
+										: t('Thank you for your answer!')}
 								</h2>
 								<p className='text-gray-600'>
 									{t('You scored {{score}} out of {{total}} ({{pct}}%)', {
@@ -214,9 +263,13 @@ const QuizTake = () => {
 						const userAnswer = answers[q.id]
 						const qType = q.type || 'single_choice'
 						const isOpenText = qType === 'open_text'
-						const isMultiple = qType === 'multiple_choice'
+						const isMultiple = 
+							qType === 'multiple_choice' || qType === 'survey'
 						let isCorrect, isWrong
-						if (isOpenText) {
+						if (qType === 'survey') {
+							isCorrect = false
+							isWrong = false
+						} else if (isOpenText) {
 							isCorrect = false
 							isWrong = false
 						} else if (isMultiple) {
@@ -237,7 +290,7 @@ const QuizTake = () => {
 								key={q.id}
 								className={`bg-white border rounded-xl p-6 shadow-sm ${
 									result
-										? isOpenText
+										? qType === 'survey' || isOpenText
 											? 'border-border-color'
 											: isCorrect
 												? 'border-success border-2'
@@ -272,14 +325,13 @@ const QuizTake = () => {
 											disabled={!!result}
 											className='w-full px-4 py-3 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-y disabled:bg-gray-50 disabled:text-gray-600'
 										/>
-										{result && (
+										{result && qType !== 'survey' && (
 											<div className='mt-2 text-sm text-gray-500'>
-												{result.answers_json?.manual_scores?.[q.id] !==
-												undefined
+												{result.answers_json?.manual_scores?.[q.id] !== undefined
 													? t('Score: {{score}}/{{max}}', {
-															score: result.answers_json.manual_scores[q.id],
-															max: q.max_points || 1,
-														})
+														score: result.answers_json.manual_scores[q.id],
+														max: q.max_points || 1,
+													})
 													: t('Awaiting trainer grading')}
 											</div>
 										)}
@@ -291,12 +343,14 @@ const QuizTake = () => {
 												? Array.isArray(userAnswer) && userAnswer.includes(opt)
 												: userAnswer === opt
 											const isCorrectOpt =
-												result &&
-												(isMultiple
-													? Array.isArray(q.correct) && q.correct.includes(opt)
-													: opt === q.correct)
+												result && qType !== 'survey' && (
+													isMultiple
+														? Array.isArray(q.correct) && q.correct.includes(opt)
+														: opt === q.correct
+												)
+
 											const isWrongSelection =
-												result && isSelected && !isCorrectOpt
+												result && qType !== 'survey' && isSelected && !isCorrectOpt
 
 											let optionClass =
 												'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all '
@@ -395,21 +449,60 @@ const QuizTake = () => {
 						</button>
 					</div>
 				)}
+				{result && Object.keys(categoryScores).length > 0 && (
+					<div className="mt-10">
+						<h2 className="text-xl font-semibold text-primary mb-4">
+							{t('Your Survey Results')}
+						</h2>
 
-				{result && (
-					<div className='mt-8 flex justify-center'>
-						<button
-							onClick={goBack}
-							className='inline-flex items-center gap-2 bg-white text-primary border border-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors'
-						>
-							<ArrowLeft size={20} />
-							{t('Back to Lesson')}
-						</button>
+						<div className="overflow-x-auto">
+							<table className="w-full table-fixed border-2 border-black rounded-xl overflow-hidden border-separate border-spacing-0">
+								<thead>
+									<tr>
+										<th className="px-4 py-3 border-b border-black text-left">
+											{t('Category')}
+										</th>
+										<th
+										className="px-4 py-3 border-b border-black cursor-pointer select-none text-center"
+										onClick={() =>
+											setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+										}
+										>
+										<div className="flex flex-col items-center justify-center">
+											<span className="text-xs leading-none">
+											{sortDirection === 'asc' ? '▲' : '▼'}
+											</span>
+										</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{sortedCategories.map(([category, score]) => (
+										<tr key={category}>
+											<td className="px-4 py-3 border-b border-black font-medium">
+												{category}
+											</td>
+											<td className="px-4 py-3 border-b border-black text-center">
+												{score}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				)}
+				<div className='mt-8 flex justify-center'>
+				<button
+					onClick={goBack}
+					className='inline-flex items-center gap-2 bg-white text-primary border border-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary/5 transition-colors'
+				>
+					<ArrowLeft size={20} />
+					{t('Back to Lesson')}
+				</button>
+			</div>
 			</div>
 		</div>
 	)
 }
-
 export default QuizTake
