@@ -1,14 +1,18 @@
 import axios from 'axios'
 import { getToken } from './authen/login'
+import { buildApiUrl } from './apiConfig'
 
-const baseUrl = 'http://localhost:3001/api/assessments'
+const baseUrl = buildApiUrl('/api/assessments')
 
 const getConfig = () => ({
 	headers: { Authorization: getToken() },
 })
 
 const getByLesson = async (lessonId) => {
-	const response = await axios.get(`${baseUrl}?lessonId=${lessonId}`, getConfig())
+	const response = await axios.get(
+		`${baseUrl}?lessonId=${lessonId}`,
+		getConfig(),
+	)
 	return response.data
 }
 
@@ -33,7 +37,11 @@ const remove = async (id) => {
 }
 
 const submit = async (id, answers) => {
-	const response = await axios.post(`${baseUrl}/${id}/submit`, { answers }, getConfig())
+	const response = await axios.post(
+		`${baseUrl}/${id}/submit`,
+		{ answers },
+		getConfig(),
+	)
 	return response.data
 }
 
