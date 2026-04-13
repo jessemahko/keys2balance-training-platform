@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useParams, useNavigate, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -17,13 +17,15 @@ const CourseForm = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const users = useSelector((state) => state.users) || []
-	const courses = useSelector((state) => state.course.items) || []
+	const courseState = useSelector((state) => state.course)
+	const courses = courseState?.items || []
 	const courseToEdit = courses.find(
 		(c) => String(c.course_id) === String(courseId),
 	)
 
 	const currentUserId = user?.id || ''
 	const userRole = user?.role || ''
+	const requestedCourseIdRef = useRef(null)
 
 	// Role guard: only admins and trainers can create/edit courses
 	const isCourseOwner =
@@ -41,6 +43,13 @@ const CourseForm = () => {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
+	// If we're creating a course, there's nothing to fetch.
+	useEffect(() => {
+		if (!isEditMode) {
+			setLoading(false)
+		}
+	}, [isEditMode])
+
 	useEffect(() => {
 		if (userRole === 'admin') {
 			dispatch(setUsersFn())
@@ -57,6 +66,17 @@ const CourseForm = () => {
 		]
 	}, [users, currentUserId, t])
 
+	// In edit mode, ensure the course detail is loaded once.
+	useEffect(() => {
+		if (!isEditMode || !courseId) return
+		if (courseToEdit) return
+
+		if (requestedCourseIdRef.current === courseId) return
+		requestedCourseIdRef.current = courseId
+
+		dispatch(fetchCourseByIdFn(courseId))
+	}, [dispatch, isEditMode, courseId, courseToEdit])
+
 	useEffect(() => {
 		if (isEditMode && courseToEdit) {
 			setFormData({
@@ -67,6 +87,18 @@ const CourseForm = () => {
 			setLoading(false)
 		}
 	}, [courseToEdit, isEditMode])
+
+	// If the course fetch fails in edit mode, stop the spinner and show error.
+	useEffect(() => {
+		if (!isEditMode) return
+		if (!courseId) return
+		if (courseToEdit) return
+
+		if (courseState?.error) {
+			setError(courseState.error)
+			setLoading(false)
+		}
+	}, [isEditMode, courseId, courseToEdit, courseState?.error])
 
 	const handleChange = (e) => {
 		const { name, value } = e.target
@@ -88,7 +120,6 @@ const CourseForm = () => {
 	}
 
 	if (!canAccessForm) {
-		setError(t('You do not have permission to access this page'))
 		return <Navigate replace to='/dashboard' />
 	}
 
