@@ -120,13 +120,13 @@ const CourseLabel = () => {
 							<>
 								<Link
 									to={`/courses/${course.course_id}/edit`}
-									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-white text-[#0f172a] border border-[#cbd5e1] transition-colors hover:bg-gray-50 no-underline'
+									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 no-underline'
 								>
 									{t('Edit Course')}
 								</Link>
 								<button
 									onClick={() => setIsParticipantModalOpen(true)}
-									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#0f172a] text-white border border-[#cbd5e1] transition-opacity hover:opacity-90'
+									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 cursor-pointer'
 								>
 									{t('Manage Participants')}
 								</button>

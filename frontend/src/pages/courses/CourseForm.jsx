@@ -188,17 +188,17 @@ const CourseForm = () => {
 						</div>
 					)}
 
-					<div className='flex gap-4 pt-4'>
+					<div className='flex flex-wrap gap-4 pt-4'>
 						<button
 							type='submit'
-							className='flex-grow bg-[#514587] text-white py-3 rounded-lg font-bold hover:bg-[#9484b4] transition shadow-md'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1 min-w-[220px]'
 						>
 							{isEditMode ? t('Update Course') : t('Create Course')}
 						</button>
 						<button
 							type='button'
 							onClick={() => navigate(-1)}
-							className='px-8 py-3 border-2 border-[#cdd0d8] text-[#9484b4] rounded-lg font-bold hover:bg-[#ededed] transition'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 min-w-[220px]'
 						>
 							{t('Cancel')}
 						</button>
