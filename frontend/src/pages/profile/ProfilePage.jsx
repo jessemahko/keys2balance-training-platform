@@ -13,6 +13,7 @@ import { rmUserFn } from '../../reducers/userReducer'
 
 import { isValidPhoneNumber } from 'libphonenumber-js'
 import PasswordField from './PasswordField'
+import MobileProfilePage from './mobile/MobileProfilePage'
 
 const ProfilePage = () => {
 	const dispatch = useDispatch()
@@ -21,6 +22,7 @@ const ProfilePage = () => {
 	const [isEditting, setIsEditting] = useState(false)
 	const [isEdittingPassword, setIsEdittingPassword] = useState(false)
 	const [isEditingEmail, setIsEditingEmail] = useState(false)
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
 	const [formData, setFormData] = useState({
 		...user,
@@ -31,7 +33,17 @@ const ProfilePage = () => {
 
 	useEffect(() => {
 		document.title = t('Profile')
-	}, [])
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 768)
+		}
+
+		window.addEventListener('resize', handleResize)
+
+		return () => {
+			window.removeEventListener('resize', handleResize)
+		}
+		
+	}, [t])
 
 	const handleFormChange = (e) => {
 		const { name, value } = e.target
@@ -118,6 +130,9 @@ const ProfilePage = () => {
 		isValidPhoneNumber(`+${formData.phone}`)
 
 	const isEdittingEmailOrPassword = isEdittingPassword || isEditingEmail
+	if (isMobile) {
+		return <MobileProfilePage />
+	}
 	return (
 		<div className='min-h-screen bg-gray-100 p-4 md:p-8'>
 			<div className='mx-auto max-w-6xl space-y-6'>
