@@ -125,9 +125,9 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 	}
 
 	return (
-		<div className='fixed inset-0 bg-black/50 flex justify-center items-center z-[1000] p-5'>
+		<div className='fixed inset-0 bg-black/50 flex z-[1000] p-3 sm:p-5 overflow-auto'>
 			<div
-				className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.14)] p-[1.3rem] w-full max-w-[560px] max-h-[80vh] overflow-y-auto'
+				className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.14)] p-[1.3rem] w-full max-w-[560px] max-h-[80vh] overflow-y-auto min-w-[300px] max-w-full m-auto'
 				ref={modalRef}
 			>
 				<div className='flex justify-between items-center mb-4'>
