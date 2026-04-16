@@ -30,8 +30,8 @@ const LessonTitleModal = ({
 	}
 
 	return (
-		<div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[1000] p-5 animate-in fade-in duration-200'>
-			<div className='bg-white w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom-8 duration-300'>
+		<div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex z-[1000] p-3 sm:p-5 animate-in fade-in duration-200 overflow-auto'>
+			<div className='bg-white w-full m-auto max-w-md max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom-8 duration-300 min-w-[300px] max-w-full'>
 				<div className='p-6 md:px-8 border-b border-border-color flex justify-between items-center sticky top-0 bg-white z-10'>
 					<h2 className='text-xl text-[#514587] font-bold'>
 						{isEdit ? t('Rename Lesson') : t('Create New Lesson')}
@@ -46,7 +46,7 @@ const LessonTitleModal = ({
 
 				<form
 					onSubmit={handleSubmit}
-					className='p-8 flex-1 flex flex-col gap-6'
+					className='p-4 sm:p-8 flex-1 flex flex-col gap-6'
 				>
 					<div className='flex flex-col'>
 						<label className='block font-semibold text-gray-800 mb-2 text-[0.95rem]'>
@@ -63,20 +63,20 @@ const LessonTitleModal = ({
 						/>
 					</div>
 
-					<div className='flex justify-end gap-3 mt-auto pt-4 border-t border-border-color'>
-						<button
-							type='button'
-							onClick={onClose}
-							className='inline-flex items-center justify-center bg-transparent text-gray-800 px-6 py-2.5 rounded-lg border border-border-color font-semibold cursor-pointer transition-colors hover:bg-sidebar-bg'
-						>
-							{t('Cancel')}
-						</button>
+					<div className='flex flex-col sm:flex-row gap-4 pt-4 border-t border-border-color'>
 						<button
 							type='submit'
-							className='inline-flex items-center justify-center bg-[#514587] text-white px-6 py-2.5 rounded-lg border-none font-semibold cursor-pointer transition-all shadow-md hover:bg-[#3f356d] hover:shadow-lg hover:-translate-y-[1px]'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1 cursor-pointer'
 						>
 							<SaveRoundedIcon sx={{ fontSize: 18, mr: 1 }} />
 							{isEdit ? t('Save Changes') : t('Create Lesson')}
+						</button>
+						<button
+							type='button'
+							onClick={onClose}
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 flex-1 cursor-pointer'
+						>
+							{t('Cancel')}
 						</button>
 					</div>
 				</form>
