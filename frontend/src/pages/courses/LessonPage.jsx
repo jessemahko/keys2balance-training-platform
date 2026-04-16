@@ -182,14 +182,14 @@ const LessonPage = () => {
 	const blocks = lesson.content_data || []
 
 	return (
-		<div className='flex flex-col items-center w-full min-h-full min-w-[320px]'>
-			<header className='w-full bg-white px-8 md:px-16 py-10 border-b border-[#ecebea] flex items-center justify-between min-w-[320px]'>
+		<div className='flex flex-col items-stretch w-full min-h-full'>
+			<header className='w-full bg-white rounded-[18px] p-4 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(90,90,90,0.08)] border border-[#4a4a4a]/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 min-w-[300px] max-w-full transition-all duration-200'>
 				<div className='flex items-center gap-6'>
 					<div>
-						<div className='text-[0.85rem] text-gray-500 uppercase tracking-wide font-semibold mb-1'>
-							{activeCourse?.title || t('Course')} / {lesson.title}
-						</div>
-						<h1 className='text-4xl text-[#514587] font-bold tracking-tight'>
+						<div className='text-[0.75rem] sm:text-[0.85rem] text-gray-500 uppercase tracking-wide font-semibold mb-1 break-words'>
+						{activeCourse?.title || t('Course')} / {lesson.title}
+					</div>
+					<h1 className='text-2xl sm:text-3xl md:text-4xl text-[#514587] font-bold tracking-tight break-words'>
 							{lesson.title}
 						</h1>
 					</div>
@@ -207,9 +207,9 @@ const LessonPage = () => {
 				)}
 			</header>
 
-			<div className='w-full py-10 pb-24'>
+			<div className='w-full mt-6 pb-24'>
 				{blocks.length === 0 && assessments.length === 0 && (
-					<div className='text-center p-16 bg-white rounded-2xl border-2 border-dashed border-[#ecebea] text-gray-500'>
+					<div className='text-center p-6 sm:p-16 bg-white rounded-2xl border-2 border-dashed border-[#ecebea] text-gray-500'>
 						<p className='mb-6 font-medium text-lg'>
 							{t(
 								'This lesson is currently empty. Add your first content block!',
@@ -218,7 +218,7 @@ const LessonPage = () => {
 						{canEdit && (
 							<button
 								onClick={() => handleAddClick(null)}
-								className='inline-flex items-center justify-center bg-[#514587] text-white py-3 px-6 rounded-xl border-none font-semibold cursor-pointer transition-all shadow-md hover:bg-[#3f356d] hover:shadow-lg hover:-translate-y-[1px]'
+								className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 cursor-pointer'
 							>
 								<PlusCircle size={20} className='mr-2' /> {t('Start Building')}
 							</button>
@@ -279,7 +279,7 @@ const LessonPage = () => {
 								return (
 									<div
 										key={a.assessment_id}
-										className={`flex justify-between items-center p-5 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow ${
+										className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 p-4 sm:p-5 bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow ${
 											isCompleted ? 'border-l-4 border-l-success' : 'border-l-4 border-l-secondary'
 										}`}
 									>
