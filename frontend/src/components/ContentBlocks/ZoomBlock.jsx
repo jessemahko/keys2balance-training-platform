@@ -17,7 +17,7 @@ const ZoomBlock = ({ block }) => {
 				</h3>
 			</div>
 
-			<div className='flex gap-6 mb-6 p-4 bg-primary/5 rounded-lg'>
+			<div className='flex flex-wrap gap-4 sm:gap-6 mb-6 p-4 bg-primary/5 rounded-lg'>
 				{date && (
 					<div className='flex items-center gap-2 text-gray-800 font-medium'>
 						<Calendar size={18} />
