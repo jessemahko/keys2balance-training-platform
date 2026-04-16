@@ -18,9 +18,15 @@ const createLesson = async (lessonData) => {
 	return response.data
 }
 
-const updateLesson = async (id, title) => {
-	const response = await axios.patch(`${baseUrl}/${id}`, { title }, getConfig())
+const updateLesson = async (id, updates = {}) => {
+	// Prefer a single, explicit contract: updates is an object payload.
+	// Example: updateLesson(id, { title: "New title" })
+	const response = await axios.patch(`${baseUrl}/${id}`, updates, getConfig())
 	return response.data
+}
+
+const renameLesson = async (id, title) => {
+	return updateLesson(id, { title })
 }
 
 const deleteLesson = async (id) => {
@@ -58,6 +64,7 @@ export {
 	getLessonById,
 	createLesson,
 	updateLesson,
+	renameLesson,
 	deleteLesson,
 	addBlock,
 	updateBlock,

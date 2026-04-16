@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useParams, useNavigate, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -17,13 +17,15 @@ const CourseForm = () => {
 	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const users = useSelector((state) => state.users) || []
-	const courses = useSelector((state) => state.course.items) || []
+	const courseState = useSelector((state) => state.course)
+	const courses = courseState?.items || []
 	const courseToEdit = courses.find(
 		(c) => String(c.course_id) === String(courseId),
 	)
 
 	const currentUserId = user?.id || ''
 	const userRole = user?.role || ''
+	const requestedCourseIdRef = useRef(null)
 
 	// Role guard: only admins and trainers can create/edit courses
 	const isCourseOwner =
@@ -41,6 +43,13 @@ const CourseForm = () => {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
+	// If we're creating a course, there's nothing to fetch.
+	useEffect(() => {
+		if (!isEditMode) {
+			setLoading(false)
+		}
+	}, [isEditMode])
+
 	useEffect(() => {
 		if (userRole === 'admin') {
 			dispatch(setUsersFn())
@@ -57,6 +66,17 @@ const CourseForm = () => {
 		]
 	}, [users, currentUserId, t])
 
+	// In edit mode, ensure the course detail is loaded once.
+	useEffect(() => {
+		if (!isEditMode || !courseId) return
+		if (courseToEdit) return
+
+		if (requestedCourseIdRef.current === courseId) return
+		requestedCourseIdRef.current = courseId
+
+		dispatch(fetchCourseByIdFn(courseId))
+	}, [dispatch, isEditMode, courseId, courseToEdit])
+
 	useEffect(() => {
 		if (isEditMode && courseToEdit) {
 			setFormData({
@@ -67,6 +87,18 @@ const CourseForm = () => {
 			setLoading(false)
 		}
 	}, [courseToEdit, isEditMode])
+
+	// If the course fetch fails in edit mode, stop the spinner and show error.
+	useEffect(() => {
+		if (!isEditMode) return
+		if (!courseId) return
+		if (courseToEdit) return
+
+		if (courseState?.error) {
+			setError(courseState.error)
+			setLoading(false)
+		}
+	}, [isEditMode, courseId, courseToEdit, courseState?.error])
 
 	const handleChange = (e) => {
 		const { name, value } = e.target
@@ -88,15 +120,14 @@ const CourseForm = () => {
 	}
 
 	if (!canAccessForm) {
-		setError(t('You do not have permission to access this page'))
 		return <Navigate replace to='/dashboard' />
 	}
 
 	if (loading) return <div className='p-8 text-center'>{t('Loading...')}</div>
 
 	return (
-		<div className='p-8 max-w-2xl mx-auto'>
-			<div className='bg-white rounded-xl shadow-lg p-8 border border-[#cdd0d8]'>
+		<div className='p-4 sm:p-8 max-w-2xl mx-auto w-full min-w-[300px] max-w-full'>
+			<div className='bg-white rounded-xl shadow-lg p-4 sm:p-8 border border-[#cdd0d8] w-full min-w-[300px] max-w-full'>
 				<h1 className='text-3xl font-bold text-[#514587] mb-6'>
 					{isEditMode ? t('Edit Course') : t('Create New Course')}
 				</h1>
@@ -157,17 +188,17 @@ const CourseForm = () => {
 						</div>
 					)}
 
-					<div className='flex gap-4 pt-4'>
+					<div className='flex flex-col sm:flex-row gap-4 pt-4'>
 						<button
 							type='submit'
-							className='flex-grow bg-[#514587] text-white py-3 rounded-lg font-bold hover:bg-[#9484b4] transition shadow-md'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1'
 						>
 							{isEditMode ? t('Update Course') : t('Create Course')}
 						</button>
 						<button
 							type='button'
 							onClick={() => navigate(-1)}
-							className='px-8 py-3 border-2 border-[#cdd0d8] text-[#9484b4] rounded-lg font-bold hover:bg-[#ededed] transition'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 flex-1'
 						>
 							{t('Cancel')}
 						</button>

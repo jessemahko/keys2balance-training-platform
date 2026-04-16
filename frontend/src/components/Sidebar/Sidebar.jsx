@@ -110,7 +110,7 @@ const Sidebar = ({
 			)}
 
 			<aside
-				className={`bg-white border-r border-[#ecebea] flex flex-col py-6 shrink-0 z-[100] transition-all duration-300 ease-in-out h-full overflow-hidden ${isOpen ? 'w-[280px] translate-x-0' : 'w-0 -translate-x-full border-r-0'}`}
+				className={`bg-white border-r border-[#ecebea] flex flex-col py-6 shrink-0 z-[100] transition-all duration-300 ease-in-out h-full overflow-hidden fixed md:relative ${isOpen ? 'w-[280px] translate-x-0' : 'w-0 -translate-x-full border-r-0'}`}
 			>
 				{/* Brand Header */}
 				<div
@@ -134,12 +134,6 @@ const Sidebar = ({
 									>
 										Keys 2 Balance
 									</p>
-									<span
-										className='dashboard-brand-subtitle'
-										style={{ color: '#7a7a7a', fontSize: '10px' }}
-									>
-										{t('Participant portal')}
-									</span>
 								</div>
 							</div>
 						</Link>

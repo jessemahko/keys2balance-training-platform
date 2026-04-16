@@ -41,7 +41,7 @@ config.pool
 
 // Middleware setup
 app.use(cors()) // Enable CORS for all routes
-app.use(express.json()) // Parse incoming JSON requests
+app.use(express.json({ limit: '50mb' })) // Parse incoming JSON requests (increased limit for file attachments)
 app.use(middleware.tokenExtractor) // Extract token from requests
 
 app.use(passport.initialize()) // Initialize Passport for authentication
