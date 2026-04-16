@@ -242,19 +242,25 @@ const QuizTake = () => {
 						) : (
 							<>
 								<h2 className='text-xl font-bold mb-1'>
-									{score === total
-										? t('Perfect Score!')
-										: t('Thank you for your answer!')}
+									Thank you for your answer!
 								</h2>
 								<p className='text-gray-600'>
 									{t('You scored {{score}} out of {{total}} ({{pct}}%)', {
 										score,
 										total,
-										pct: Math.round((score / total) * 100),
+										pct: total > 0 ? Math.round((score / total) * 100) : 100,
 									})}
 								</p>
 							</>
 						)}
+					</div>
+				)}
+
+				{assessment.assessment_json?.description && (
+					<div className="mb-6 bg-white border border-border-color rounded-xl p-8 shadow-sm">
+						<p className="text-gray-600 whitespace-pre-line">
+							{assessment.assessment_json.description}
+						</p>
 					</div>
 				)}
 
@@ -263,11 +269,10 @@ const QuizTake = () => {
 						const userAnswer = answers[q.id]
 						const qType = q.type || 'single_choice'
 						const isOpenText = qType === 'open_text'
-						const isMultiple = 
-							qType === 'multiple_choice' || qType === 'survey'
+						const isMultiple = qType === 'multiple_choice' || qType === 'survey'
 						let isCorrect, isWrong
 						if (qType === 'survey') {
-							isCorrect = false
+							isCorrect = true
 							isWrong = false
 						} else if (isOpenText) {
 							isCorrect = false
