@@ -81,8 +81,8 @@ const CourseLabel = () => {
 				<h1 className='m-0 text-[#222] font-bold text-2xl'>{course.title}</h1>
 			</div>
 
-			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>
-				<p className='m-0 text-[#666] leading-relaxed'>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 overflow-hidden'>
+				<p className='m-0 text-[#666] leading-relaxed break-words overflow-hidden'>
 					{course.description ||
 						t('Access your course contents and track your progress below.')}
 				</p>
