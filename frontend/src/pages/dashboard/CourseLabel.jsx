@@ -69,8 +69,8 @@ const CourseLabel = () => {
 		: profilePicNull
 
 	return (
-		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
-			<div className='grid gap-[0.4rem]'>
+		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto min-w-0'>
+			<div className='grid gap-[0.4rem] ml-12 md:ml-0'>
 				<Link
 					to='/dashboard'
 					className='flex items-center gap-2 text-[#4d458d] font-bold border-b-2 border-transparent hover:border-[#4d458d] w-max'
