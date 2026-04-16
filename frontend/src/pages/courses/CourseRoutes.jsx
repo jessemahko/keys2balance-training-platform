@@ -40,7 +40,7 @@ const CourseRoutes = () => {
 
 	if (isLoading) {
 		return (
-			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 w-full min-w-[300px] max-w-full'>
 				{t('Loading course...')}
 			</section>
 		)
@@ -48,7 +48,7 @@ const CourseRoutes = () => {
 
 	if (loadError || !course) {
 		return (
-			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center'>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center w-full min-w-[300px] max-w-full'>
 				<h2 className='m-0 text-[#222]'>
 					{t('We could not open this course')}
 				</h2>
