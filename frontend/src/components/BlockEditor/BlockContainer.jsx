@@ -12,8 +12,8 @@ const BlockContainer = ({
 }) => {
 	const { t } = useTranslation()
 	return (
-		<div className='relative mb-6 group'>
-			<div className='relative bg-white rounded-2xl p-8 shadow-sm border border-border-color transition-all duration-200 hover:border-primary-light hover:shadow-[0_14px_25px_rgba(81,69,135,0.15)] hover:scale-[1.01]'>
+		<div className='relative mb-6 group w-full'>
+			<div className='relative bg-white rounded-[18px] p-4 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(90,90,90,0.08)] border border-[#4a4a4a]/[0.08] transition-all duration-200 hover:border-primary-light hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] hover:scale-[1.01] w-full min-w-[300px] max-w-full'>
 				{/* Admin/Trainer controls shown on hover */}
 				{canEdit && (
 					<div className='absolute top-3 right-3 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200'>
