@@ -36,7 +36,14 @@ const coursesSlice = createSlice({
 		updateCourseAction(state, action) {
 			const index = state.items.findIndex((c) => String(c.course_id) === String(action.payload.course_id))
 			if (index !== -1) {
-				state.items[index] = action.payload
+				const mergedCourse = {
+					...state.items[index],
+					...action.payload,
+				}
+				if (Array.isArray(action.payload.lessons)) {
+					mergedCourse.lesson_count = action.payload.lessons.length
+				}
+				state.items[index] = mergedCourse
 			} else {
 				state.items.push(action.payload)
 			}
