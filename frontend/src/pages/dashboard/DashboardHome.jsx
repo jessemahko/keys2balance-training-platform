@@ -237,10 +237,10 @@ const DashboardHome = () => {
 						<Link
 							key={course.course_id}
 							to={`/courses/${course.course_id}`}
-							className='grid gap-4 p-5 bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] rounded-[18px] text-inherit transition-all duration-180 ease-in-out hover:-translate-y-[2px] hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] no-underline'
+							className='flex flex-col gap-4 p-5 bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] rounded-[18px] text-inherit transition-all duration-180 ease-in-out hover:-translate-y-[2px] hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] no-underline h-[260px] min-w-0'
 						>
-							<div className='flex items-start justify-between gap-3'>
-								<h3 className='m-0 text-[#222]'>{course.title}</h3>
+							<div className='flex items-start justify-between gap-3 shrink-0 min-w-0'>
+								<h3 className='m-0 text-[#222] truncate'>{course.title}</h3>
 								{canDeleteCourse ? (
 									<button
 										type='button'
@@ -253,16 +253,16 @@ const DashboardHome = () => {
 									</button>
 								) : null}
 							</div>
-							<p className='m-0 text-[#666] leading-relaxed'>
+							<p className='m-0 text-[#666] leading-relaxed flex-1 overflow-hidden break-words'>
 								{course.description ||
 									t('Open the course overview to access lessons.')}
 							</p>
-							<div className='flex flex-wrap gap-2 text-[#7a7a7a] text-[0.9rem] font-semibold'>
+							<div className='flex flex-wrap gap-2 text-[#7a7a7a] text-[0.9rem] font-semibold shrink-0'>
 								<span>
 									{Number(course.lesson_count ?? 0)} {t('lessons')}
 								</span>
 							</div>
-							<div className='flex items-center justify-between text-[#27a665] font-bold'>
+							<div className='flex items-center justify-between text-[#27a665] font-bold shrink-0 mt-auto'>
 								<span>{t('View course')}</span>
 								<span className='text-2xl leading-none'>&rsaquo;</span>
 							</div>
