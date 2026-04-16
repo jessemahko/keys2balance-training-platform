@@ -116,7 +116,7 @@ const Dashboard = () => {
 			/>
 
 			<main
-				className={`flex-1 overflow-y-auto relative h-screen w-full ${isDiscussionPage ? '' : 'p-6 md:p-8 lg:p-10'}`}
+				className={`flex-1 overflow-y-auto relative h-screen w-full min-w-0 ${isDiscussionPage ? '' : 'p-4 sm:p-6 md:p-8 lg:p-10'}`}
 			>
 				<Routes>
 					<Route path='/dashboard' element={<DashboardHome />} />
