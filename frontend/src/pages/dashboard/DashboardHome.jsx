@@ -88,7 +88,7 @@ const DashboardHome = () => {
 		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto min-w-0'>
 			{isDeleteModalOpen && courseToDelete ? (
 				<div
-					className='fixed inset-0 bg-black/50 flex z-[1000] p-5 overflow-auto'
+					className='absolute inset-0 bg-black/50 flex z-[1000] p-5 overflow-auto'
 					onMouseDown={(e) => {
 						// click outside to close (unless deleting)
 						if (e.target === e.currentTarget) closeDeleteModal()
