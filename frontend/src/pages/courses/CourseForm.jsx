@@ -126,8 +126,8 @@ const CourseForm = () => {
 	if (loading) return <div className='p-8 text-center'>{t('Loading...')}</div>
 
 	return (
-		<div className='p-8 max-w-2xl mx-auto'>
-			<div className='bg-white rounded-xl shadow-lg p-8 border border-[#cdd0d8]'>
+		<div className='p-4 sm:p-8 max-w-2xl mx-auto w-full min-w-[300px] max-w-full'>
+			<div className='bg-white rounded-xl shadow-lg p-4 sm:p-8 border border-[#cdd0d8] w-full min-w-[300px] max-w-full'>
 				<h1 className='text-3xl font-bold text-[#514587] mb-6'>
 					{isEditMode ? t('Edit Course') : t('Create New Course')}
 				</h1>
@@ -188,17 +188,17 @@ const CourseForm = () => {
 						</div>
 					)}
 
-					<div className='flex flex-wrap gap-4 pt-4'>
+					<div className='flex flex-col sm:flex-row gap-4 pt-4'>
 						<button
 							type='submit'
-							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1 min-w-[220px]'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1'
 						>
 							{isEditMode ? t('Update Course') : t('Create Course')}
 						</button>
 						<button
 							type='button'
 							onClick={() => navigate(-1)}
-							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 min-w-[220px]'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 flex-1'
 						>
 							{t('Cancel')}
 						</button>
