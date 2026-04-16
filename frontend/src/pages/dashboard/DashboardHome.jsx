@@ -85,16 +85,16 @@ const DashboardHome = () => {
 	}
 
 	return (
-		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
+		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto min-w-0'>
 			{isDeleteModalOpen && courseToDelete ? (
 				<div
-					className='fixed inset-0 bg-black/50 flex justify-center items-center z-[1000] p-5'
+					className='fixed inset-0 bg-black/50 flex z-[1000] p-5 overflow-auto'
 					onMouseDown={(e) => {
 						// click outside to close (unless deleting)
 						if (e.target === e.currentTarget) closeDeleteModal()
 					}}
 				>
-					<div className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.14)] p-[1.3rem] w-full max-w-[560px]'>
+					<div className='rounded-[18px] m-auto bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.14)] p-[1.3rem] w-full max-w-[560px] min-w-[300px] max-w-full'>
 						<div className='flex justify-between items-center mb-4'>
 							<h2 className='m-0 text-2xl font-bold text-[#514587]'>
 								{t('Delete course')}
@@ -138,7 +138,7 @@ const DashboardHome = () => {
 								autoFocus
 							/>
 
-							<div className='flex flex-wrap gap-3 justify-end'>
+							<div className='flex flex-col-reverse sm:flex-row gap-3 sm:justify-end'>
 								<button
 									type='button'
 									onClick={closeDeleteModal}
