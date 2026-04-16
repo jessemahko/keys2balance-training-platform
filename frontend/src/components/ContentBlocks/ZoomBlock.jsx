@@ -36,7 +36,7 @@ const ZoomBlock = ({ block }) => {
 				href={join_link}
 				target='_blank'
 				rel='noopener noreferrer'
-				className='inline-flex items-center justify-center gap-2 w-full p-3 bg-primary text-white rounded-lg font-semibold hover:-translate-y-0.5 transition-transform'
+				className='inline-flex items-center justify-center p-[0.8rem_1.15rem] gap-2 rounded-full w-full bg-primary text-white font-semibold hover:-translate-y-0.5 transition-transform'
 			>
 				<span>{t('Join Meeting')}</span>
 				<ExternalLink size={18} />
