@@ -30,7 +30,7 @@ const LessonTitleModal = ({
 	}
 
 	return (
-		<div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex z-[1000] p-3 sm:p-5 animate-in fade-in duration-200 overflow-auto'>
+		<div className='absolute inset-0 bg-black/40 backdrop-blur-sm flex z-[1000] p-3 sm:p-5 animate-in fade-in duration-200 overflow-auto'>
 			<div className='bg-white w-full m-auto max-w-md max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom-8 duration-300 min-w-[300px] max-w-full'>
 				<div className='p-6 md:px-8 border-b border-border-color flex justify-between items-center sticky top-0 bg-white z-10'>
 					<h2 className='text-xl text-[#514587] font-bold'>
