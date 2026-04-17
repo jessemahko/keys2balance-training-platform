@@ -17,6 +17,7 @@ import CourseForm from '../courses/CourseForm'
 import DashboardHome from './DashboardHome'
 import ProfilePage from '../profile/ProfilePage'
 import OtherProfile from '../profile/OtherProfile'
+import NotificationListener from '../../components/NotificationListener'
 
 import CourseRoutes from '../courses/CourseRoutes'
 
@@ -107,6 +108,7 @@ const Dashboard = () => {
 
 	return (
 		<div className='dashboard-shell flex h-screen overflow-hidden'>
+			<NotificationListener />
 			<Sidebar
 				isOpen={isSidebarOpen}
 				onToggle={() => setIsSidebarOpen(!isSidebarOpen)}

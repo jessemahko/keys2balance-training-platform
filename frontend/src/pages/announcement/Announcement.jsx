@@ -16,20 +16,12 @@ const AnnouncementPage = () => {
 	const dispatch = useDispatch()
 	const { t } = useTranslation()
 	const notifications = useSelector((state) => state.notifications)
+
 	const [sortBy, setSortBy] = useState('newest')
-	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
 		document.title = t('Announcements')
 	}, [])
-	useEffect(() => {
-		const fetchNotifications = () => {
-			setLoading(true)
-			dispatch(setNotificationsFn())
-			setLoading(false)
-		}
-		fetchNotifications()
-	}, [dispatch])
 
 	const notificationsToDisplay = useMemo(() => {
 		const byCreatedAtDesc = (a, b) =>
@@ -95,15 +87,6 @@ const AnnouncementPage = () => {
 
 	const unreadCount = notifications.filter((n) => !n.is_read).length
 
-	if (loading) {
-		return (
-			<div style={styles.loadingContainer}>
-				<div style={styles.loadingSpinner}></div>
-				<p style={styles.loadingText}>{t('Loading notifications...')}</p>
-			</div>
-		)
-	}
-
 	return (
 		<div style={styles.container}>
 			<div style={styles.header}>
@@ -155,6 +138,7 @@ const AnnouncementPage = () => {
 								...styles.card,
 								...(noti.is_read ? styles.cardRead : styles.cardUnread),
 							}}
+							// className={noti.is_read ? 'card' : 'cardUnread'}
 						>
 							<div style={styles.cardHeader}>
 								<div style={styles.titleRow}>
