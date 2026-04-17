@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useParams, useNavigate, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { setError } from '../../reducers/notiReducer'
 import {
 	createCourseFn,
 	updateCourseFn,
@@ -41,7 +42,6 @@ const CourseForm = () => {
 		teacherId: currentUserId,
 	})
 	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(null)
 
 	// If we're creating a course, there's nothing to fetch.
 	useEffect(() => {
@@ -95,7 +95,7 @@ const CourseForm = () => {
 		if (courseToEdit) return
 
 		if (courseState?.error) {
-			setError(courseState.error)
+			dispatch(setError(courseState.error))
 			setLoading(false)
 		}
 	}, [isEditMode, courseId, courseToEdit, courseState?.error])
@@ -115,7 +115,7 @@ const CourseForm = () => {
 			}
 			navigate('/dashboard')
 		} catch (e) {
-			setError(e.response?.data?.error || t('Operation failed'))
+			dispatch(setError(e.response?.data?.error || t('Operation failed')))
 		}
 	}
 
@@ -131,12 +131,6 @@ const CourseForm = () => {
 				<h1 className='text-3xl font-bold text-[#514587] mb-6'>
 					{isEditMode ? t('Edit Course') : t('Create New Course')}
 				</h1>
-
-				{error && (
-					<div className='bg-red-100 text-red-700 p-4 rounded-lg mb-6'>
-						{error}
-					</div>
-				)}
 
 				<form onSubmit={handleSubmit} className='space-y-6'>
 					<div>
