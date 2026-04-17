@@ -24,6 +24,8 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded'
 import { Menu as MenuIcon } from 'lucide-react'
 
+import AnnoucementNavLink from './AnnoucementNavLink'
+
 import EnFlag from '../../assets/flags/en.png'
 import SvFlag from '../../assets/flags/sv.png'
 import FiFlag from '../../assets/flags/fi.png'
@@ -315,29 +317,40 @@ const Sidebar = ({
 							<ul className='list-none px-4 w-[280px] mb-6 flex flex-col gap-1'>
 								{getNavigationItems(user?.role).map((item) => {
 									const Icon = item.icon
-									return (
-										<li className='rounded-lg w-full' key={item.to}>
-											<NavLink
-												to={item.to}
-												end={item.end}
-												className={({ isActive }) =>
-													`${navLinkClass} ${isActive ? activeNavLinkClass : ''} ${item.action === 'logout' ? logoutButtonStyle : ''}`
-												}
-												onClick={() => {
-													if (item.action === 'logout') {
-														handleLogout()
+									if (item.label === 'Announcements') {
+										return (
+											<AnnoucementNavLink
+												item={item}
+												key={item.to}
+												Icon={Icon}
+												navLinkClass={navLinkClass}
+												activeNavLinkClass={activeNavLinkClass}
+											/>
+										)
+									} else
+										return (
+											<li className='rounded-lg w-full' key={item.to}>
+												<NavLink
+													to={item.to}
+													end={item.end}
+													className={({ isActive }) =>
+														`${navLinkClass} ${isActive ? activeNavLinkClass : ''} ${item.action === 'logout' ? logoutButtonStyle : ''}`
 													}
-												}}
-											>
-												<span className='mr-3 flex items-center'>
-													<Icon size={18} />
-												</span>
-												<span className='whitespace-nowrap overflow-hidden text-ellipsis'>
-													{t(item.label)}
-												</span>
-											</NavLink>
-										</li>
-									)
+													onClick={() => {
+														if (item.action === 'logout') {
+															handleLogout()
+														}
+													}}
+												>
+													<span className='mr-3 flex items-center'>
+														<Icon size={18} />
+													</span>
+													<span className='whitespace-nowrap overflow-hidden text-ellipsis'>
+														{t(item.label)}
+													</span>
+												</NavLink>
+											</li>
+										)
 								})}
 							</ul>
 						</>

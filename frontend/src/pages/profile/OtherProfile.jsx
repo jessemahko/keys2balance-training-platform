@@ -9,6 +9,8 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 
 import { getProfile } from '../../services/profile'
 
+import { styles } from '../style.js'
+
 const OtherProfile = () => {
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -47,8 +49,9 @@ const OtherProfile = () => {
 
 	if (isLoading) {
 		return (
-			<div className='min-h-screen flex items-center justify-center bg-gray-100'>
-				<p className='text-gray-500'>{t('Loading profile...')}</p>
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading profile...')}</p>
 			</div>
 		)
 	}

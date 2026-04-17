@@ -82,7 +82,10 @@ export const styles = {
 		padding: '20px',
 		boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
 		transition: 'all 0.25s ease',
-		border: '1px solid #e8e8ed',
+		borderTop: '1px solid #e8e8ed',
+		borderBottom: '1px solid #e8e8ed',
+		borderRight: '1px solid #e8e8ed',
+		borderLeft: '1px solid #e8e8ed',
 	},
 	cardUnread: {
 		borderLeft: '4px solid #6b5b95',

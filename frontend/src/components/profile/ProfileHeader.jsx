@@ -246,7 +246,7 @@ const ProfileHeader = ({ user }) => {
 						<WarningIcon fontSize='small' />
 						<p className='whitespace-normal break-words'>
 							{isMissingEmail
-								? t('Fill your email using the red edit button below.')
+								? t('Fill your email.')
 								: t(
 										'Your email is not verified. Please verify your email to access all features.',
 									)}
@@ -256,11 +256,7 @@ const ProfileHeader = ({ user }) => {
 				{isMissingProfileFields && isViewingOwnProfile && (
 					<div className='flex items-center gap-2 rounded-lg bg-red-100 px-4 py-3 text-red-700 w-full md:w-auto mt-2'>
 						<WarningIcon fontSize='small' />
-						<p className=''>
-							{t(
-								'Fill required fields using the button at the bottom of the page.',
-							)}
-						</p>
+						<p className=''>{t('Fill required fields.')}</p>
 					</div>
 				)}
 			</div>

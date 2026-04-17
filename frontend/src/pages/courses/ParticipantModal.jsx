@@ -9,6 +9,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
 import profilePicNull from '../../assets/profile-picture-null.png'
 import { API_BASE_URL } from '../../services/apiConfig'
+import { styles } from '../style.js'
 
 const ParticipantModal = ({ isOpen, onClose }) => {
 	const { t } = useTranslation()
@@ -158,10 +159,9 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 				</div>
 
 				{loading ? (
-					<div className='flex justify-center items-center h-24'>
-						<p className='text-gray-500 font-medium'>
-							{t('Loading participants...')}
-						</p>
+					<div style={styles.loadingContainer}>
+						<div style={styles.loadingSpinner}></div>
+						<p style={styles.loadingText}>{t('Loading participants...')}</p>
 					</div>
 				) : (
 					<ul className='list-none p-0 m-0'>

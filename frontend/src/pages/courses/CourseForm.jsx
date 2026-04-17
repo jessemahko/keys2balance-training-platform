@@ -9,6 +9,7 @@ import {
 } from '../../reducers/courseReducer'
 import { setUsersFn } from '../../reducers/usersReducer'
 import { useTranslation } from 'react-i18next'
+import { styles } from '../style.js'
 
 const CourseForm = () => {
 	const { courseId } = useParams()
@@ -123,7 +124,13 @@ const CourseForm = () => {
 		return <Navigate replace to='/dashboard' />
 	}
 
-	if (loading) return <div className='p-8 text-center'>{t('Loading...')}</div>
+	if (loading)
+		return (
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading...')}</p>
+			</div>
+		)
 
 	return (
 		<div className='p-4 sm:p-8 max-w-2xl mx-auto w-full min-w-[300px] max-w-full'>

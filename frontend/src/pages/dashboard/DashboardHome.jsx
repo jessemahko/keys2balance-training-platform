@@ -8,6 +8,7 @@ import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
 import { Trash2 } from 'lucide-react'
 import { deleteCourseFn } from '../../reducers/courseReducer'
 import { setError, setNotification } from '../../reducers/notiReducer'
+import { styles } from '../style.js'
 
 const DashboardHome = () => {
 	const { t } = useTranslation()
@@ -85,7 +86,10 @@ const DashboardHome = () => {
 
 	if (isLoading) {
 		return (
-			<section className='dashboard-panel'>{t('Loading courses...')}</section>
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading courses...')}</p>
+			</div>
 		)
 	}
 

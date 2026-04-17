@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { ArrowLeft, CheckCircle, XCircle, Send } from 'lucide-react'
 import * as assessmentService from '../../services/assessments'
+import { styles } from '../style.js'
 import { useTranslation } from 'react-i18next'
 
 const QuizTake = () => {
@@ -110,8 +111,9 @@ const QuizTake = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex items-center justify-center h-full text-gray-500'>
-				{t('Loading quiz...')}
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading quiz...')}</p>
 			</div>
 		)
 	}

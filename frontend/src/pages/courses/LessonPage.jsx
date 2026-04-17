@@ -18,6 +18,7 @@ import TextBlock from '../../components/ContentBlocks/TextBlock'
 import ZoomBlock from '../../components/ContentBlocks/ZoomBlock'
 import FileBlock from '../../components/ContentBlocks/FileBlock'
 import LinkEmbedBlock from '../../components/ContentBlocks/LinkEmbedBlock'
+import { styles } from '../style.js'
 
 const LessonPage = () => {
 	const { t } = useTranslation()
@@ -165,8 +166,9 @@ const LessonPage = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex items-center justify-center h-full text-gray-500'>
-				{t('Loading lesson content...')}
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading lesson content...')}</p>
 			</div>
 		)
 	}

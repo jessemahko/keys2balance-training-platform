@@ -31,6 +31,18 @@ const ProfilePage = () => {
 
 	useEffect(() => {
 		document.title = t('Profile')
+		if (!user.email) {
+			setTimeout(() => {
+				const input = document.querySelector(`input[name="email"]`)
+				if (input) {
+					input.focus()
+				}
+			}, 0)
+			setIsEditingEmail(true)
+		}
+		if (!user.phone || !user.first_name || !user.last_name) {
+			setIsEditting(true)
+		}
 	}, [])
 
 	const handleFormChange = (e) => {
@@ -223,7 +235,7 @@ const ProfilePage = () => {
 
 						{isEditting ? (
 							<div
-								className={`flex flex-wrap gap-4 pt-2 ${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}
+								className={`flex flex-wrap justify-center gap-4 pt-2 ${isEdittingEmailOrPassword ? 'opacity-20' : ''}`}
 							>
 								<button
 									type='button'
@@ -233,14 +245,16 @@ const ProfilePage = () => {
 								>
 									{t('Save Changes')}
 								</button>
-								<button
-									type='button'
-									onClick={handleCancelEdit}
-									className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 mt-5'
-									disabled={isEdittingEmailOrPassword}
-								>
-									{t('Cancel')}
-								</button>
+								{user.first_name && user.last_name && user.phone && (
+									<button
+										type='button'
+										onClick={handleCancelEdit}
+										className='rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 mt-5'
+										disabled={isEdittingEmailOrPassword}
+									>
+										{t('Cancel')}
+									</button>
+								)}
 							</div>
 						) : (
 							<div
