@@ -1,4 +1,5 @@
 const Courses = require('../../models/courses')
+const Notification = require('../../models/notification')
 
 const getCourses = async (req, res) => {
 	if (req.user.role === 'admin') {
@@ -78,6 +79,12 @@ const createCourse = async (req, res) => {
 		teacherId: finalTeacherId,
 	})
 
+	await Notification.createCourseAssignedNotification(
+		course.course_id,
+		finalTeacherId,
+		course.title,
+	)
+
 	res.status(201).json(course)
 }
 
@@ -134,6 +141,10 @@ const deleteCourse = async (req, res) => {
 		return res.status(403).json({ error: 'Only admins or the course creator can delete courses' })
 	}
 
+	await Notification.createCourseDeletedNotifications(
+		courseId,
+		existingCourse.title,
+	)
 	const deletedCourse = await Courses.deleteCourse(courseId)
 	if (!deletedCourse) return res.status(404).json({ error: 'course not found' })
 
@@ -158,6 +169,11 @@ const enrollStudent = async (req, res) => {
 	}
 
 	const enrollment = await Courses.enrollInCourse(userId, courseId)
+	await Notification.createEnrollmentNotifications(
+		courseId,
+		userId,
+		course.title,
+	)
 	res.status(201).json(enrollment)
 }
 
@@ -179,6 +195,11 @@ const removeStudent = async (req, res) => {
 	}
 
 	await Courses.deleteEnrollment(userId, courseId)
+	await Notification.createEnrollmentRemovedNotifications(
+		courseId,
+		userId,
+		course.title,
+	)
 	res.status(204).end()
 }
 

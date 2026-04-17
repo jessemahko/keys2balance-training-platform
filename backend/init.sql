@@ -179,12 +179,19 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 	type TEXT NOT NULL CHECK (
 		type IN (
-			'welcome',
 			'course_assigned',
-			'lesson_completed',
-			'assessment_submitted',
-			'discussion_reply',
-			'admin_announcement',
+			'course_enrolled',
+			'course_removed',
+			'course_deleted',
+			'thread_created',
+			'quiz_graded',
+			'new_quiz_available',
+			'new_lesson_available',
+			'quiz_updated',
+			'quiz_deleted',
+			'participant_assigned',
+			'trainer_assigned',
+			'quiz_submitted',
 			'reminder'
 		)
 	),
@@ -414,26 +421,48 @@ WHERE NOT EXISTS (
 -- NOTIFICATIONS
 INSERT INTO notifications (user_id, type, title, message, is_read)
 VALUES
-((SELECT user_id FROM users WHERE username='student1'),
- 'welcome',
- 'Welcome to Leadership Academy!',
- 'Welcome Alice! We are excited to have you join our learning platform. Start exploring courses today.',
- TRUE),
-((SELECT user_id FROM users WHERE username='student2'),
- 'welcome',
- 'Welcome to Leadership Academy!',
- 'Welcome Bob! We are excited to have you join our learning platform. Start exploring courses today.',
- TRUE),
-((SELECT user_id FROM users WHERE username='student3'),
- 'welcome',
- 'Welcome to Leadership Academy!',
- 'Welcome Charlie! We are excited to have you join our learning platform. Start exploring courses today.',
- FALSE),
-((SELECT user_id FROM users WHERE username='student4'),
- 'welcome',
- 'Welcome to Leadership Academy!',
- 'Welcome Diana! We are excited to have you join our learning platform. Start exploring courses today.',
- FALSE);
+(
+	(SELECT user_id FROM users WHERE username='student1'),
+	'course_enrolled',
+	'Enrolled in course',
+	'You have been enrolled in "Intro to Leadership"',
+	TRUE
+),
+(
+	(SELECT user_id FROM users WHERE username='student2'),
+	'course_enrolled',
+	'Enrolled in course',
+	'You have been enrolled in "Intro to Leadership"',
+	TRUE
+),
+(
+	(SELECT user_id FROM users WHERE username='student3'),
+	'new_lesson_available',
+	'New lesson available',
+	'New lesson added to "Intro to Leadership"',
+	FALSE
+),
+(
+	(SELECT user_id FROM users WHERE username='student4'),
+	'new_quiz_available',
+	'New assessment available',
+	'New quiz available in "Effective Communication"',
+	FALSE
+),
+(
+	(SELECT user_id FROM users WHERE username='trainer1'),
+	'quiz_submitted',
+	'Quiz submitted',
+	'A student submitted a quiz in "Intro to Leadership"',
+	FALSE
+),
+(
+	(SELECT user_id FROM users WHERE username='trainer2'),
+	'thread_created',
+	'New thread created',
+	'A new discussion thread was created in "Team Management"',
+	FALSE
+);
 
 -- ACCESS CODES
 INSERT INTO access_codes (course_id)

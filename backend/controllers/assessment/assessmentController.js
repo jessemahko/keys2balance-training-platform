@@ -1,5 +1,6 @@
 const Assessment = require('../../models/assessment')
 const AssessmentResponse = require('../../models/assessment-response')
+const Notification = require('../../models/notification')
 const Course = require('../../models/courses')
 const Lesson = require('../../models/lesson')
 const { calculateScore } = require('./scoring')
@@ -116,6 +117,14 @@ const postAssessment = async (req, res) => {
 		title,
 		assessmentJson,
 	})
+
+	await Notification.createNewAssessmentNotifications(
+		course.course_id,
+		title,
+		user.id,
+		course.title,
+		course.teacher_id,
+	)
 	res.status(201).json(assessment)
 }
 
@@ -162,6 +171,15 @@ const updateAssessment = async (req, res) => {
 	})
 	if (!assessment)
 		return res.status(404).json({ error: 'Assessment not found' })
+
+	await Notification.createAssessmentUpdatedNotifications(
+		course.course_id,
+		title,
+		user.id,
+		course.title,
+		course.teacher_id,
+	)
+
 	res.json(assessment)
 }
 
@@ -197,6 +215,15 @@ const deleteAssessment = async (req, res) => {
 
 	const deleted = await Assessment.deleteById(req.params.id)
 	if (!deleted) return res.status(404).json({ error: 'Assessment not found' })
+
+	await Notification.createAssessmentDeletedNotifications(
+		course.course_id,
+		foundAssessment.title,
+		user.id,
+		course.title,
+		course.teacher_id,
+	)
+
 	res.json({ success: true })
 }
 
@@ -247,6 +274,13 @@ const submitAssessment = async (req, res) => {
 
 	if (!response)
 		return res.status(500).json({ error: 'Failed to submit assessment' })
+
+	await Notification.createQuizSubmittedNotification(
+		course.teacher_id,
+		assessment.title,
+		lesson.title,
+		course.title,
+	)
 
 	res.json({
 		...response,
@@ -394,6 +428,11 @@ const gradeOpenText = async (req, res) => {
 		},
 	)
 
+	await Notification.createQuizGradedNotification(
+		assessment.title,
+		course.title,
+		responseRecord.user_id,
+	)
 	res.json(updated)
 }
 

@@ -182,6 +182,11 @@ CREATE TABLE IF NOT EXISTS notifications (
 			'quiz_graded',
 			'new_quiz_available',
 			'new_lesson_available',
+			'quiz_updated',
+			'quiz_deleted',
+			'participant_assigned',
+			'trainer_assigned',
+			'quiz_submitted',
 			'reminder'
 		)
 	),
