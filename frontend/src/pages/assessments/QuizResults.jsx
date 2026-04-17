@@ -230,17 +230,15 @@ const QuizResults = () => {
 
 				{surveyQuestions.length > 0 && (
 					<div className='mb-10'>
-						<h2 className='text-xl font-bold mb-4'>
-							{t('Survey Results')}
-						</h2>
-
-						<div className='overflow-x-auto bg-white border border-border-color rounded-xl'>
+						<h2 className='text-xl font-bold mb-4'>{t('Survey Results')}</h2>
+						<div className='relative'>
+							<div className='overflow-x-auto w-full bg-white border border-border-color rounded-xl relative'>
 							<table className='w-full'>
 								<thead>
 									<tr className='bg-gray-50 border-b'>
-										{/* ROW HEADER = STUDENT */}
+											{/* ROW HEADER = PARTICIPANT */}
 										<th className='px-4 py-3 text-left w-[200px]'>
-											{t('Student')}
+												{t('Participant')}
 										</th>
 
 										{/* COLUMNS = CATEGORIES */}
@@ -288,6 +286,8 @@ const QuizResults = () => {
 									))}
 								</tbody>
 							</table>
+							</div>
+							<div className='pointer-events-none absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent rounded-r-xl border-r border-t border-b border-border-color'></div>
 						</div>
 					</div>
 				)}
@@ -300,22 +300,27 @@ const QuizResults = () => {
 						</p>
 					</div>
 				) : (
-					<div className='bg-white border border-border-color rounded-xl overflow-hidden shadow-sm'>
+					<div className='relative'>
+						<div className='bg-white border border-border-color rounded-xl overflow-x-auto shadow-sm relative'>
 						<table className='w-full'>
 							<thead>
 								<tr className='bg-gray-50 border-b border-border-color'>
 									<th className='text-left px-6 py-4 text-sm font-semibold text-gray-600'>
-										{t('Student')}
+											{t('Participant')}
 									</th>
 									<th className='text-left px-6 py-4 text-sm font-semibold text-gray-600'>
 										{t('Email')}
 									</th>
+										{surveyQuestions.length === 0 && (
+											<>
 									<th className='text-center px-6 py-4 text-sm font-semibold text-gray-600'>
 										{t('Score')}
 									</th>
 									<th className='text-center px-6 py-4 text-sm font-semibold text-gray-600'>
 										{t('Percentage')}
 									</th>
+											</>
+										)}
 									<th className='text-right px-6 py-4 text-sm font-semibold text-gray-600'>
 										{t('Submitted')}
 									</th>
@@ -348,6 +353,8 @@ const QuizResults = () => {
 												<td className='px-6 py-4 text-gray-600 text-sm'>
 													{r.email}
 												</td>
+													{surveyQuestions.length === 0 && (
+														<>
 												<td className='px-6 py-4 text-center font-bold'>
 													{isPending ? (
 														<span className='text-secondary text-sm font-semibold'>
@@ -386,6 +393,8 @@ const QuizResults = () => {
 														</span>
 													)}
 												</td>
+														</>
+													)}
 												<td className='px-6 py-4 text-right text-sm text-gray-500'>
 													<div className='flex items-center justify-end gap-2'>
 														{new Date(r.submitted_at).toLocaleDateString(
@@ -494,6 +503,8 @@ const QuizResults = () => {
 								})}
 							</tbody>
 						</table>
+						</div>
+						<div className='pointer-events-none absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent rounded-r-xl border-r border-t border-b border-border-color'></div>
 					</div>
 				)}
 			</div>
