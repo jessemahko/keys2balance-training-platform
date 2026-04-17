@@ -422,6 +422,7 @@ const getNavigationItems = (userRole) => {
 			to: '/manage-trainers',
 			icon: ManageAccountsRoundedIcon,
 		})
+		items.splice(1, 1) // Remove Announcements for admin
 	}
 
 	items.push({
