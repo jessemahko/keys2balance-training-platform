@@ -387,7 +387,13 @@
 	"Username must be at least 5 characters": "Användarnamnet måste vara minst 5 tecken",
 	"View Results →": "Visa resultat →",
 	"View Submission →": "Visa inlämning →",
+	"Survey Results": "Enkätresultat",
+	"Participant": "Deltagare",
+	"Delete Course": "Ta bort kurs",
+	"This will permanently delete the course and its lessons.": "Detta kommer permanent att radera kursen och dess lektioner.",
+	"To confirm, type the course title exactly:": "För att bekräfta, skriv kursens titel exakt:",
+	"Confirm Delete": "Bekräfta borttagning",
+	"Type course title to confirm": "Skriv kursens titel för att bekräfta",
 	"e.g. Class Recording - Week 1": "t.ex. Klassinspelning - Vecka 1",
 	"eg. example@example.com": "t.ex. example@example.com"
 }
-

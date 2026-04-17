@@ -387,7 +387,13 @@
 	"Username must be at least 5 characters": "Käyttäjänimen on oltava vähintään 5 merkkiä",
 	"View Results →": "Näytä tulokset →",
 	"View Submission →": "Näytä palautus →",
+	"Survey Results": "Kyselyn tulokset",
+	"Participant": "Osallistuja",
+	"Delete Course": "Poista kurssi",
+	"This will permanently delete the course and its lessons.": "Tämä poistaa pysyvästi kurssin ja sen oppitunnit.",
+	"To confirm, type the course title exactly:": "Vahvista kirjoittamalla kurssin nimi täsmälleen:",
+	"Confirm Delete": "Vahvista poisto",
+	"Type course title to confirm": "Kirjoita kurssin nimi vahvistaaksesi",
 	"e.g. Class Recording - Week 1": "esim. Tuntitallenne - Viikko 1",
 	"eg. example@example.com": "esim. example@example.com"
 }
-

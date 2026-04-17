@@ -403,5 +403,12 @@
 	"View Results →": "View Results →",
 	"View Submission →": "View Submission →",
 	"e.g. Class Recording - Week 1": "e.g. Class Recording - Week 1",
-	"eg. example@example.com": "eg. example@example.com"
+	"eg. example@example.com": "eg. example@example.com",
+	"Survey Results": "Survey Results",
+	"Participant": "Participant",
+	"Delete Course": "Delete Course",
+	"This will permanently delete the course and its lessons.": "This will permanently delete the course and its lessons.",
+	"To confirm, type the course title exactly:": "To confirm, type the course title exactly:",
+	"Confirm Delete": "Confirm Delete",
+	"Type course title to confirm": "Type course title to confirm"
 }
