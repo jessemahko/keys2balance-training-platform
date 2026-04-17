@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useDeferredValue, useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
@@ -51,6 +51,14 @@ const CourseLabel = () => {
 			)
 		})
 	}, [lessons, normalizedLessonSearchTerm])
+
+	useEffect(() => {
+		document.title = course ? `${course.title}` : t('Course Dashboard')
+		if (location.state) {
+			window.history.replaceState({}, document.title)
+		}
+	}, [])
+
 	const hasActiveLessonSearch = lessonSearchTerm.trim().length > 0
 
 	const participants = Array.isArray(course.participants)
