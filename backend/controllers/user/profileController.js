@@ -100,6 +100,7 @@ profileRouter.get('/:userId/', async (req, res) => {
 		first_name: user.first_name,
 		last_name: user.last_name,
 		role: user.role,
+		is_verified: user.is_verified,
 		avatar_url: user.avatar_url,
 		gender: user.gender,
 		date_of_birth: user.date_of_birth,
