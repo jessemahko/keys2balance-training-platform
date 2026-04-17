@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUsersFn } from '../../reducers/usersReducer'
+import { setError } from '../../reducers/notiReducer'
 import { toggleEnrollmentFn } from '../../reducers/courseReducer'
 import { useTranslation } from 'react-i18next'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
@@ -23,7 +24,6 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 		) || {}
 	const allUsers = useSelector((state) => state.users) || []
 	const [loading, setLoading] = useState(false)
-	const [error, setError] = useState(null)
 	const [processingId, setProcessingId] = useState(null)
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebouncedSearch(searchTerm)
@@ -79,7 +79,7 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 				try {
 					dispatch(setUsersFn())
 				} catch (err) {
-					setError(t('Failed to load participants.'))
+					dispatch(setError(t('Failed to load participants.')))
 				} finally {
 					setLoading(false)
 				}
@@ -89,7 +89,7 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 			} else {
 				// Refresh quietly
 				dispatch(setUsersFn()).catch(() =>
-					setError(t('Failed to refresh participants.')),
+					dispatch(setError(t('Failed to refresh participants.'))),
 				)
 			}
 		}
@@ -117,7 +117,7 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 			const isEnrolled = enrolledUserIds.has(user.user_id)
 			await dispatch(toggleEnrollmentFn(course.course_id, user, isEnrolled))
 		} catch (err) {
-			setError(t('Failed to update enrollment.'))
+			dispatch(setError(t('Failed to update enrollment.')))
 			console.error('Failed to toggle enrollment', err)
 		} finally {
 			setProcessingId(null)
@@ -141,12 +141,6 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 						&times;
 					</button>
 				</div>
-
-				{error && (
-					<div className='bg-red-100 text-red-700 p-4 rounded-[14px] mb-4'>
-						{error}
-					</div>
-				)}
 
 				<div className='mb-4'>
 					<label className='grid gap-[0.45rem]'>

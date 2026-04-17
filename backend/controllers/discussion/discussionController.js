@@ -1,5 +1,6 @@
 const Discussion = require('../../models/discussion')
 const Course = require('../../models/courses')
+const Notification = require('../../models/notification')
 
 const getThreads = async (req, res) => {
 	const user = req.user
@@ -38,6 +39,11 @@ const createThread = async (req, res) => {
 		return res.status(400).json({ error: 'courseId is required' })
 	}
 
+	const course = await Course.findById(courseId)
+	if (!course) {
+		return res.status(404).json({ error: 'Course to create thread not found' })
+	}
+
 	const { title } = req.body
 	const trimmedTitle = typeof title === 'string' ? title.trim() : ''
 
@@ -53,6 +59,14 @@ const createThread = async (req, res) => {
 	if (!thread) {
 		return res.status(500).json({ error: 'Unable to create or load thread' })
 	}
+
+	await Notification.createThreadCreatedNotifications(
+		courseId,
+		user.id,
+		thread.title,
+		course.teacher_id,
+		course.title,
+	)
 
 	res.status(created ? 201 : 200).json(thread)
 }

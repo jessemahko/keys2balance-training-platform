@@ -410,5 +410,6 @@
 	"This will permanently delete the course and its lessons.": "This will permanently delete the course and its lessons.",
 	"To confirm, type the course title exactly:": "To confirm, type the course title exactly:",
 	"Confirm Delete": "Confirm Delete",
-	"Type course title to confirm": "Type course title to confirm"
+	"Type course title to confirm": "Type course title to confirm",
+	"Options:": "Options"
 }

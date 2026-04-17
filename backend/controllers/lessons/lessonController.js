@@ -1,5 +1,6 @@
 const Lesson = require('../../models/lesson')
 const Course = require('../../models/courses')
+const Notification = require('../../models/notification')
 const crypto = require('crypto')
 
 /**
@@ -62,6 +63,15 @@ const createLesson = async (req, res) => {
 		title,
 		order_index,
 	})
+
+	await Notification.createNewLessonNotifications(
+		course_id,
+		title,
+		user.id,
+		course.teacher_id,
+		course.title,
+	)
+
 	res.status(201).json(newLesson)
 }
 

@@ -1,4 +1,5 @@
 const User = require('../../models/user')
+const Notification = require('../../models/notification')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const sendEmail = require('../../utils/sendEmail') // utility to send emails
@@ -153,6 +154,8 @@ const updateUserRole = async (req, res) => {
 	}
 
 	const updatedUser = await User.findByIdAndUpdate(id, { role })
+	await Notification.createRoleAssignedNotification(id, role)
+
 	res.json(updatedUser)
 }
 

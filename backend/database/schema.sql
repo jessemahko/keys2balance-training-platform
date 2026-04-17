@@ -174,12 +174,19 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 	type TEXT NOT NULL CHECK (
 		type IN (
-			'welcome',
 			'course_assigned',
-			'lesson_completed',
-			'assessment_submitted',
-			'discussion_reply',
-			'admin_announcement',
+			'course_enrolled',
+			'course_removed',
+			'course_deleted',
+			'thread_created',
+			'quiz_graded',
+			'new_quiz_available',
+			'new_lesson_available',
+			'quiz_updated',
+			'quiz_deleted',
+			'participant_assigned',
+			'trainer_assigned',
+			'quiz_submitted',
 			'reminder'
 		)
 	),
