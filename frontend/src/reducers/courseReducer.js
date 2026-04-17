@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { isTokenExpired, getToken } from '../services/authen/login'
 import { rmUserFn } from './userReducer'
-import { getAllCourses, getCourseById, createCourse, updateCourse, enrollParticipant, removeParticipant } from '../services/courses'
+import { getAllCourses, getCourseById, createCourse, updateCourse, enrollParticipant, removeParticipant, deleteCourse } from '../services/courses'
 
 const initialState = {
 	items: [],
@@ -36,7 +36,14 @@ const coursesSlice = createSlice({
 		updateCourseAction(state, action) {
 			const index = state.items.findIndex((c) => String(c.course_id) === String(action.payload.course_id))
 			if (index !== -1) {
-				state.items[index] = action.payload
+				const mergedCourse = {
+					...state.items[index],
+					...action.payload,
+				}
+				if (Array.isArray(action.payload.lessons)) {
+					mergedCourse.lesson_count = action.payload.lessons.length
+				}
+				state.items[index] = mergedCourse
 			} else {
 				state.items.push(action.payload)
 			}
@@ -58,6 +65,12 @@ const coursesSlice = createSlice({
 				course.participants = course.participants.filter((p) => String(p.user_id) !== String(userId))
 			}
 		},
+		removeCourseAction(state, action) {
+			const courseId = action.payload
+			state.items = state.items.filter(
+				(c) => String(c.course_id) !== String(courseId),
+			)
+		},
 		setLoading(state, action) {
 			state.isLoading = action.payload
 		},
@@ -70,7 +83,7 @@ const coursesSlice = createSlice({
 	},
 })
 
-export const { setCourses, appendCourse, updateCourseAction, addParticipantAction, removeParticipantAction, setLoading, setLoadError, clearError } = coursesSlice.actions
+export const { setCourses, appendCourse, updateCourseAction, addParticipantAction, removeParticipantAction, removeCourseAction, setLoading, setLoadError, clearError } = coursesSlice.actions
 
 export const setCoursesFn = () => {
 	return async (dispatch) => {
@@ -134,6 +147,18 @@ export const toggleEnrollmentFn = (courseId, user, isCurrentlyEnrolled) => {
 			await enrollParticipant(courseId, user.user_id)
 			dispatch(addParticipantAction({ courseId, user }))
 		}
+	}
+}
+
+export const deleteCourseFn = (courseId) => {
+	return async (dispatch) => {
+		if (isTokenExpired(getToken())) {
+			dispatch(rmUserFn())
+			return
+		}
+
+		await deleteCourse(courseId)
+		dispatch(removeCourseAction(courseId))
 	}
 }
 

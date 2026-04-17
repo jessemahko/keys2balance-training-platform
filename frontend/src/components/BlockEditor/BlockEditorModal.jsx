@@ -49,8 +49,11 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
 		setFormData((prev) => ({ ...prev, [name]: value }))
 	}
 
-	const handleQuillChange = (content) => {
-		setFormData((prev) => ({ ...prev, content }))
+	const handleQuillChange = (_content, _delta, _source, editor) => {
+		// Persist a constrained rich-text representation (Quill Delta), not raw HTML.
+		// Rendering from Delta avoids executing HTML and prevents XSS by design.
+		const delta = editor?.getContents?.()
+		setFormData((prev) => ({ ...prev, delta }))
 	}
 
 	// File picker helpers
@@ -105,8 +108,8 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
 	const labelClass = 'block font-semibold text-gray-800 mb-2 text-[0.95rem]'
 
 	return (
-		<div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[1000] p-5 animate-in fade-in duration-200'>
-			<div className='bg-white w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom-8 duration-300'>
+		<div className='absolute inset-0 bg-black/40 backdrop-blur-sm flex z-[1000] p-3 sm:p-5 animate-in fade-in duration-200 overflow-auto'>
+			<div className='bg-white w-full m-auto max-w-[700px] max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl flex flex-col animate-in slide-in-from-bottom-8 duration-300 min-w-[300px] max-w-full'>
 				<div className='p-6 md:px-8 border-b border-border-color flex justify-between items-center sticky top-0 bg-white z-10'>
 					<h2 className='text-xl text-primary font-bold'>
 						{isNew ? t('Add New Content Block') : t('Edit Block')}
@@ -121,7 +124,7 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
 
 				<form
 					onSubmit={handleSubmit}
-					className='p-8 flex-1 flex flex-col gap-6'
+					className='p-4 sm:p-8 flex-1 flex flex-col gap-6'
 				>
 					{isNew && (
 						<div>
@@ -149,7 +152,8 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
 							<div className='bg-white rounded-lg overflow-hidden border border-border-color transition-all focus-within:border-primary focus-within:ring-[3px] focus-within:ring-primary/15 [&_.ql-toolbar]:border-none [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border-color [&_.ql-toolbar]:bg-[#fdfdfd] [&_.ql-toolbar]:px-3 [&_.ql-toolbar]:py-2 [&_.ql-container.ql-snow]:border-none [&_.ql-container.ql-snow]:min-h-[200px] [&_.ql-container.ql-snow]:font-sans [&_.ql-container.ql-snow]:text-base [&_.ql-editor]:break-words [&_.ql-editor]:leading-relaxed [&_.ql-editor]:text-gray-800 [&_.ql-editor.ql-blank::before]:text-[#bbb] [&_.ql-editor.ql-blank::before]:not-italic [&_.ql-snow_.ql-stroke]:stroke-gray-500 [&_.ql-snow_.ql-fill]:fill-gray-500 [&_.ql-snow_.ql-picker]:text-gray-500'>
 								<ReactQuill
 									theme='snow'
-									value={formData.content || ''}
+									// ReactQuill supports Delta values. Fall back to legacy HTML for older saved lessons.
+									value={formData.delta || formData.content || ''}
 									onChange={handleQuillChange}
 									modules={quillModules}
 									formats={quillFormats}
@@ -361,20 +365,20 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
 						</>
 					)}
 
-					<div className='flex justify-end gap-3 mt-auto pt-4 border-t border-border-color'>
-						<button
-							type='button'
-							onClick={onClose}
-							className='inline-flex items-center justify-center bg-transparent text-gray-800 px-6 py-2.5 rounded-lg border border-border-color font-semibold cursor-pointer transition-colors hover:bg-sidebar-bg'
-						>
-							{t('Cancel')}
-						</button>
+					<div className='flex flex-col sm:flex-row gap-4 pt-4 border-t border-border-color'>
 						<button
 							type='submit'
-							className='inline-flex items-center justify-center bg-primary text-white px-6 py-2.5 rounded-lg border-none font-semibold cursor-pointer transition-all shadow-md hover:bg-[#3f356d] hover:shadow-lg hover:-translate-y-[1px]'
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1 cursor-pointer'
 						>
 							<Save size={18} className='mr-2' />
 							{t('Save Block')}
+						</button>
+						<button
+							type='button'
+							onClick={onClose}
+							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 flex-1 cursor-pointer'
+						>
+							{t('Cancel')}
 						</button>
 					</div>
 				</form>

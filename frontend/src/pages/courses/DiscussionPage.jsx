@@ -148,7 +148,7 @@ const DiscussionPage = () => {
 			<div
 				className={`${activeThreadId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#f8fafc] min-w-0`}
 			>
-				<header className='p-6 pl-[4.5rem] md:pl-6 bg-white border-b border-[#e2e8f0] flex items-center gap-4'>
+				<header className='p-4 sm:p-6 pl-[3rem] sm:pl-[4.5rem] md:pl-6 bg-white border-b border-[#e2e8f0] flex items-center gap-3 sm:gap-4 min-w-0'>
 					{activeThreadId && (
 						<button
 							className='md:hidden p-2 -ml-2 rounded-full cursor-pointer hover:bg-[#f1f5f9] flex items-center justify-center border-none bg-transparent'
@@ -166,7 +166,7 @@ const DiscussionPage = () => {
 				<div className='flex-1 flex flex-col overflow-hidden relative'>
 					{activeThread ? (
 						<>
-							<div className='flex-1 overflow-y-auto p-8 flex flex-col gap-5'>
+							<div className='flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col gap-5'>
 								{(activeThread.messages || []).length === 0 ? (
 									<div className='flex flex-col items-center justify-center h-full text-[#64748b]'>
 										<p>{t('No messages yet. Start the conversation!')}</p>
@@ -188,7 +188,7 @@ const DiscussionPage = () => {
 										return (
 											<div
 												key={msg.message_id}
-												className={`flex gap-3 max-w-[80%] ${isOwn ? 'self-end flex-row-reverse' : ''}`}
+												className={`flex gap-3 max-w-[90%] sm:max-w-[80%] ${isOwn ? 'self-end flex-row-reverse' : ''}`}
 											>
 												{!isOwn && (
 													<div
@@ -239,7 +239,7 @@ const DiscussionPage = () => {
 							</div>
 
 							<form
-								className='p-[1.5rem_2rem] bg-white border-t border-[#e2e8f0] flex gap-4'
+								className='p-3 sm:p-[1.5rem_2rem] bg-white border-t border-[#e2e8f0] flex gap-3 sm:gap-4'
 								onSubmit={handleSendMessage}
 							>
 								<textarea

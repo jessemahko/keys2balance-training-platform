@@ -115,10 +115,9 @@ const Dashboard = () => {
 				onDeleteLesson={canManageCourse ? handleDeleteLesson : null}
 			/>
 
-			<main
-				className={`flex-1 overflow-y-auto relative h-screen w-full ${isDiscussionPage ? '' : 'p-6 md:p-8 lg:p-10'}`}
-			>
-				<Routes>
+			<main className='flex-1 relative h-screen w-full min-w-0'>
+				<div className={`h-full w-full overflow-y-auto ${isDiscussionPage ? '' : 'p-4 sm:p-6 md:p-8 lg:p-10'}`}>
+					<Routes>
 					<Route path='/dashboard' element={<DashboardHome />} />
 					<Route path='courses/new' element={<CourseForm />} />
 					<Route path='courses/:courseId/*' element={<CourseRoutes />} />
@@ -139,15 +138,16 @@ const Dashboard = () => {
 
 					<Route path='*' element={<Navigate replace to='/dashboard' />} />
 				</Routes>
-			</main>
+				</div>
 
-			<LessonTitleModal
-				isOpen={isLessonModalOpen}
-				onClose={() => setIsLessonModalOpen(false)}
-				onConfirm={handleConfirmLesson}
-				initialTitle={selectedLesson?.title || ''}
-				isEdit={lessonModalMode === 'edit'}
-			/>
+				<LessonTitleModal
+					isOpen={isLessonModalOpen}
+					onClose={() => setIsLessonModalOpen(false)}
+					onConfirm={handleConfirmLesson}
+					initialTitle={selectedLesson?.title || ''}
+					isEdit={lessonModalMode === 'edit'}
+				/>
+			</main>
 		</div>
 	)
 }

@@ -69,8 +69,8 @@ const CourseLabel = () => {
 		: profilePicNull
 
 	return (
-		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto'>
-			<div className='grid gap-[0.4rem]'>
+		<div className='grid gap-[1.35rem] max-w-[1220px] mx-auto min-w-0'>
+			<div className='grid gap-[0.4rem] ml-12 md:ml-0'>
 				<Link
 					to='/dashboard'
 					className='flex items-center gap-2 text-[#4d458d] font-bold border-b-2 border-transparent hover:border-[#4d458d] w-max'
@@ -81,8 +81,8 @@ const CourseLabel = () => {
 				<h1 className='m-0 text-[#222] font-bold text-2xl'>{course.title}</h1>
 			</div>
 
-			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4'>
-				<p className='m-0 text-[#666] leading-relaxed'>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 overflow-hidden'>
+				<p className='m-0 text-[#666] leading-relaxed break-words overflow-hidden'>
 					{course.description ||
 						t('Access your course contents and track your progress below.')}
 				</p>
@@ -120,13 +120,13 @@ const CourseLabel = () => {
 							<>
 								<Link
 									to={`/courses/${course.course_id}/edit`}
-									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-white text-[#0f172a] border border-[#cbd5e1] transition-colors hover:bg-gray-50 no-underline'
+									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#EBE8F5] text-[#4f4965] border-none transition-opacity hover:opacity-90 no-underline'
 								>
 									{t('Edit Course')}
 								</Link>
 								<button
 									onClick={() => setIsParticipantModalOpen(true)}
-									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#0f172a] text-white border border-[#cbd5e1] transition-opacity hover:opacity-90'
+									className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 cursor-pointer'
 								>
 									{t('Manage Participants')}
 								</button>

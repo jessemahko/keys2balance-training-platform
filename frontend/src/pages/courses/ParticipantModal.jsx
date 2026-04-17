@@ -125,22 +125,28 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 	}
 
 	return (
-		<div className='fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]'>
+		<div className='absolute inset-0 bg-black/50 flex z-[1000] p-3 sm:p-5 overflow-auto'>
 			<div
-				className='bg-white p-8 rounded-lg w-[90%] max-w-[500px] max-h-[80vh] overflow-y-auto'
+				className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.14)] p-[1.3rem] w-full max-w-[560px] max-h-[80vh] overflow-y-auto min-w-[300px] max-w-full m-auto'
 				ref={modalRef}
 			>
 				<div className='flex justify-between items-center mb-4'>
-					<h2 className='m-0'>{t('Manage Participants')}</h2>
+					<h2 className='m-0 text-2xl font-bold text-[#514587]'>
+						{t('Manage Participants')}
+					</h2>
 					<button
 						onClick={onClose}
-						className='cursor-pointer bg-transparent border-none text-2xl text-black'
+						className='cursor-pointer bg-transparent border-none w-10 h-10 rounded-full text-2xl text-[#4f4965] flex items-center justify-center transition-colors hover:bg-[#ebe8f5] hover:text-[#514587]'
 					>
 						&times;
 					</button>
 				</div>
 
-				{error && <p className='text-red-500'>{error}</p>}
+				{error && (
+					<div className='bg-red-100 text-red-700 p-4 rounded-[14px] mb-4'>
+						{error}
+					</div>
+				)}
 
 				<div className='mb-4'>
 					<label className='grid gap-[0.45rem]'>
@@ -149,7 +155,7 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 						</span>
 						<input
 							type='search'
-							className='w-full p-[0.85rem_1rem] border border-[#4d458d]/[0.16] rounded-[14px] bg-[#f8f8fb] text-[#222] focus:outline-none focus:ring-2 focus:ring-[#5f4b96]/20 focus:border-[#5f4b96]'
+							className='w-full p-[0.85rem_1rem] border border-[#4d458d]/[0.16] rounded-[14px] bg-[#f8f8fb] text-[#222] focus:outline-none focus:ring-2 focus:ring-[#5f4b96]/20 focus:border-[#5f4b96] transition-all'
 							value={searchTerm}
 							onChange={(event) => setSearchTerm(event.target.value)}
 							placeholder={t('Search by name or email')}
@@ -158,7 +164,11 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 				</div>
 
 				{loading ? (
-					<p>{t('Loading participants...')}</p>
+					<div className='flex justify-center items-center h-24'>
+						<p className='text-gray-500 font-medium'>
+							{t('Loading participants...')}
+						</p>
+					</div>
 				) : (
 					<ul className='list-none p-0 m-0'>
 						{filteredUsers.length === 0 ? (
@@ -178,7 +188,7 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 							return (
 								<li
 									key={user.user_id}
-									className='flex justify-between items-center py-3 border-b border-gray-100 last:border-0'
+									className='flex justify-between items-center py-3 border-b border-gray-100 last:border-0 gap-4'
 								>
 									<div className='flex flex-1 items-center gap-3 min-w-0 mr-5'>
 										<div
@@ -213,14 +223,14 @@ const ParticipantModal = ({ isOpen, onClose }) => {
 									<button
 										onClick={() => handleToggleEnrollment(user)}
 										disabled={isProcessing}
-										className={`px-4 py-2 rounded font-bold border-none transition-colors ${
+										className={`inline-flex items-center justify-center px-4 py-2 rounded-full font-bold border-none transition-opacity ${
 											isProcessing
 												? 'cursor-not-allowed opacity-50'
 												: 'cursor-pointer'
 										} ${
 											isEnrolled
-												? 'bg-red-100 text-red-800 hover:bg-red-200'
-												: 'bg-indigo-100 text-indigo-900 hover:bg-indigo-200'
+												? 'bg-[#EBE8F5] text-[#4f4965] hover:opacity-90'
+												: 'bg-[#514587] text-white hover:opacity-90'
 										}`}
 									>
 										{isProcessing

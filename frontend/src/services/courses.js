@@ -49,6 +49,11 @@ const removeParticipant = async (courseId, userId) => {
 	return response.data
 }
 
+const deleteCourse = async (courseId) => {
+	const response = await axios.delete(`${baseUrl}/${courseId}`, getConfig())
+	return response.data
+}
+
 export {
 	getAllCourses,
 	getCourseById,
@@ -56,4 +61,5 @@ export {
 	updateCourse,
 	enrollParticipant,
 	removeParticipant,
+	deleteCourse,
 }

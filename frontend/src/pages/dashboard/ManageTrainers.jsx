@@ -227,9 +227,9 @@ const ManageTrainers = () => {
 			: profilePicNull
 
 	return (
-		<div className='max-w-5xl mx-auto py-6 px-4 flex flex-col gap-5'>
+		<div className='max-w-5xl mx-auto py-6 px-2 sm:px-4 flex flex-col gap-5 min-w-0'>
 			{/* Header + Search card */}
-			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-[0.85rem] min-w-[320px]'>
+			<section className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-[0.85rem] w-full min-w-[300px] max-w-full'>
 				<h2 className='text-2xl font-bold text-[#514587] m-0'>
 					{t('Manage Trainers')}
 				</h2>
@@ -292,7 +292,7 @@ const ManageTrainers = () => {
 					{filteredUsers.map((user) => (
 						<div
 							key={user.user_id}
-							className='flex items-center p-5 bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] rounded-[18px] transition-all duration-180 ease-in-out hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] gap-4 min-w-[320px]'
+							className='flex items-center p-3 sm:p-5 bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] rounded-[18px] transition-all duration-180 ease-in-out hover:shadow-[0_16px_32px_rgba(90,90,90,0.12)] gap-3 sm:gap-4 w-full min-w-[300px] max-w-full'
 						>
 							<div className='flex flex-1 items-center gap-4 min-w-0'>
 								{/* Avatar */}
