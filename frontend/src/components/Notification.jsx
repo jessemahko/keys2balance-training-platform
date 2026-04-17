@@ -15,9 +15,9 @@ const Notification = ({ message, className, removeMessage }) => {
 		'z-10000 fixed flex text-center items-center gap-2 text-xl top-0 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg transition-transform duration-500 ease-in-out'
 	const colorStyles =
 		className === 'error'
-			? 'bg-red-500 text-white'
+			? 'bg-[#e3b465] text-white'
 			: className === 'notification'
-				? 'bg-green-500 text-white'
+				? 'bg-[#2ea49c] text-white'
 				: 'bg-gray-500 text-white'
 
 	return (
@@ -46,4 +46,3 @@ Notification.propTypes = {
 }
 
 export default Notification
-
