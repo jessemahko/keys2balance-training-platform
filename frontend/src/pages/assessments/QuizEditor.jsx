@@ -110,7 +110,9 @@ const QuizEditor = () => {
 		for (let i = 0; i < questions.length; i++) {
 			const q = questions[i]
 			if (!q.question.trim()) {
-				dispatch(setError(t('Question {{number}} is empty', { number: i + 1 }),5))
+				dispatch(
+					setError(t('Question {{number}} is empty', { number: i + 1 }), 5),
+				)
 				return
 			}
 			const qType = q.type || 'single_choice'
@@ -121,8 +123,8 @@ const QuizEditor = () => {
 					dispatch(
 						setError(
 							t('Question {{number}} requires a category', { number: i + 1 }),
-							5
-						)
+							5,
+						),
 					)
 					return
 				}
@@ -130,9 +132,11 @@ const QuizEditor = () => {
 				if (filledOptions.length === 0) {
 					dispatch(
 						setError(
-							t('Question {{number}} requires at least 1 option', { number: i + 1 }),
-							5
-						)
+							t('Question {{number}} requires at least 1 option', {
+								number: i + 1,
+							}),
+							5,
+						),
 					)
 					return
 				}
@@ -141,27 +145,38 @@ const QuizEditor = () => {
 
 			const filledOptions = q.options.filter((o) => o.trim())
 			if (filledOptions.length < 2) {
-				dispatch(setError(
-					t('Question {{number}} needs at least 2 options', { number: i + 1 }),5
-				))
+				dispatch(
+					setError(
+						t('Question {{number}} needs at least 2 options', {
+							number: i + 1,
+						}),
+						5,
+					),
+				)
 				return
 			}
 			if (qType === 'multiple_choice') {
 				if (!Array.isArray(q.correct) || q.correct.length === 0) {
-					dispatch(setError(
-						t('Question {{number}} has no correct answers selected', {
-							number: i + 1,
-						}),5
-					))
+					dispatch(
+						setError(
+							t('Question {{number}} has no correct answers selected', {
+								number: i + 1,
+							}),
+							5,
+						),
+					)
 					return
 				}
 			} else {
 				if (!q.correct) {
-					dispatch(setError(
-						t('Question {{number}} has no correct answer selected', {
-							number: i + 1,
-						}),5
-					))
+					dispatch(
+						setError(
+							t('Question {{number}} has no correct answer selected', {
+								number: i + 1,
+							}),
+							5,
+						),
+					)
 					return
 				}
 			}
@@ -210,7 +225,9 @@ const QuizEditor = () => {
 
 			navigate(`/courses/${courseId}/lessons/${lessonId}`)
 		} catch (err) {
-			dispatch(setError(err?.response?.data?.error || t('Failed to save quiz'),5))
+			dispatch(
+				setError(err?.response?.data?.error || t('Failed to save quiz'), 5),
+			)
 		} finally {
 			setSaving(false)
 		}
@@ -380,9 +397,12 @@ const QuizEditor = () => {
 								<>
 									<div className='flex flex-col gap-2 mb-4'>
 										<label className='text-sm font-semibold text-gray-600'>
-											{(q.type || 'single_choice') === 'multiple_choice'
-												? t('Options (check all correct answers):')
-												: t('Options (click radio to set correct answer):')}
+											{q.type === 'multiple_choice' &&
+												t('Options (check all correct answers):')}
+											{q.type == 'single_choice' &&
+												t('Options (click radio to set correct answer):')}
+
+											{q.type === 'survey' && `${t('Options')}:`}
 										</label>
 										{q.options.map((opt, oIndex) => (
 											<div key={oIndex} className='flex items-center gap-3'>
@@ -398,7 +418,9 @@ const QuizEditor = () => {
 														}
 														onChange={() => {
 															if (!opt.trim()) return
-															const current = Array.isArray(q.correct) ? q.correct : []
+															const current = Array.isArray(q.correct)
+																? q.correct
+																: []
 															const updated = current.includes(opt)
 																? current.filter((c) => c !== opt)
 																: [...current, opt]
@@ -412,7 +434,9 @@ const QuizEditor = () => {
 														type='radio'
 														name={`correct-${q.id}`}
 														checked={q.correct === opt && opt !== ''}
-														onChange={() => updateQuestion(qIndex, 'correct', opt)}
+														onChange={() =>
+															updateQuestion(qIndex, 'correct', opt)
+														}
 														disabled={!opt.trim()}
 														className='w-4 h-4 accent-primary'
 													/>
