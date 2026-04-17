@@ -11,6 +11,12 @@ const calculateScore = (questions, answers) => {
 	for (const q of questions) {
 		const type = q.type || 'single_choice'
 
+		if (type === 'survey') {
+			maxScore += 1
+			autoScore += 1
+			continue
+		}
+		
 		if (type === 'open_text') {
 			maxScore += q.max_points || 1
 			hasOpenText = true

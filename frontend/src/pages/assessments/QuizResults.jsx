@@ -73,28 +73,41 @@ const QuizResults = () => {
 	const { assessment, responses } = data
 	const questions = assessment.assessment_json?.questions || []
 	const surveyQuestions = questions.filter((q) => q.type === 'survey')
-	const categoryTable = {}
+	const studentTable = {}
 	responses.forEach((r) => {
 		const answers = r.answers_json?.answers || {}
+		const id = String(r.user_id)
+
+		if (!studentTable[id]) {
+			studentTable[id] = {
+				name: `${r.first_name} ${r.last_name}`,
+				categories: {},
+			}
+		}
+
 		surveyQuestions.forEach((q) => {
 			const category = q.category || 'General'
-			const selected = answers[q.id] || []
+			const selected = Array.isArray(answers[q.id]) ? answers[q.id] : []
 
-			if (!categoryTable[category]) {
-				categoryTable[category] = {}
+			if (!studentTable[id].categories[category]) {
+				studentTable[id].categories[category] = 0
 			}
-			categoryTable[category][r.user_id] = Array.isArray(selected)
-				? selected.length
-				: 0
+
+			studentTable[id].categories[category] += selected.length
 		})
 	})
-	let sortedCategories = Object.entries(categoryTable)
-	if (surveySort.userId) {
-	sortedCategories = sortedCategories.sort(([catA, usersA], [catB, usersB]) => {
-		const valA = usersA[surveySort.userId] ?? 0
-		const valB = usersB[surveySort.userId] ?? 0
-		return surveySort.asc ? valA - valB : valB - valA
-	})
+	const categories = Array.from(
+		new Set(surveyQuestions.map((q) => q.category || 'General'))
+	)
+	const sortedCategories = [...categories]
+	if (surveySort.userId && studentTable[surveySort.userId]) {
+		sortedCategories.sort((a, b) => {
+			const valA = studentTable[surveySort.userId].categories[a] ?? 0
+			const valB = studentTable[surveySort.userId].categories[b] ?? 0
+			return surveySort.asc
+				? valA - valB   // ASC
+				: valB - valA   // DESC
+		})
 	}
 	const openTextQuestions = questions.filter(
 		(q) => (q.type || 'single_choice') === 'open_text',
@@ -225,39 +238,53 @@ const QuizResults = () => {
 							<table className='w-full'>
 								<thead>
 									<tr className='bg-gray-50 border-b'>
-										<th className='px-4 py-3 text-left'>
-											{t('Category')}
+										{/* ROW HEADER = STUDENT */}
+										<th className='px-4 py-3 text-left w-[200px]'>
+											{t('Student')}
 										</th>
-										{responses
-										.filter((r) => r.user_id === user.id || user.role !== 'student')
-										.map((r) => (
-											<th
-											key={r.user_id}
-											className='px-4 py-3 text-center cursor-pointer select-none'
-											onClick={() =>
-												setSurveySort((prev) => ({
-												userId: r.user_id,
-												asc: prev.userId === r.user_id ? !prev.asc : false, // first click = desc
-												}))
-											}
-											>
-											{r.first_name} {r.last_name}
-											{surveySort.userId === r.user_id &&
-												(surveySort.asc ? ' ▲' : ' ▼')}
+
+										{/* COLUMNS = CATEGORIES */}
+										{sortedCategories.map((cat) => (
+											<th key={cat} className='px-4 py-3 text-center whitespace-nowrap'>
+												{cat}
 											</th>
 										))}
 									</tr>
 								</thead>
+
 								<tbody>
-									{sortedCategories.map(([category, users]) => (
-									<tr key={category} className='border-b'>
-										<td className='px-4 py-3 font-semibold'>{category}</td>
-										{responses.map((r) => (
-										<td key={r.user_id} className='px-4 py-3 text-center'>
-											{users[r.user_id] ?? 0}
-										</td>
-										))}
-									</tr>
+									{/* ROWS = STUDENTS */}
+									{Object.entries(studentTable).map(([userId, data]) => (
+										<tr key={userId} className='border-b'>
+											<td
+												className="px-4 py-3 font-semibold cursor-pointer select-none"
+												onClick={() =>
+													setSurveySort((prev) => {
+														const isSame = prev.userId === userId
+
+														return {
+															userId: String(userId),
+															asc: isSame ? !prev.asc : false, // first click = desc, second = asc
+														}
+													})
+												}
+											>
+												{data.name}
+
+												{surveySort.userId === userId && (
+													<span className="ml-2 text-xs">
+														{surveySort.asc ? '▲' : '▼'}
+													</span>
+												)}
+											</td>
+
+											{/* VALUES PER CATEGORY */}
+											{sortedCategories.map((cat) => (
+												<td key={cat} className='px-4 py-3 text-center'>
+													{data.categories[cat] ?? 0}
+												</td>
+											))}
+										</tr>
 									))}
 								</tbody>
 							</table>

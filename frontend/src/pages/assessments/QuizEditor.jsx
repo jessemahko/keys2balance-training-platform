@@ -32,6 +32,7 @@ const QuizEditor = () => {
 	const [saving, setSaving] = useState(false)
 	const [error, setLocalError] = useState(null)
 	const [isLoading, setIsLoading] = useState(!!assessmentId)
+	const [description, setDescription] = useState('')
 
 	useEffect(() => {
 		if (assessmentId) {
@@ -39,6 +40,7 @@ const QuizEditor = () => {
 				try {
 					const data = await assessmentService.getById(assessmentId)
 					setTitle(data.title)
+					setDescription(data.description || '')
 					const q = data.assessment_json?.questions || []
 					setQuestions(q.length > 0 ? q : [emptyQuestion()])
 				} catch (err) {
@@ -168,6 +170,7 @@ const QuizEditor = () => {
 		setSaving(true)
 		try {
 			const assessmentJson = {
+				description,
 				questions: questions.map((q, i) => {
 					const base = {
 						id: i + 1,
@@ -260,6 +263,20 @@ const QuizEditor = () => {
 						onChange={(e) => setTitle(e.target.value)}
 						placeholder={t('e.g. Leadership Fundamentals Quiz')}
 						className='w-full px-4 py-3 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20'
+					/>
+				</div>
+
+				{/* Quiz description*/}
+				<div className='mb-8'>
+					<label className='block font-semibold text-gray-800 mb-2'>
+						{t('Description')} ({t('optional')})
+					</label>
+					<textarea
+						value={description}
+						onChange={(e) => setDescription(e.target.value)}
+						placeholder={t('Enter quiz description...')}
+						rows={3}
+						className='w-full px-4 py-3 border border-border-color rounded-lg text-base bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-y'
 					/>
 				</div>
 
