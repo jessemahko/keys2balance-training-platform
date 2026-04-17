@@ -160,13 +160,13 @@ const CourseLabel = () => {
 									className='w-full h-full object-cover'
 								/>
 							</div>
-							<div className='instructor-info'>
-								<div className='font-bold text-gray-800'>
+							<div className='instructor-info overflow-auto'>
+								<div className='font-bold text-gray-800 truncate'>
 									{[course.teacher.first_name, course.teacher.last_name]
 										.filter(Boolean)
 										.join(' ') || course.teacher.username}
 								</div>
-								<div className='text-sm text-gray-500'>
+								<div className='text-sm text-gray-500 truncate'>
 									{course.teacher.email}
 								</div>
 							</div>
