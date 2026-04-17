@@ -10,7 +10,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete'
 import DoneIcon from '@mui/icons-material/Done'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
-import { styles } from './style.js'
+import { styles } from '../style.js'
 
 const AnnouncementPage = () => {
 	const dispatch = useDispatch()
