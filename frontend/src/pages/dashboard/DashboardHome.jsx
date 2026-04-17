@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Link } from 'react-router-dom'
 import { normalizeSearchValue } from './dashboardHelpers'
@@ -32,6 +32,11 @@ const DashboardHome = () => {
 			)
 		})
 	}, [courses, normalizedSearchTerm])
+
+	useEffect(() => {
+		document.title = t('Dashboard')
+	}, [])
+
 	const hasActiveSearch = searchTerm.trim().length > 0
 
 	const userRole = user?.role || ''
@@ -162,7 +167,7 @@ const DashboardHome = () => {
 										isDeleting
 											? 'bg-[#514587] text-white cursor-not-allowed opacity-70'
 											: deleteConfirmText.trim() ===
-													String(courseToDelete.title || '').trim()
+												  String(courseToDelete.title || '').trim()
 												? 'bg-[#514587] text-white cursor-pointer hover:opacity-90'
 												: 'bg-[#514587] text-white opacity-50 cursor-not-allowed'
 									}`}
