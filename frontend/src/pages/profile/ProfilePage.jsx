@@ -38,8 +38,8 @@ const ProfilePage = () => {
 					input.focus()
 				}
 			}, 0)
+			setIsEditingEmail(true)
 		}
-		setIsEditingEmail(true)
 		if (!user.phone || !user.first_name || !user.last_name) {
 			setIsEditting(true)
 		}
