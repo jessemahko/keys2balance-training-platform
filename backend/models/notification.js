@@ -68,6 +68,8 @@ const deleteNotification = async (notificationId) => {
 }
 
 const insertNotifications = async (notifications) => {
+	if (!notifications.length) return
+
 	const values = []
 	const placeholders = notifications
 		.map((n, i) => {
