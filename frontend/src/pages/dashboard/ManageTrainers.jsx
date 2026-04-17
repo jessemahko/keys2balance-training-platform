@@ -8,6 +8,7 @@ import { useDebouncedSearch } from '../../hooks/useDebouncedSearch'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import { API_BASE_URL } from '../../services/apiConfig'
 import profilePicNull from '../../assets/profile-picture-null.png'
+import { styles } from '../style.js'
 
 const ROLE_FILTERS = [
 	{ value: 'all', label: 'All' },
@@ -277,8 +278,9 @@ const ManageTrainers = () => {
 
 			{/* User cards */}
 			{loading ? (
-				<div className='flex justify-center items-center h-40'>
-					<p className='text-gray-500 font-medium'>{t('Loading users...')}</p>
+				<div style={styles.loadingContainer}>
+					<div style={styles.loadingSpinner}></div>
+					<p style={styles.loadingText}>{t('Loading users...')}</p>
 				</div>
 			) : filteredUsers.length === 0 ? (
 				<div className='rounded-[18px] bg-white border border-[#4a4a4a]/[0.08] shadow-[0_10px_30px_rgba(90,90,90,0.08)] p-[1.3rem] flex flex-col gap-4 items-center text-center'>

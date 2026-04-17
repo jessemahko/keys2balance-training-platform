@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { styles } from './pages/style.js'
 
 import {
 	BrowserRouter as Router,
@@ -69,7 +70,13 @@ const App = () => {
 		setIsLoading(false)
 	}, [])
 
-	if (isLoading) return <div>{t('Loading...')}</div>
+	if (isLoading)
+		return (
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading...')}</p>
+			</div>
+		)
 
 	return (
 		<div className='min-h-screen bg-slate-100 text-slate-950'>

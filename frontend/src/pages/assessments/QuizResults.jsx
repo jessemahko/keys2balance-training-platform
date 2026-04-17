@@ -10,6 +10,7 @@ import {
 	ChevronUp,
 } from 'lucide-react'
 import * as assessmentService from '../../services/assessments'
+import { styles } from '../style.js'
 import { useTranslation } from 'react-i18next'
 
 const QuizResults = () => {
@@ -53,8 +54,9 @@ const QuizResults = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex items-center justify-center h-full text-gray-500'>
-				{t('Loading results...')}
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading results...')}</p>
 			</div>
 		)
 	}

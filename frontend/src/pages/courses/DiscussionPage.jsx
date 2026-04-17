@@ -16,6 +16,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import profilePicNull from '../../assets/profile-picture-null.png'
 import { API_BASE_URL } from '../../services/apiConfig'
 import { useTranslation } from 'react-i18next'
+import { styles } from '../style.js'
 
 const DiscussionPage = () => {
 	const { t } = useTranslation()
@@ -88,8 +89,9 @@ const DiscussionPage = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex items-center justify-center h-full text-[#64748b]'>
-				{t('Loading discussion...')}
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading discussion...')}</p>
 			</div>
 		)
 	}

@@ -6,6 +6,7 @@ import * as assessmentService from '../../services/assessments'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { setNotification, setError } from '../../reducers/notiReducer'
+import { styles } from '../style.js'
 
 const emptyQuestion = () => ({
 	id: Date.now(),
@@ -235,8 +236,9 @@ const QuizEditor = () => {
 
 	if (isLoading) {
 		return (
-			<div className='flex items-center justify-center h-full text-gray-500'>
-				{t('Loading...')}
+			<div style={styles.loadingContainer}>
+				<div style={styles.loadingSpinner}></div>
+				<p style={styles.loadingText}>{t('Loading...')}</p>
 			</div>
 		)
 	}
