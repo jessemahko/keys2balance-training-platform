@@ -33,11 +33,16 @@ const Dashboard = () => {
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
 
-	const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+	const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+		return localStorage.getItem('sidebarOpen') === 'true'
+	})
 	const [isLessonModalOpen, setIsLessonModalOpen] = useState(false)
 	const [lessonModalMode, setLessonModalMode] = useState('create')
 	const [selectedLesson, setSelectedLesson] = useState(null)
 
+	useEffect(() => {
+		localStorage.setItem('sidebarOpen', isSidebarOpen)
+	}, [isSidebarOpen])
 	useEffect(() => {
 		dispatch(setCoursesFn())
 	}, [dispatch])
