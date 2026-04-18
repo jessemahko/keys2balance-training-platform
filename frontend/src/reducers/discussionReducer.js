@@ -66,10 +66,8 @@ export const fetchThreadsFn = (courseId) => {
 			dispatch(setThreads(sorted))
 
 			const { activeThreadId } = getState().discussion
-			if (sorted.length > 0 && !activeThreadId) {
-				dispatch(setActiveThread(sorted[0].thread_id))
-			} else if (activeThreadId) {
-				const stillExists = sorted.some(t => t.thread_id === activeThreadId)
+			if (activeThreadId) {
+				const stillExists = sorted.some((t) => t.thread_id === activeThreadId)
 				if (!stillExists) {
 					dispatch(setActiveThread(sorted[0]?.thread_id || null))
 				}
