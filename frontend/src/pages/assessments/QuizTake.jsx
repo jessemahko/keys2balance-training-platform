@@ -127,6 +127,7 @@ const QuizTake = () => {
 	}
 
 	const questions = assessment.assessment_json?.questions || []
+	const surveyQuestions = questions.filter((q) => q.type === 'survey')
 	const gradingStatus = result?.answers_json?.grading_status
 	const maxScore =
 		result?.answers_json?.max_score ??
@@ -140,8 +141,6 @@ const QuizTake = () => {
 	const total = maxScore
 	const computeCategoryScores = () => {
 		if (!result || !assessment) return {}
-
-		const questions = assessment.assessment_json?.questions || []
 		const answers = result.answers_json?.answers || {}
 
 		const categoryScores = {}
@@ -196,6 +195,8 @@ const QuizTake = () => {
 				</div>
 				{result && (
 					<div className='text-right'>
+						{surveyQuestions.length < questions.length && (
+							<>
 						<div className='text-sm text-gray-500 font-medium'>
 							{t('Your Score')}
 						</div>
@@ -209,6 +210,8 @@ const QuizTake = () => {
 							>
 								{score}/{total}
 							</div>
+								)}
+							</>
 						)}
 					</div>
 				)}
@@ -247,7 +250,8 @@ const QuizTake = () => {
 									Thank you for your answer!
 								</h2>
 								<p className='text-gray-600'>
-									{t('You scored {{score}} out of {{total}} ({{pct}}%)', {
+									{surveyQuestions.length < questions.length &&
+										t('You scored {{score}} out of {{total}} ({{pct}}%)', {
 										score,
 										total,
 										pct: total > 0 ? Math.round((score / total) * 100) : 100,
@@ -462,15 +466,16 @@ const QuizTake = () => {
 							{t('Your Survey Results')}
 						</h2>
 
-						<div className="overflow-x-auto">
-							<table className="w-full table-fixed border-2 border-black rounded-xl overflow-hidden border-separate border-spacing-0">
+						<div className='relative'>
+							<div className='overflow-x-auto w-full bg-white border border-border-color rounded-xl relative'>
+								<table className='w-full'>
 								<thead>
-									<tr>
-										<th className="px-4 py-3 border-b border-black text-left">
+										<tr className='bg-gray-50 border-b'>
+											<th className='px-4 py-3 text-left w-[200px]'>
 											{t('Category')}
 										</th>
 										<th
-										className="px-4 py-3 border-b border-black cursor-pointer select-none text-center"
+												className='px-4 py-3 text-center whitespace-nowrap'
 										onClick={() =>
 											setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
 										}
@@ -485,17 +490,17 @@ const QuizTake = () => {
 								</thead>
 								<tbody>
 									{sortedCategories.map(([category, score]) => (
-										<tr key={category}>
-											<td className="px-4 py-3 border-b border-black font-medium">
+											<tr className='border-b' key={category}>
+												<td className='px-4 py-3 font-semibold cursor-pointer select-none'>
 												{category}
 											</td>
-											<td className="px-4 py-3 border-b border-black text-center">
-												{score}
-											</td>
+												<td className='px-4 py-3 text-center'>{score}</td>
 										</tr>
 									))}
 								</tbody>
 							</table>
+							</div>
+							<div className='pointer-events-none absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent rounded-r-xl border-r border-t border-b border-border-color'></div>
 						</div>
 					</div>
 				)}

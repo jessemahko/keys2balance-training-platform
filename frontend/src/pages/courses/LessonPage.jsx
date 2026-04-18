@@ -277,6 +277,12 @@ const LessonPage = () => {
 										)
 									}
 								}
+								const questions = a.assessment_json?.questions || []
+								const surveyQuestions = questions.filter(
+									(q) => q.type === 'survey',
+								)
+
+								const hasNonSurvey = surveyQuestions.length < questions.length
 
 								return (
 									<div
@@ -293,6 +299,7 @@ const LessonPage = () => {
 												<h3 className='font-semibold text-gray-800'>
 													{a.title}
 												</h3>
+												{hasNonSurvey && (
 												<p className='text-sm text-gray-500'>
 													{a.assessment_json?.questions?.length || 0}{' '}
 													{t('questions')}
@@ -303,6 +310,7 @@ const LessonPage = () => {
 																a.my_response.answers_json?.total_questions,
 														})}
 												</p>
+												)}
 											</div>
 										</div>
 										<div className="flex items-center gap-3">

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { setError } from '../../reducers/notiReducer.js'
+import { useDispatch } from 'react-redux'
 import {
 	ArrowLeft,
 	Users,
@@ -17,6 +19,7 @@ const QuizResults = () => {
 	const { t } = useTranslation()
 	const { courseId, lessonId, assessmentId } = useParams()
 	const navigate = useNavigate()
+	const dispatch = useDispatch()
 	const user = useSelector((state) => state.user)
 	const courses = useSelector((state) => state.course.items)
 	const activeCourse = courses.find(
@@ -25,7 +28,6 @@ const QuizResults = () => {
 
 	const [data, setData] = useState(null)
 	const [isLoading, setIsLoading] = useState(true)
-	const [error, setError] = useState(null)
 	const [expandedResponse, setExpandedResponse] = useState(null)
 	const [gradingScores, setGradingScores] = useState({})
 	const [gradingSaving, setGradingSaving] = useState({})
@@ -40,7 +42,12 @@ const QuizResults = () => {
 				const res = await assessmentService.getResults(assessmentId)
 				setData(res)
 			} catch (err) {
-				setError(err?.response?.data?.error || t('Failed to load results'))
+				dispatch(
+					setError(
+						err?.response?.data?.error || t('Failed to load results'),
+						5,
+					),
+				)
 			} finally {
 				setIsLoading(false)
 			}
@@ -57,17 +64,6 @@ const QuizResults = () => {
 			<div style={styles.loadingContainer}>
 				<div style={styles.loadingSpinner}></div>
 				<p style={styles.loadingText}>{t('Loading results...')}</p>
-			</div>
-		)
-	}
-
-	if (error) {
-		return (
-			<div className='flex flex-col items-center justify-center h-full gap-4'>
-				<p className='text-red-500 font-medium'>{t(error)}</p>
-				<button onClick={goBack} className='text-primary hover:underline'>
-					{t('Go back')}
-				</button>
 			</div>
 		)
 	}
@@ -154,7 +150,9 @@ const QuizResults = () => {
 			const res = await assessmentService.getResults(assessmentId)
 			setData(res)
 		} catch (err) {
-			setError(err?.response?.data?.error || t('Failed to save grade'))
+			dispatch(
+				setError(err?.response?.data?.error || t('Failed to save grade'), 5),
+			)
 		} finally {
 			setGradingSaving((prev) => ({ ...prev, [key]: false }))
 		}
@@ -194,7 +192,9 @@ const QuizResults = () => {
 
 			<div className='max-w-[900px] w-full mx-auto px-5 py-10 pb-24'>
 				{/* Stats cards */}
-				<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8'>
+				<div
+					className={`grid grid-cols-1 ${surveyQuestions.length < questions.length ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4 mb-8`}
+				>
 					<div className='bg-white border border-border-color rounded-xl p-5 flex items-center gap-4'>
 						<div className='w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center'>
 							<Users size={24} className='text-primary' />
@@ -206,6 +206,7 @@ const QuizResults = () => {
 							<div className='text-sm text-gray-500'>{t('Submissions')}</div>
 						</div>
 					</div>
+					{surveyQuestions.length < questions.length && (
 					<div className='bg-white border border-border-color rounded-xl p-5 flex items-center gap-4'>
 						<div className='w-12 h-12 rounded-full bg-success/10 flex items-center justify-center'>
 							<BarChart3 size={24} className='text-success' />
@@ -214,9 +215,12 @@ const QuizResults = () => {
 							<div className='text-2xl font-bold text-gray-800'>
 								{avgScore}/{maxScore}
 							</div>
-							<div className='text-sm text-gray-500'>{t('Average Score')}</div>
+								<div className='text-sm text-gray-500'>
+									{t('Average Score')}
+								</div>
+							</div>
 						</div>
-					</div>
+					)}
 					<div className='bg-white border border-border-color rounded-xl p-5 flex items-center gap-4'>
 						<div className='w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center'>
 							<BarChart3 size={24} className='text-secondary' />

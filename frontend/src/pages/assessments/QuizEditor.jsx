@@ -118,6 +118,19 @@ const QuizEditor = () => {
 			}
 			const qType = q.type || 'single_choice'
 			if (qType === 'open_text') continue
+			const filledOptions = q.options.filter((o) => o.trim())
+			const hasDuplicates = new Set(filledOptions).size !== filledOptions.length
+			if (hasDuplicates) {
+				dispatch(
+					setError(
+						t('Question {{number}} has duplicate options', {
+							number: i + 1,
+						}),
+						5,
+					),
+				)
+				return
+			}
 
 			if (qType === 'survey') {
 				if (!q.category?.trim()) {
@@ -129,7 +142,6 @@ const QuizEditor = () => {
 					)
 					return
 				}
-				const filledOptions = q.options.filter((o) => o.trim())
 				if (filledOptions.length === 0) {
 					dispatch(
 						setError(
@@ -144,7 +156,6 @@ const QuizEditor = () => {
 				continue
 			}
 
-			const filledOptions = q.options.filter((o) => o.trim())
 			if (filledOptions.length < 2) {
 				dispatch(
 					setError(
