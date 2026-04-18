@@ -136,11 +136,11 @@ const ProfileHeader = ({ user }) => {
 			)}
 
 			{/* Profile Section */}
-			<div className='flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap w-full md:w-auto'>
+			<div className='flex flex-col items-center md:flex-row md:items-start  gap-4 flex-wrap w-full md:w-auto'>
 				{/* Avatar */}
-				<div className='relative flex-shrink-0'>
+				<div className='relative flex-shrink-0 items-center justify-center'>
 					<div
-						className='h-20 w-20 rounded-full box'
+						className='h-20 w-20 rounded-full box relative'
 						style={{
 							backgroundImage: `url(${resolvedProfileImageUrl})`,
 							backgroundSize: 'cover',
@@ -176,9 +176,9 @@ const ProfileHeader = ({ user }) => {
 							className='flex flex-col items-center select-nones '
 							ref={dialogRef}
 						>
-							<div className='mt-10 cursor-pointer avatar-crop react-avatar-edit'>
+							<div className='mt-10 cursor-pointer avatar-crop react-avatar-edit w-[250px] md:w-[500px]'>
 								<Avatar
-									width={500}
+									width={'100%'}
 									height={300}
 									onCrop={onCrop}
 									onClose={onClose}
@@ -192,8 +192,8 @@ const ProfileHeader = ({ user }) => {
 										justifyContent: 'center',
 										alignItems: 'center',
 										position: 'absolute', // Position it absolutely within the Avatar
-										width: '500px', // Make it take the entire width of the Avatar
-										height: '300px', // Make it take the entire height of the Avatar
+										width: '80%',
+
 										textAlign: 'center', // Center the text inside the circle
 										cursor: 'pointer', // Make it clickable
 									}}
@@ -214,7 +214,7 @@ const ProfileHeader = ({ user }) => {
 				</div>
 
 				{/* Name, Email, Role */}
-				<div className='flex flex-col min-w-0'>
+				<div className='flex flex-col min-w-0 items-center md:items-start'>
 					<h1 className='text-2xl font-bold text-gray-800 truncate'>
 						{fullName}
 					</h1>
