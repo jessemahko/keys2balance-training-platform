@@ -39,6 +39,7 @@ const LessonPage = () => {
 	const [isEditorOpen, setIsEditorOpen] = useState(false)
 	const [editingBlock, setEditingBlock] = useState(null)
 	const [insertAfterId, setInsertAfterId] = useState(null)
+	const [savingBlock, setSavingBlock] = useState(false)
 
 	const userRole = user?.role || ''
 	const isCourseOwner = String(activeCourse?.teacher_id) === String(user?.id)
@@ -110,6 +111,8 @@ const LessonPage = () => {
 	}
 
 	const handleSaveBlock = async (blockData) => {
+		if (savingBlock) return
+		setSavingBlock(true)
 		try {
 			let updatedLesson
 			if (editingBlock) {
@@ -125,6 +128,8 @@ const LessonPage = () => {
 			setIsEditorOpen(false)
 		} catch (error) {
 			console.error('Failed to save block:', error)
+		} finally {
+			setSavingBlock(false)
 		}
 	}
 
@@ -352,6 +357,7 @@ const LessonPage = () => {
 				onSave={handleSaveBlock}
 				initialData={editingBlock}
 				isNew={!editingBlock}
+				saving={savingBlock}
 			/>
 		</div>
 	)
