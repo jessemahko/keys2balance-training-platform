@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { X, Save } from 'lucide-react'
+import { X, Save, Loader2 } from 'lucide-react'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 import { useTranslation } from 'react-i18next'
 
-const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
+const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew, saving }) => {
 	const { t } = useTranslation()
 	const [type, setType] = useState('text')
 	const [formData, setFormData] = useState({})
@@ -368,10 +368,15 @@ const BlockEditorModal = ({ isOpen, onClose, onSave, initialData, isNew }) => {
 					<div className='flex flex-col sm:flex-row gap-4 pt-4 border-t border-border-color'>
 						<button
 							type='submit'
-							className='inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity hover:opacity-90 flex-1 cursor-pointer'
+							disabled={saving}
+							className={`inline-flex items-center justify-center p-[0.8rem_1.15rem] rounded-full font-bold bg-[#514587] text-white border-none transition-opacity flex-1 ${saving ? 'opacity-60 cursor-not-allowed' : 'hover:opacity-90 cursor-pointer'}`}
 						>
-							<Save size={18} className='mr-2' />
-							{t('Save Block')}
+							{saving ? (
+								<Loader2 size={18} className='mr-2 animate-spin' />
+							) : (
+								<Save size={18} className='mr-2' />
+							)}
+							{saving ? t('Saving...') : t('Save Block')}
 						</button>
 						<button
 							type='button'
