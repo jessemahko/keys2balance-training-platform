@@ -140,11 +140,62 @@ The React app is built into `backend/dist/` and served statically by Express.
 
 ## Deployment (Fly.io)
 
+### 1. Install the Fly CLI & log in
+
 ```bash
-fly deploy
+# Install (macOS/Linux)
+curl -L https://fly.io/install.sh | sh
+
+# Log in
+fly auth login
 ```
 
-See `backend/fly.toml` for configuration (Amsterdam region, 1 GB RAM, persistent uploads volume).
+### 2. Build the frontend
+
+```bash
+# macOS / Linux
+cd backend && npm run build:ui:mac
+
+# Windows CMD
+cd backend && npm run build:ui:windows-cmd
+
+# WSL
+cd backend && npm run build:ui:wsl
+```
+
+This compiles the React app into `backend/dist/` so Express can serve it statically.
+
+### 3. Deploy
+
+```bash
+# Deploy only (frontend already built)
+cd backend && npm run deploy
+
+# Build frontend + deploy in one step
+npm run deploy:full
+```
+
+### 4. View production logs
+
+```bash
+npm run logs:prod
+```
+
+### Production config (`backend/fly.toml`)
+
+| Setting        | Value                       |
+| -------------- | --------------------------- |
+| App name       | `keys2balance`              |
+| Region         | `ams` (Amsterdam)           |
+| RAM            | 1 GB                        |
+| CPUs           | 1                           |
+| Uploads volume | `/app/uploads` (persistent) |
+
+> Make sure all required environment variables are set as Fly secrets before deploying:
+>
+> ```bash
+> fly secrets set SECRET=your_jwt_secret FRONTEND_URL=https://keys2balance.fly.dev ...
+> ```
 
 ---
 
