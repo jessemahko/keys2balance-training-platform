@@ -62,24 +62,9 @@ CREATE TABLE IF NOT EXISTS courses (
 	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ======================================================================================
--- 4. COHORTS (GROUPS)
--- ======================================================================================
-
-CREATE TABLE IF NOT EXISTS cohorts (
-	cohort_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	name TEXT NOT NULL,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS user_cohorts (
-	user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
-	cohort_id UUID REFERENCES cohorts(cohort_id) ON DELETE CASCADE,
-	PRIMARY KEY (user_id, cohort_id)
-);
 
 -- ======================================================================================
--- 5. LESSONS
+-- 4. LESSONS
 -- ======================================================================================
 
 CREATE TABLE IF NOT EXISTS lessons (
@@ -95,24 +80,10 @@ CREATE TABLE IF NOT EXISTS lessons (
 CREATE INDEX IF NOT EXISTS idx_lessons_course
 ON lessons(course_id);
 
--- ======================================================================================
--- 6. PROGRESS
--- ======================================================================================
 
-CREATE TABLE IF NOT EXISTS progress (
-	user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
-	lesson_id UUID REFERENCES lessons(lesson_id) ON DELETE CASCADE,
-	is_completed BOOLEAN NOT NULL DEFAULT FALSE,
-	completed_at TIMESTAMPTZ,
-	last_activity_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	PRIMARY KEY (user_id, lesson_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_progress_user
-ON progress(user_id);
 
 -- ======================================================================================
--- 7. ASSESSMENTS
+-- 5. ASSESSMENTS
 -- ======================================================================================
 
 CREATE TABLE IF NOT EXISTS assessments (
@@ -127,7 +98,7 @@ CREATE INDEX IF NOT EXISTS idx_assessments_lesson
 ON assessments(lesson_id);
 
 -- ======================================================================================
--- 8. ASSESSMENT RESPONSES
+-- 6. ASSESSMENT RESPONSES
 -- ======================================================================================
 
 CREATE TABLE IF NOT EXISTS assessment_responses (
@@ -143,7 +114,7 @@ CREATE INDEX IF NOT EXISTS idx_assessment_responses_user_time
 ON assessment_responses(user_id, submitted_at DESC);
 
 -- ======================================================================================
--- 9. DISCUSSION THREADS
+-- 7. DISCUSSION THREADS
 -- ======================================================================================
 
 CREATE TABLE IF NOT EXISTS discussion_threads (
@@ -162,7 +133,7 @@ CREATE TABLE IF NOT EXISTS discussion_messages (
 );
 
 -- ======================================================================================
--- 10. NOTIFICATIONS
+-- 8. NOTIFICATIONS
 -- ======================================================================================
 
 CREATE TABLE IF NOT EXISTS notifications (
@@ -203,7 +174,7 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user_time
 ON notifications(user_id, created_at DESC);
 
 -- ======================================================================================
--- 11. UPDATED_AT TRIGGER
+-- 9. UPDATED_AT TRIGGER
 -- ======================================================================================
 
 CREATE OR REPLACE FUNCTION set_updated_at()
@@ -220,22 +191,8 @@ FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
 
-
 -- ======================================================================================
--- 12. ACCESS CODES (for student registration)
--- ======================================================================================
-
-CREATE TABLE IF NOT EXISTS access_codes (
-	code_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	code TEXT UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(8), 'hex'),
-	course_id UUID NOT NULL REFERENCES courses(course_id) ON DELETE CASCADE,
-	is_available BOOLEAN NOT NULL DEFAULT True,
-	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '1 day'
-);
-
--- ======================================================================================
--- 13. COURSE ENROLLMENTS
+-- 10. COURSE ENROLLMENTS
 -- ======================================================================================
 
 CREATE TABLE IF NOT EXISTS course_enrollments (
